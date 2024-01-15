@@ -31,6 +31,7 @@ public class JwtToken {
         this.refreshToken = newRefreshToken;
     }
 
+    // TODO : 추후 update, validation 은 서비스단으로 분리
     public void validateRefreshToken(String refreshToken) {
         if (!refreshToken.equals(this.refreshToken)) {
             throw new JwtException("refreshToken이 일치하지 않습니다");

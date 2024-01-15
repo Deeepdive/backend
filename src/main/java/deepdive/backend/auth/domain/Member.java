@@ -18,5 +18,12 @@ public class Member {
 
     private String email;
 
-    private String profile;
+    private String picture;
+
+    public static Member of(UserProfile userProfile) {
+        Member member = new Member();
+        member.picture = (String) userProfile.getAttributes().get("picture");
+        member.email = (String) userProfile.getAttributes().get("email");
+        return member;
+    }
 }

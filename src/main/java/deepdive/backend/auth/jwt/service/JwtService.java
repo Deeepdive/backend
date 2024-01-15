@@ -74,7 +74,7 @@ public class JwtService {
         return createToken(memberId, email, refreshTokenExpiration);
     }
 
-    private String createAccessToken(Long memberId, String email) {
+    public String createAccessToken(Long memberId, String email) {
         return createToken(memberId, email, accessTokenExpiration);
     }
 
@@ -114,7 +114,7 @@ public class JwtService {
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
             .memberId(memberId)
             .email(member.getEmail())
-            .profile(member.getProfile())
+            .profile(member.getPicture())
             .build();
 
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);
