@@ -1,6 +1,18 @@
 package deepdive.backend.auth.controller;
 
+import deepdive.backend.auth.utils.response.Response;
+import deepdive.backend.auth.utils.response.ResponseMsg;
+import deepdive.backend.auth.utils.response.StatusCode;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,4 +21,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @GetMapping("/login")
+    public ResponseEntity login(HttpServletRequest request, HttpServletResponse response,
+        @CookieValue(value = "ID", required = false) String key) {
+        return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.UNREGISTERED),
+            HttpStatus.OK);
+    }
+
+    @PostMapping("/token")
+    public ResponseEntity makeToken(HttpServletRequest request, HttpServletResponse response,
+        @RequestBody Map<String, String> code) {
+        return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.LOGIN_SUCCESS),
+            HttpStatus.OK);
+    }
+
+    @GetMapping("/auth/logout")
+    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
+        return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.LOGOUT_SUCCESS),
+            HttpStatus.OK);
+    }
 }
