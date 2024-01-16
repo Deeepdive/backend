@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class JwtToken {
+public class JsonWebToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class JwtToken {
     private Long memberId;
     private String refreshToken;
 
-    public JwtToken(Long memberId, String refreshToken) {
+    public JsonWebToken(Long memberId, String refreshToken) {
         this.memberId = memberId;
         this.refreshToken = refreshToken;
     }

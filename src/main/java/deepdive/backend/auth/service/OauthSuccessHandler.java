@@ -11,7 +11,6 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -38,24 +37,15 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
 
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String oauthEmail = oAuth2User.getAttribute("email");
-        String provider = oAuth2User.getAttribute("provider");
-        boolean isExistMember = oAuth2User.getAttribute("exist");
-        String role = oAuth2User.getAuthorities().stream().findFirst()
-            .orElseThrow(IllegalArgumentException::new).getAuthority();
-
         UserProfile userProfile = (UserProfile) authentication.getPrincipal();
         String email = (String) userProfile.getAttributes().get("email");
 
         Member member = memberService.findByEmail(email)
             .orElseGet(() -> memberService.generateMemberByUserProfile(userProfile));
+        log.info("member entity = {}", member);
 
         log.info("JWT access 토큰 발행 시작");
         String accessToken = jwtService.createAccessToken(member.getId(), member.getEmail());
-        if (isExistMember) {
-            jwtService.updateRefreshToken(member.getId(), member.getEmail());
-        }
 
         getRedirectStrategy()
             .sendRedirect(

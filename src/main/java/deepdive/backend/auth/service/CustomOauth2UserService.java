@@ -1,13 +1,11 @@
 package deepdive.backend.auth.service;
 
-import deepdive.backend.auth.domain.Member;
 import deepdive.backend.auth.domain.OAuth2Attribute;
 import deepdive.backend.auth.domain.UserProfile;
-import deepdive.backend.auth.jwt.service.MemberService;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -16,11 +14,10 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-
-    private final MemberService memberService;
 
     @Override
     public UserProfile loadUser(OAuth2UserRequest userRequest)
@@ -36,17 +33,8 @@ public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2Attribute oAuth2Attribute =
             OAuth2Attribute.of(provider, userNameAttributeName, attributes);
         Map<String, Object> memberAttribute = oAuth2Attribute.convertToMap();
-        String email = (String) memberAttribute.get("email");
 
-        Optional<Member> memberInDb = memberService.findByEmail(email);
-        if (memberInDb.isEmpty()) { // 처음 가입한 회원이라면
-            memberAttribute.put("exist", false);
-            return new UserProfile(provider,
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), memberAttribute);
-        }
-
-        // 이미 등록된 유저
-        memberAttribute.put("exist", true);
+        // TODO : 추후 admin 계정 추가 시 ROLE 부분 리팩
         return new UserProfile(provider,
             Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), memberAttribute);
     }

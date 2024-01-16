@@ -1,7 +1,7 @@
 package deepdive.backend.auth.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.auth.domain.JwtToken;
+import deepdive.backend.auth.domain.JsonWebToken;
 import deepdive.backend.auth.domain.Member;
 import deepdive.backend.auth.domain.ReIssueDto;
 import deepdive.backend.auth.repository.JwtRepository;
@@ -46,12 +46,12 @@ public class JwtService {
 
     @Transactional
     public void create(Long memberId, String refreshToken) {
-        tokenRepository.save(new JwtToken(memberId, refreshToken));
+        tokenRepository.save(new JsonWebToken(memberId, refreshToken));
     }
 
     @Transactional
     public void updateRefreshToken(Long memberId, String email) {
-        JwtToken refreshToken = tokenRepository.findByMemberId(memberId)
+        JsonWebToken refreshToken = tokenRepository.findByMemberId(memberId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
         log.info("member ID : {}", refreshToken.getMemberId());
@@ -61,7 +61,7 @@ public class JwtService {
     }
 
     public String reissueAccessToken(ReIssueDto reIssueDto) {
-        JwtToken memberToken = tokenRepository.findByMemberId(reIssueDto.getMemberId())
+        JsonWebToken memberToken = tokenRepository.findByMemberId(reIssueDto.getMemberId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         // TODO : 추후 service 분리

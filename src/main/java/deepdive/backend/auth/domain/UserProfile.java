@@ -31,4 +31,8 @@ public class UserProfile implements OAuth2User {
     public String getName() {
         return this.name;
     }
+
+    public String getAttributeByKey(String key) {
+        return (String) attributes.get(key);
+    }
 }

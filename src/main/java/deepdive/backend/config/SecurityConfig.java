@@ -33,17 +33,16 @@ public class SecurityConfig {
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/token/**").permitAll()
-                .requestMatchers("/oauth2/*").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
+                .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
                 .userInfoEndpoint(user -> user.userService(customOauth2UserService))
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
             )
-            .addFilterBefore(
-                new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class
-            );
+            .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
