@@ -1,4 +1,4 @@
-package deepdive.backend.auth.utils.response;
+package deepdive.backend.utils.response;
 
 public class StatusCode {
 

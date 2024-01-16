@@ -1,4 +1,4 @@
-package deepdive.backend.auth.utils.response;
+package deepdive.backend.utils.response;
 
 import lombok.Builder;
 import lombok.Getter;

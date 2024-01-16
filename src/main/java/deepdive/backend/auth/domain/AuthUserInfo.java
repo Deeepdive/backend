@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AuthUserInfo {
 
-    private Long memberId;
+    private String oauthId;
     private String email;
     private String profile;
 }

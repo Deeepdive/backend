@@ -1,4 +1,4 @@
-package deepdive.backend.auth.domain;
+package deepdive.backend.jwt.domain;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.Column;
@@ -19,11 +19,11 @@ public class JsonWebToken {
     @Column(name = "token_id")
     private Long id;
 
-    private Long memberId;
+    private String oauthId;
     private String refreshToken;
 
-    public JsonWebToken(Long memberId, String refreshToken) {
-        this.memberId = memberId;
+    public JsonWebToken(String oauthId, String refreshToken) {
+        this.oauthId = oauthId;
         this.refreshToken = refreshToken;
     }
 

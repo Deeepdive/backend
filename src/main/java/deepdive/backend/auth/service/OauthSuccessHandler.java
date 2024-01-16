@@ -1,9 +1,9 @@
 package deepdive.backend.auth.service;
 
-import deepdive.backend.auth.domain.Member;
 import deepdive.backend.auth.domain.UserProfile;
-import deepdive.backend.auth.jwt.service.JwtService;
-import deepdive.backend.auth.jwt.service.MemberService;
+import deepdive.backend.jwt.service.JwtService;
+import deepdive.backend.member.domain.Member;
+import deepdive.backend.member.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,14 +38,14 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         Authentication authentication) throws IOException, ServletException {
 
         UserProfile userProfile = (UserProfile) authentication.getPrincipal();
-        String email = (String) userProfile.getAttributes().get("email");
+        String email = userProfile.getAttributeByKey("email");
+        String oauthId = userProfile.getAttributeByKey("id");
 
-        Member member = memberService.findByEmail(email)
-            .orElseGet(() -> memberService.generateMemberByUserProfile(userProfile));
+        Member member = memberService.registerMember(oauthId, email, userProfile);
         log.info("member entity = {}", member);
 
         log.info("JWT access 토큰 발행 시작");
-        String accessToken = jwtService.createAccessToken(member.getId(), member.getEmail());
+        String accessToken = jwtService.createAccessToken(member.getOauthId(), member.getEmail());
 
         getRedirectStrategy()
             .sendRedirect(
@@ -54,7 +54,6 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 UriComponentsBuilder
                     .fromUriString("http://localhost:3000")
                     .queryParam("token", accessToken)
-                    .queryParam("email", email)
                     .build()
                     .toUriString()
             );

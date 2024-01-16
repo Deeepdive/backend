@@ -1,8 +1,8 @@
 package deepdive.backend.auth.controller;
 
-import deepdive.backend.auth.utils.response.Response;
-import deepdive.backend.auth.utils.response.ResponseMsg;
-import deepdive.backend.auth.utils.response.StatusCode;
+import deepdive.backend.utils.response.Response;
+import deepdive.backend.utils.response.ResponseMsg;
+import deepdive.backend.utils.response.StatusCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class AuthController {
             HttpStatus.OK);
     }
 
-    @GetMapping("/auth/logout")
+    @GetMapping("/logout")
     public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextHolder.clearContext();
         return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.LOGOUT_SUCCESS),

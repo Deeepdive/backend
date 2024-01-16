@@ -1,4 +1,4 @@
-package deepdive.backend.auth.domain;
+package deepdive.backend.jwt.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
 public class ReIssueDto {
 
     @NotBlank
-    private Long memberId;
+    private String oauthId;
 
     @NotBlank
     private String refreshToken;

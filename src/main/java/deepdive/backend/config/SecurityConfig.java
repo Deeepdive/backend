@@ -1,10 +1,10 @@
 package deepdive.backend.config;
 
-import deepdive.backend.auth.jwt.filter.JwtFilter;
-import deepdive.backend.auth.jwt.service.JwtService;
 import deepdive.backend.auth.service.CustomOauth2UserService;
 import deepdive.backend.auth.service.OauthFailureHandler;
 import deepdive.backend.auth.service.OauthSuccessHandler;
+import deepdive.backend.jwt.filter.JwtFilter;
+import deepdive.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

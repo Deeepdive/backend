@@ -1,10 +1,11 @@
-package deepdive.backend.auth.jwt.service;
+package deepdive.backend.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.auth.domain.JsonWebToken;
-import deepdive.backend.auth.domain.Member;
-import deepdive.backend.auth.domain.ReIssueDto;
-import deepdive.backend.auth.repository.JwtRepository;
+import deepdive.backend.jwt.domain.JsonWebToken;
+import deepdive.backend.jwt.domain.ReIssueDto;
+import deepdive.backend.jwt.repository.JwtRepository;
+import deepdive.backend.member.domain.Member;
+import deepdive.backend.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -45,43 +46,44 @@ public class JwtService {
     private String issuer;
 
     @Transactional
-    public void create(Long memberId, String refreshToken) {
-        tokenRepository.save(new JsonWebToken(memberId, refreshToken));
+    public void createAndSaveRefreshToken(String oauthId, String refreshToken) {
+        tokenRepository.save(new JsonWebToken(oauthId, refreshToken));
     }
 
     @Transactional
-    public void updateRefreshToken(Long memberId, String email) {
-        JsonWebToken refreshToken = tokenRepository.findByMemberId(memberId)
+    public void updateRefreshToken(String oauthId, String email) {
+        JsonWebToken refreshToken = tokenRepository.findByOauthId(oauthId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
-        log.info("member ID : {}", refreshToken.getMemberId());
-        String createdRefreshToken = createRefreshToken(memberId, email);
+        log.info("member ID : {}", refreshToken.getOauthId());
+        String createdRefreshToken = createRefreshToken(oauthId, email);
 
         refreshToken.updateRefreshToken(createdRefreshToken);
     }
 
     public String reissueAccessToken(ReIssueDto reIssueDto) {
-        JsonWebToken memberToken = tokenRepository.findByMemberId(reIssueDto.getMemberId())
+        JsonWebToken memberToken = tokenRepository.findByOauthId(reIssueDto.getOauthId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         // TODO : 추후 service 분리
         memberToken.validateRefreshToken(reIssueDto.getRefreshToken());
 
-        return createAccessToken(reIssueDto.getMemberId(), "name");
+        return createAccessToken(reIssueDto.getOauthId(), "name");
     }
 
-    private String createRefreshToken(Long memberId, String email) {
-        return createToken(memberId, email, refreshTokenExpiration);
+    private String createRefreshToken(String oauthId, String email) {
+        return createToken(oauthId, email, refreshTokenExpiration);
     }
 
-    public String createAccessToken(Long memberId, String email) {
-        return createToken(memberId, email, accessTokenExpiration);
+    public String createAccessToken(String oauthId, String email) {
+        return createToken(oauthId, email, accessTokenExpiration);
     }
 
-    private String createToken(Long memberId, String email, Long expireTime) {
+    private String createToken(String oauthId, String email, Long expireTime) {
         Claims claims = Jwts.claims().setSubject("User");
-        claims.put("memberId", memberId);
+        claims.put("oauthId", oauthId);
         claims.put("email", email);
+        // TODO : role 분리 생각..
         claims.put("roles", "User");
         Date now = new Date();
 
@@ -102,17 +104,17 @@ public class JwtService {
             throw new IllegalArgumentException("권한 정보가 존재하지 않습니다.");
         }
 
-        List<SimpleGrantedAuthority> authorities = Stream.of(claims.get("role").toString())
+        List<SimpleGrantedAuthority> authorities = Stream.of(claims.get("roles").toString())
             .map(SimpleGrantedAuthority::new)
             .toList();
 
-        Long memberId = claims.get("memberId", Long.class);
-        Member member = memberService.findById(memberId)
+        String oauthId = claims.get("oauthId", String.class);
+        Member member = memberService.findByOauthId(oauthId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         // principal 구축
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
-            .memberId(memberId)
+            .oauthId(oauthId)
             .email(member.getEmail())
             .profile(member.getPicture())
             .build();
