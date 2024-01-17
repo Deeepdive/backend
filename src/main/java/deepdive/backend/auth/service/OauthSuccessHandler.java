@@ -8,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -41,12 +40,11 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         UserProfile userProfile = (UserProfile) authentication.getPrincipal();
         String email = userProfile.getAttributeByKey("email");
         String oauthId = userProfile.getAttributeByKey("id");
-        
-        Optional<Member> member = memberService.findByEmail(email);
+
+        Member member = memberService.registerMember(oauthId, email, userProfile);
 
         /**
          * 이게 맞나..
-         *
          * 동의 한 애들 -> db 내에 존재한다 -> updateRefreshToken, accessToken을 가지고 프론트에게 보내기.
          * 동의 안한 애들 -> db 내에 존재하지 않는다
          *            -> accessToken, registed T/F 프론트에게 보내기 -> 분기 통합,
@@ -56,11 +54,11 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         boolean isRegistered = false;
 
-        if (member.isPresent()) {
+        if (member.getIsAgree()) {
             isRegistered = true;
-            log.info("member entity = {}", member.get());
-            jwtService.updateRefreshToken(oauthId, email);
-
+            log.info("member entity = {}", member);
+            // 만일 유저가 로그인한 시점이 refreshToken이 만료될 시점보다 1일 이전이라면?
+            jwtService.updateRefreshToken(member.getOauthId(), member.getEmail());
         }
 
         log.info("JWT access 토큰 발행 시작");

@@ -52,6 +52,9 @@ public class Member {
     private CertType certType;
     private Boolean isTeacher;
     private String nickName;
+    private Boolean isAlarmAgree;
+    private Boolean isMarketingAgree;
+    private Boolean isAgree;
 
 
     /**
@@ -82,6 +85,12 @@ public class Member {
     public void updateProfile(String nickName, String picture) {
         this.nickName = nickName;
         this.picture = picture;
+    }
+
+    public void updateAgreement(Boolean isAlarmAgree, Boolean isMarketingAgree) {
+        this.isAgree = true;
+        this.isAlarmAgree = isAlarmAgree;
+        this.isMarketingAgree = isMarketingAgree;
     }
 
 }

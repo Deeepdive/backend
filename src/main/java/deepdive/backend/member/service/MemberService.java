@@ -66,4 +66,10 @@ public class MemberService {
         return null;
     }
 
+    @Transactional
+    public void updateAgreement(AuthUserInfo authUser, Boolean isAlarmAgree,
+        Boolean isMarketingAgree) {
+        Member member = findByOauthId(authUser.getOauthId());
+        member.updateAgreement(isAlarmAgree, isMarketingAgree);
+    }
 }
