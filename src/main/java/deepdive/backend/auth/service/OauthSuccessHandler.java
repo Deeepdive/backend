@@ -8,8 +8,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,7 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final MemberService memberService;
     private final JwtService jwtService;
+    private final CacheManager cacheManager;
 
     /**
      * authentication에 성공한 유저들을 db에 저장합니다.
@@ -41,7 +45,7 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String email = userProfile.getAttributeByKey("email");
         String oauthId = userProfile.getAttributeByKey("id");
 
-        Member member = memberService.registerMember(oauthId, email, userProfile);
+        Optional<Member> member = memberService.findByEmail(email);
 
         /**
          * 이게 맞나..
@@ -52,13 +56,11 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
          *            -> 멤버 최초 등록, DTO를 통해 isAlarm, isMarketing T/F값 업데이트
          */
 
-        boolean isRegistered = false;
-
-        if (member.getIsAgree()) {
-            isRegistered = true;
-            log.info("member entity = {}", member);
-            // 만일 유저가 로그인한 시점이 refreshToken이 만료될 시점보다 1일 이전이라면?
-            jwtService.updateRefreshToken(member.getOauthId(), member.getEmail());
+        boolean isRegistered = member.isPresent();
+        if (member.isPresent()) {
+            jwtService.updateRefreshToken(member.get().getOauthId(), member.get().getEmail());
+        } else {
+            Objects.requireNonNull(cacheManager.getCache("userProfile")).put(email, userProfile);
         }
 
         log.info("JWT access 토큰 발행 시작");
@@ -72,6 +74,7 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 UriComponentsBuilder
                     .fromUriString("http://localhost:3000")
                     .queryParam("token", accessToken)
+                    .queryParam("email", email)
                     .queryParam("isRegistered", isRegistered)
                     .build()
                     .toUriString()

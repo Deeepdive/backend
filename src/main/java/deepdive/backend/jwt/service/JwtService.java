@@ -4,8 +4,6 @@ import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.jwt.domain.JsonWebToken;
 import deepdive.backend.jwt.domain.dto.ReIssueDto;
 import deepdive.backend.jwt.repository.JwtRepository;
-import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -35,7 +33,6 @@ import org.springframework.stereotype.Service;
 public class JwtService {
 
     private final JwtRepository tokenRepository;
-    private final MemberService memberService;
     @Value("${jwt.token.secret}")
     private String secret_code;
     @Value("${refreshtoken.expires}")
@@ -71,7 +68,7 @@ public class JwtService {
         return createAccessToken(reIssueDto.getOauthId(), "name");
     }
 
-    private String createRefreshToken(String oauthId, String email) {
+    public String createRefreshToken(String oauthId, String email) {
         return createToken(oauthId, email, refreshTokenExpiration);
     }
 
@@ -109,12 +106,10 @@ public class JwtService {
             .toList();
 
         String oauthId = claims.get("oauthId", String.class);
-        Member member = memberService.findByOauthId(oauthId);
 
         // principal 구축
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
             .oauthId(oauthId)
-            .email(member.getEmail())
             .build();
 
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);
