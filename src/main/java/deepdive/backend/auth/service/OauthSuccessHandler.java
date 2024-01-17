@@ -2,12 +2,13 @@ package deepdive.backend.auth.service;
 
 import deepdive.backend.auth.domain.UserProfile;
 import deepdive.backend.jwt.service.JwtService;
-import deepdive.backend.member.domain.Member;
+import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -40,12 +41,31 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         UserProfile userProfile = (UserProfile) authentication.getPrincipal();
         String email = userProfile.getAttributeByKey("email");
         String oauthId = userProfile.getAttributeByKey("id");
+        
+        Optional<Member> member = memberService.findByEmail(email);
 
-        Member member = memberService.registerMember(oauthId, email, userProfile);
-        log.info("member entity = {}", member);
+        /**
+         * 이게 맞나..
+         *
+         * 동의 한 애들 -> db 내에 존재한다 -> updateRefreshToken, accessToken을 가지고 프론트에게 보내기.
+         * 동의 안한 애들 -> db 내에 존재하지 않는다
+         *            -> accessToken, registed T/F 프론트에게 보내기 -> 분기 통합,
+         *            -> 프론트는 토큰을 갖고 다시 특정 url(/register)로 POST
+         *            -> 멤버 최초 등록, DTO를 통해 isAlarm, isMarketing T/F값 업데이트
+         */
+
+        boolean isRegistered = false;
+
+        if (member.isPresent()) {
+            isRegistered = true;
+            log.info("member entity = {}", member.get());
+            jwtService.updateRefreshToken(oauthId, email);
+
+        }
 
         log.info("JWT access 토큰 발행 시작");
-        String accessToken = jwtService.createAccessToken(member.getOauthId(), member.getEmail());
+        // oauthId를 가지고 accessToken을 발행합니다.
+        String accessToken = jwtService.createAccessToken(oauthId, email);
 
         getRedirectStrategy()
             .sendRedirect(
@@ -54,8 +74,10 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 UriComponentsBuilder
                     .fromUriString("http://localhost:3000")
                     .queryParam("token", accessToken)
+                    .queryParam("isRegistered", isRegistered)
                     .build()
                     .toUriString()
             );
+
     }
 }

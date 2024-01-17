@@ -2,9 +2,9 @@ package deepdive.backend.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.jwt.domain.JsonWebToken;
-import deepdive.backend.jwt.domain.ReIssueDto;
+import deepdive.backend.jwt.domain.dto.ReIssueDto;
 import deepdive.backend.jwt.repository.JwtRepository;
-import deepdive.backend.member.domain.Member;
+import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -55,7 +55,7 @@ public class JwtService {
         JsonWebToken refreshToken = tokenRepository.findByOauthId(oauthId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
-        log.info("member ID : {}", refreshToken.getOauthId());
+        log.info("member OauthID : {}", refreshToken.getOauthId());
         String createdRefreshToken = createRefreshToken(oauthId, email);
 
         refreshToken.updateRefreshToken(createdRefreshToken);
@@ -109,14 +109,12 @@ public class JwtService {
             .toList();
 
         String oauthId = claims.get("oauthId", String.class);
-        Member member = memberService.findByOauthId(oauthId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        Member member = memberService.findByOauthId(oauthId);
 
         // principal 구축
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
             .oauthId(oauthId)
             .email(member.getEmail())
-            .profile(member.getPicture())
             .build();
 
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);

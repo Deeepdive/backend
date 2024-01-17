@@ -1,4 +1,4 @@
-package deepdive.backend.jwt.domain;
+package deepdive.backend.jwt.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

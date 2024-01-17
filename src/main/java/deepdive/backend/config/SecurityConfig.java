@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/token/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v1/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
