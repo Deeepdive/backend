@@ -12,7 +12,7 @@ public class AuthUserInfo {
 
     private String oauthId;
     private String email;
-    private String profile;
+    private String picture;
 
     public static AuthUserInfo of() {
         return (AuthUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

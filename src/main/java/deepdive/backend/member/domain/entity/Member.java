@@ -1,6 +1,5 @@
 package deepdive.backend.member.domain.entity;
 
-import deepdive.backend.auth.domain.UserProfile;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.member.domain.Os;
 import deepdive.backend.profile.domain.CertOrganization;
@@ -31,10 +30,8 @@ public class Member {
     private Set<DiveLog> diveLogs = new HashSet<>();
 
     private String email;
-    private String picture;
     private String name;
     private String oauthId;
-    private String locale;
     private String provider;
 
     @Enumerated(value = EnumType.STRING)
@@ -47,29 +44,18 @@ public class Member {
     private CertOrganization organization;
     @Enumerated(value = EnumType.STRING)
     private CertType certType;
+    private String picture;
     private Boolean isTeacher;
     private String nickName;
     private Boolean isAlarmAgree;
     private Boolean isMarketingAgree;
-    private Boolean isAgree;
 
-
-    /**
-     * 각기 다른 Oauth들 중, 공통 key값을 가지고 Member Entity를 생성합니다.
-     * <p>
-     * userProfile -> 고유id, email, provider, name, locale, picture
-     *
-     * @param userProfile
-     * @return Member Entity
-     */
-    public static Member defaultInformation(UserProfile userProfile) {
+    public static Member of(String oauthId, String email, String provider) {
         Member member = new Member();
-        member.picture = userProfile.getAttributeByKey("picture");
-        member.email = userProfile.getAttributeByKey("email");
-        member.name = userProfile.getAttributeByKey("name");
-        member.locale = userProfile.getAttributeByKey("locale");
-        member.provider = userProfile.getAttributeByKey("provider");
-        member.oauthId = userProfile.getAttributeByKey("id");
+        member.oauthId = oauthId;
+        member.email = email;
+        member.provider = provider;
+
         return member;
     }
 
@@ -85,7 +71,6 @@ public class Member {
     }
 
     public void updateAgreement(Boolean isAlarmAgree, Boolean isMarketingAgree) {
-        this.isAgree = true;
         this.isAlarmAgree = isAlarmAgree;
         this.isMarketingAgree = isMarketingAgree;
     }

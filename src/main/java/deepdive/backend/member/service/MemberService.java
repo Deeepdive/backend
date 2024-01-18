@@ -1,18 +1,14 @@
 package deepdive.backend.member.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.auth.domain.UserProfile;
-import deepdive.backend.divelog.domain.entity.DiveLog;
-import deepdive.backend.jwt.service.JwtService;
+import deepdive.backend.jwt.service.JwtProvider;
 import deepdive.backend.member.domain.dto.ProfileRequestDto;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final JwtService jwtService;
+    private final JwtProvider tokenProvider;
     private final MemberRepository memberRepository;
     private final CacheManager cacheManager;
 
@@ -55,20 +51,6 @@ public class MemberService {
         member.updateProfile(requestDto.getNickName(), requestDto.getProfile());
     }
 
-    @Transactional
-    public Member registerMember(String oauthId, String email, UserProfile userProfile) {
-        Optional<Member> member = memberRepository.findByEmail(email);
-
-        // 아예 회원가입 한적 없음 -> refresh 토큰을 저장해야줘야한다.
-        if (member.isEmpty()) {
-            return memberRepository.save(Member.defaultInformation(userProfile));
-        }
-        if (!oauthId.equals(member.get().getOauthId())) {
-            throw new IllegalArgumentException("중복 이메일로 로그인 시도");
-        }
-        return member.get();
-    }
-
     /**
      * 최초로 등록되는 유저에 관한 로직입니다.
      * <p>
@@ -77,20 +59,16 @@ public class MemberService {
      * @param email cache의 key 역할을 합니다.
      */
     @Transactional
-    public void registMember(String email) {
-        Cache userProfile = cacheManager.getCache("userProfileStore");
+    public void registMember(String email, String provider) {
+        AuthUserInfo authUser = AuthUserInfo.of();
         log.info("email = {}", email);
-        UserProfile userInformation = userProfile.get(email, UserProfile.class);
 
-        Member member = Member.defaultInformation(userInformation);
+        Member member = Member.of(authUser.getOauthId(), email, provider);
         memberRepository.save(member);
 
-        String refreshToken = jwtService.createRefreshToken(member.getOauthId(), member.getEmail());
-        jwtService.createAndSaveRefreshToken(member.getOauthId(), refreshToken);
-    }
-
-    public List<DiveLog> findAllDiveLogs() {
-        return null;
+        String refreshToken = tokenProvider.createRefreshToken(member.getOauthId(),
+            member.getEmail());
+        tokenProvider.createAndSaveRefreshToken(member.getOauthId(), refreshToken);
     }
 
     @Transactional

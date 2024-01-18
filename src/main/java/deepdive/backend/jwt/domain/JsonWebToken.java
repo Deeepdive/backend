@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +23,8 @@ public class JsonWebToken {
     private Long id;
 
     private String oauthId;
+    @Column(length = 500)
     private String refreshToken;
-    private LocalDate expiredDate;
 
     public JsonWebToken(String oauthId, String refreshToken) {
         this.oauthId = oauthId;

@@ -1,7 +1,7 @@
 package deepdive.backend.auth.service;
 
 import deepdive.backend.auth.domain.UserProfile;
-import deepdive.backend.jwt.service.JwtService;
+import deepdive.backend.jwt.service.JwtProvider;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import jakarta.servlet.ServletException;
@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.CacheManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -23,8 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final MemberService memberService;
-    private final JwtService jwtService;
-    private final CacheManager cacheManager;
+    private final JwtProvider tokenProvider;
 
     /**
      * authentication에 성공한 유저들을 db에 저장합니다.
@@ -43,31 +41,18 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         UserProfile userProfile = (UserProfile) authentication.getPrincipal();
         String email = userProfile.getAttributeByKey("email");
         String oauthId = userProfile.getAttributeByKey("id");
+        String provider = userProfile.getAttributeByKey("provider");
 
         Optional<Member> member = memberService.findByEmail(email);
 
-        /**
-         * 이게 맞나..
-         * 동의 한 애들 -> db 내에 존재한다 -> updateRefreshToken, accessToken을 가지고 프론트에게 보내기.
-         * 동의 안한 애들 -> db 내에 존재하지 않는다
-         *            -> accessToken, registed T/F 프론트에게 보내기 -> 분기 통합,
-         *            -> 프론트는 토큰을 갖고 다시 특정 url(/register)로 POST
-         *            -> 멤버 최초 등록, DTO를 통해 isAlarm, isMarketing T/F값 업데이트
-         */
-
         boolean isRegistered = member.isPresent();
         if (member.isPresent()) {
-            jwtService.updateRefreshToken(member.get().getOauthId(), member.get().getEmail());
-        } else {
-            cacheManager.getCache("userProfileStore").put(email, userProfile);
-            log.info("isStored? = {}",
-                cacheManager.getCache("userProfileStore").get(email, UserProfile.class)
-                    .getAttributes().get("email"));
+            tokenProvider.updateRefreshToken(member.get().getOauthId(), member.get().getEmail());
         }
 
         log.info("JWT access 토큰 발행 시작");
         // oauthId를 가지고 accessToken을 발행합니다.
-        String accessToken = jwtService.createAccessToken(oauthId, email);
+        String accessToken = tokenProvider.createAccessToken(oauthId, email);
 
         getRedirectStrategy()
             .sendRedirect(
@@ -76,11 +61,10 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 UriComponentsBuilder
                     .fromUriString("http://localhost:3000")
                     .queryParam("token", accessToken)
-                    .queryParam("email", email)
+                    .queryParam("provider", provider)
                     .queryParam("isRegistered", isRegistered)
                     .build()
                     .toUriString()
             );
-
     }
 }
