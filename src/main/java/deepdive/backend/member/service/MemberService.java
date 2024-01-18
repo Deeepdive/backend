@@ -11,10 +11,12 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -76,7 +78,8 @@ public class MemberService {
      */
     @Transactional
     public void registMember(String email) {
-        Cache userProfile = cacheManager.getCache("userProfile");
+        Cache userProfile = cacheManager.getCache("userProfileStore");
+        log.info("email = {}", email);
         UserProfile userInformation = userProfile.get(email, UserProfile.class);
 
         Member member = Member.defaultInformation(userInformation);

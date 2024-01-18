@@ -8,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +59,10 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         if (member.isPresent()) {
             jwtService.updateRefreshToken(member.get().getOauthId(), member.get().getEmail());
         } else {
-            Objects.requireNonNull(cacheManager.getCache("userProfile")).put(email, userProfile);
+            cacheManager.getCache("userProfileStore").put(email, userProfile);
+            log.info("isStored? = {}",
+                cacheManager.getCache("userProfileStore").get(email, UserProfile.class)
+                    .getAttributes().get("email"));
         }
 
         log.info("JWT access 토큰 발행 시작");

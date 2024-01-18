@@ -77,8 +77,8 @@ public class JwtService {
     }
 
     private String createToken(String oauthId, String email, Long expireTime) {
-        Claims claims = Jwts.claims().setSubject("User");
-        claims.put("oauthId", oauthId);
+        Claims claims = Jwts.claims().setSubject("UserToken");
+        claims.put("oauthId", oauthId); // 얘는 빼도 될듯?
         claims.put("email", email);
         // TODO : role 분리 생각..
         claims.put("roles", "User");
@@ -86,9 +86,9 @@ public class JwtService {
 
         return Jwts.builder()
             .setClaims(claims)
-            .setIssuedAt(now)
             .setIssuer(issuer)
-            .setExpiration(new Date(now.getTime() + expireTime))
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime() + 60 * expireTime))
             .signWith(generateSecretKey(secret_code), SignatureAlgorithm.HS256)
             .compact();
     }
