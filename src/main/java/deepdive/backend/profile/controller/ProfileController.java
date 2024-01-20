@@ -1,6 +1,6 @@
 package deepdive.backend.profile.controller;
 
-import deepdive.backend.profile.domain.dto.ProfileRequestDto;
+import deepdive.backend.profile.domain.dto.ProfileDto;
 import deepdive.backend.profile.service.ProfileService;
 import deepdive.backend.utils.response.Response;
 import deepdive.backend.utils.response.ResponseMsg;
@@ -8,6 +8,7 @@ import deepdive.backend.utils.response.StatusCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +28,34 @@ public class ProfileController {
      * @return
      */
     @PostMapping("/update")
-    public ResponseEntity<Response> updateProfile(@RequestBody ProfileRequestDto dto) {
-
+    public ResponseEntity<Response> updateProfile(@RequestBody ProfileDto dto) {
         profileService.update(dto);
 
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
             HttpStatus.OK);
+    }
+
+    /**
+     * 유저의 사진, 닉네임이 담긴 기본 프로필 관련 정보를 반환합니다.
+     *
+     * @return 200 OK
+     */
+    @GetMapping
+    public ResponseEntity<ProfileDto> memberProfile() {
+        ProfileDto responseDTO = profileService.showMemberProfile();
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    /**
+     * 유저의 자격증 발급 및 강사 관련 정보를 반환합니다.
+     *
+     * @return 200 OK
+     */
+    @GetMapping("/cert")
+    public ResponseEntity<ProfileDto> certProfile() {
+        ProfileDto responseDTO = profileService.showCertProfile();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 }

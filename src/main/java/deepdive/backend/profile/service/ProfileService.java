@@ -3,7 +3,7 @@ package deepdive.backend.profile.service;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import deepdive.backend.member.service.MemberService;
-import deepdive.backend.profile.domain.dto.ProfileRequestDto;
+import deepdive.backend.profile.domain.dto.ProfileDto;
 import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class ProfileService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void update(ProfileRequestDto dto) {
+    public void update(ProfileDto dto) {
 
         Member member = memberService.findByOauthId();
         Profile profile = Profile.of(dto.getNickName(), dto.getPicture(),
@@ -26,5 +26,26 @@ public class ProfileService {
 
         member.setProfile(profile);
         memberRepository.save(member);
+    }
+
+    public ProfileDto showMemberProfile() {
+        Member member = memberService.findByOauthId();
+        Profile profile = member.getProfile();
+
+        return ProfileDto.builder()
+            .nickName(profile.getNickName())
+            .picture(profile.getPicture())
+            .build();
+    }
+
+    public ProfileDto showCertProfile() {
+        Member member = memberService.findByOauthId();
+        Profile profile = member.getProfile();
+
+        return ProfileDto.builder()
+            .isTeacher(profile.getIsTeacher())
+            .certOrganization(profile.getOrganization().name())
+            .certType(profile.getCertType().name())
+            .build();
     }
 }
