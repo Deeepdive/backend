@@ -1,6 +1,8 @@
 package deepdive.backend.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
+import deepdive.backend.jwt.domain.JsonWebToken;
+import deepdive.backend.jwt.repository.JwtRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -9,6 +11,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.transaction.Transactional;
 import java.security.Key;
 import java.util.Base64;
 import java.util.List;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
+    private final JwtRepository jwtRepository;
     @Value("${jwt.token.secret}")
     private String secret_code;
 
@@ -77,5 +81,12 @@ public class JwtService {
     private Key generateSecretKey(String secretCode) {
         String encodeSecretCode = Base64.getEncoder().encodeToString(secretCode.getBytes());
         return Keys.hmacShaKeyFor(encodeSecretCode.getBytes());
+    }
+
+    @Transactional
+    public void saveRefreshToken(String oauthId, String refreshToken) {
+        JsonWebToken jsonWebToken = new JsonWebToken(oauthId, refreshToken);
+
+        jwtRepository.save(jsonWebToken);
     }
 }

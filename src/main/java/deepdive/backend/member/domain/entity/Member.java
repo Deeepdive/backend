@@ -4,6 +4,7 @@ import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.member.domain.Os;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
+import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +13,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -28,6 +31,10 @@ public class Member {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
     private Set<DiveLog> diveLogs = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     private String email;
     private String name;
@@ -50,11 +57,15 @@ public class Member {
     private Boolean isAlarmAgree;
     private Boolean isMarketingAgree;
 
-    public static Member of(String oauthId, String email, String provider) {
+    public static Member defaultInformation(String oauthId, String email, String provider,
+        Boolean isAlarmAgree,
+        Boolean isMarketingAgree) {
         Member member = new Member();
         member.oauthId = oauthId;
         member.email = email;
         member.provider = provider;
+        member.isAlarmAgree = isAlarmAgree;
+        member.isMarketingAgree = isMarketingAgree;
 
         return member;
     }

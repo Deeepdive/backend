@@ -24,16 +24,6 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final MemberService memberService;
     private final JwtProvider tokenProvider;
 
-    /**
-     * authentication에 성공한 유저들을 db에 저장합니다.
-     *
-     * @param request        the request which caused the successful authentication
-     * @param response       the response
-     * @param authentication the <tt>Authentication</tt> object which was created during the
-     *                       authentication process.
-     * @throws IOException
-     * @throws ServletException
-     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
@@ -46,9 +36,9 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         Optional<Member> member = memberService.findByEmail(email);
 
         boolean isRegistered = member.isPresent();
-        if (member.isPresent()) {
-            tokenProvider.updateRefreshToken(member.get().getOauthId(), member.get().getEmail());
-        }
+        member.ifPresent(
+            value -> tokenProvider.updateRefreshToken(value.getOauthId(), value.getEmail())
+        );
 
         log.info("JWT access 토큰 발행 시작");
         // oauthId를 가지고 accessToken을 발행합니다.
