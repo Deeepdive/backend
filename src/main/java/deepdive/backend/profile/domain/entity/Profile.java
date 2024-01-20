@@ -22,10 +22,16 @@ public class Profile {
     private CertType certType;
     private Boolean isTeacher;
 
-    public static Profile of(String nickName, String picture, CertOrganization organization,
-        CertType type, Boolean isTeacher) {
+    // TODO : service 단으로 분리
+    public static Profile of(String nickName, String picture, String organization,
+        String type, Boolean isTeacher) {
         Profile profile = new Profile();
         profile.nickName = nickName;
-        
+        profile.picture = picture;
+        profile.organization = CertOrganization.valueOf(organization);
+        profile.certType = CertType.valueOf(type);
+        profile.isTeacher = isTeacher;
+
+        return profile;
     }
 }
