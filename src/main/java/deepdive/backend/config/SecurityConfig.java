@@ -25,9 +25,22 @@ public class SecurityConfig {
     private final OauthSuccessHandler successHandler;
     private final OauthFailureHandler failureHandler;
 
+    /**
+     * kakao 에러 -> ID 관련..
+     * <p>
+     * 기존 client id로 로그인 시 토큰 발급 성공
+     * <p>
+     * 지급된 client id -> failureHandler 타는데 이유가 뭐지 redirect ->
+     *
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+            .formLogin(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -36,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v1/api-docs/**").permitAll()
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth

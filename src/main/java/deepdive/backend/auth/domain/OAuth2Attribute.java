@@ -5,7 +5,9 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class OAuth2Attribute {
@@ -65,13 +67,14 @@ public class OAuth2Attribute {
     private static OAuth2Attribute ofNaver(String provider, String attributeKey,
         Map<String, Object> attributes) {
 
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+        Map<String, Object> response = (Map<String, Object>) attributes.get(attributeKey);
 
+        log.info("attributeKey = {}", attributeKey);
         return OAuth2Attribute.builder()
             .email((String) response.get("email"))
             .attributes(response)
             .provider(provider)
-            .attributeKey(attributeKey)
+            .attributeKey("id")
             .build();
     }
 

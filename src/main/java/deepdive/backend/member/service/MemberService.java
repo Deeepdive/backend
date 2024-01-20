@@ -1,21 +1,26 @@
 package deepdive.backend.member.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.auth.domain.UserProfile;
-import deepdive.backend.divelog.domain.entity.DiveLog;
-import deepdive.backend.member.domain.dto.ProfileRequestDto;
+import deepdive.backend.commonexception.ExceptionStatus;
+import deepdive.backend.jwt.service.JwtProvider;
+import deepdive.backend.jwt.service.JwtService;
+import deepdive.backend.member.domain.dto.RegisterMemberDto;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
+import deepdive.backend.profile.domain.dto.ProfileRequestDto;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final JwtProvider tokenProvider;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
     public Optional<Member> findByEmail(String email) {
@@ -23,8 +28,12 @@ public class MemberService {
     }
 
     public Member findByOauthId(String oauthId) {
-        return memberRepository.findByOauthId(oauthId)
-            .orElseThrow(() -> new IllegalArgumentException("oauthId로 유저를 찾지 못했습니다."));
+        Optional<Member> member = memberRepository.findByOauthId(oauthId);
+        if (member.isEmpty()) {
+            throw ExceptionStatus.NOT_FOUND_USER.asServiceException();
+        }
+
+        return member.get();
     }
 
     /**
@@ -49,21 +58,21 @@ public class MemberService {
     }
 
     @Transactional
-    public Member registerMember(String oauthId, String email, UserProfile userProfile) {
-        Optional<Member> member = memberRepository.findByEmail(email);
+    public void registerMember(RegisterMemberDto dto) {
+        AuthUserInfo authUser = AuthUserInfo.of(); // 처음 등록한 멤버의 oauthId를 ContextHolder에서 꺼내옵니다.
+        String oauthId = authUser.getOauthId();
 
-        // 아예 회원가입 한적 없음 -> refresh 토큰을 저장해야줘야한다.
-        if (member.isEmpty()) {
-            return memberRepository.save(Member.defaultInformation(userProfile));
-        }
-        if (!oauthId.equals(member.get().getOauthId())) {
-            throw new IllegalArgumentException("중복 이메일로 로그인 시도");
-        }
-        return member.get();
-    }
+        memberRepository.findByOauthId(authUser.getOauthId())
+            .ifPresent(member -> {
+                throw ExceptionStatus.DUPLICATE_REGISTER.asServiceException();
+            });
 
-    public List<DiveLog> findAllDiveLogs() {
-        return null;
+        Member member = Member.defaultInformation(oauthId, dto.getEmail(), dto.getProvider(),
+            dto.getIsAlarm(), dto.getIsMarketing());
+        memberRepository.save(member);
+
+        String refreshToken = tokenProvider.createRefreshToken(oauthId, member.getEmail());
+        jwtService.saveRefreshToken(oauthId, refreshToken);
     }
 
     @Transactional

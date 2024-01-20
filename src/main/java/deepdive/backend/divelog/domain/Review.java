@@ -1,0 +1,16 @@
+package deepdive.backend.divelog.domain;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.Getter;
+
+@Embeddable
+@Getter
+public class Review {
+
+    @Enumerated(value = EnumType.STRING)
+    private ReviewType reviewType;
+    private String comment;
+
+}

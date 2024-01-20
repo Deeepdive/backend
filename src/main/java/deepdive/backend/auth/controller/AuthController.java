@@ -23,23 +23,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @GetMapping("/login")
-    public ResponseEntity login(HttpServletRequest request, HttpServletResponse response,
+    public ResponseEntity<Response> login(HttpServletRequest request, HttpServletResponse response,
         @CookieValue(value = "ID", required = false) String key) {
-        return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.UNREGISTERED),
+        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.UNREGISTERED),
             HttpStatus.OK);
     }
 
     @PostMapping("/token")
-    public ResponseEntity makeToken(HttpServletRequest request, HttpServletResponse response,
+    public ResponseEntity<Response> makeToken(HttpServletRequest request,
+        HttpServletResponse response,
         @RequestBody Map<String, String> code) {
-        return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.LOGIN_SUCCESS),
+        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.LOGIN_SUCCESS),
             HttpStatus.OK);
     }
 
     @GetMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Response> logout(HttpServletRequest request,
+        HttpServletResponse response) {
         SecurityContextHolder.clearContext();
-        return new ResponseEntity(Response.of(StatusCode.OK, ResponseMsg.LOGOUT_SUCCESS),
+        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.LOGOUT_SUCCESS),
             HttpStatus.OK);
     }
 

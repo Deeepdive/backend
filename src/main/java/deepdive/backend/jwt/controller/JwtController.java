@@ -1,7 +1,7 @@
 package deepdive.backend.jwt.controller;
 
 import deepdive.backend.jwt.domain.dto.ReIssueDto;
-import deepdive.backend.jwt.service.JwtService;
+import deepdive.backend.jwt.service.JwtProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class JwtController {
 
-    private final JwtService jwtService;
+    private final JwtProvider tokenProvider;
 
     /**
      * access 토큰 만료 시 재발행 시작.
@@ -27,6 +27,6 @@ public class JwtController {
      */
     @PostMapping("/reissue")
     public ResponseEntity<String> reIssue(@RequestBody @Valid ReIssueDto reIssueDto) {
-        return ResponseEntity.ok(jwtService.reissueAccessToken(reIssueDto));
+        return ResponseEntity.ok(tokenProvider.reissueAccessToken(reIssueDto));
     }
 }
