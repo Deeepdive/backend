@@ -54,7 +54,14 @@ public class MemberService {
     public void updateProfile(AuthUserInfo authUser, ProfileRequestDto requestDto) {
         Member member = findByOauthId(authUser.getOauthId());
 
-        member.updateProfile(requestDto.getNickName(), requestDto.getProfile());
+        member.updateProfile(requestDto.getNickName(), requestDto.getPicture());
+    }
+
+    public Member findByOauthId() {
+        AuthUserInfo authUser = AuthUserInfo.of();
+
+        return memberRepository.findByOauthId(authUser.getOauthId())
+            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
     }
 
     @Transactional
