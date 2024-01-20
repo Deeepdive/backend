@@ -4,11 +4,15 @@ import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Profile {
 
     @Id
@@ -18,7 +22,9 @@ public class Profile {
 
     private String nickName;
     private String picture;
+    @Enumerated(EnumType.STRING)
     private CertOrganization organization;
+    @Enumerated(EnumType.STRING)
     private CertType certType;
     private Boolean isTeacher;
 

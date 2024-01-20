@@ -2,8 +2,6 @@ package deepdive.backend.member.domain.entity;
 
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.member.domain.Os;
-import deepdive.backend.profile.domain.CertOrganization;
-import deepdive.backend.profile.domain.CertType;
 import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,6 +17,7 @@ import jakarta.persistence.OneToOne;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -32,6 +31,7 @@ public class Member {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
     private Set<DiveLog> diveLogs = new HashSet<>();
 
+    @Setter
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     private Profile profile;
@@ -43,17 +43,7 @@ public class Member {
 
     @Enumerated(value = EnumType.STRING)
     private Os os;
-    private Boolean pushAllowed;
-    private Boolean marketingAllowed;
 
-    // 아래 부분은 추후 profile entity로 분리 -> 1:1, 단방향
-    @Enumerated(value = EnumType.STRING)
-    private CertOrganization organization;
-    @Enumerated(value = EnumType.STRING)
-    private CertType certType;
-    private String picture;
-    private Boolean isTeacher;
-    private String nickName;
     private Boolean isAlarmAgree;
     private Boolean isMarketingAgree;
 
@@ -68,17 +58,6 @@ public class Member {
         member.isMarketingAgree = isMarketingAgree;
 
         return member;
-    }
-
-    public void updateCertInformation(String organization, String type, Boolean isTeacher) {
-        this.isTeacher = isTeacher;
-        this.organization = CertOrganization.valueOf(organization);
-        this.certType = CertType.valueOf(type);
-    }
-
-    public void updateProfile(String nickName, String picture) {
-        this.nickName = nickName;
-        this.picture = picture;
     }
 
     public void updateAgreement(Boolean isAlarmAgree, Boolean isMarketingAgree) {
