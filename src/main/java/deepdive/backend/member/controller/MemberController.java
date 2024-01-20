@@ -20,8 +20,12 @@ public class MemberController {
 
     private final MemberService memberService;
 
+
     /**
-     * 동의를 마친 최초 로그인 유저를 db에 등록합니다.
+     * 마케팅 동의를 마친 회원을 등록합니다.
+     *
+     * @param dto 유저에 대한 기본 정보 - 이메일, 발급자, 동의내역, 접속 장소
+     * @return 성공 시 200, 실패 시 401
      */
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(@RequestBody RegisterMemberDto dto) {

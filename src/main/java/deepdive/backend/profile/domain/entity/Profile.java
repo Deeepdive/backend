@@ -22,11 +22,12 @@ public class Profile {
 
     private String nickName;
     private String picture;
+    private Boolean isTeacher;
+
     @Enumerated(EnumType.STRING)
     private CertOrganization organization;
     @Enumerated(EnumType.STRING)
     private CertType certType;
-    private Boolean isTeacher;
 
     // TODO : service 단으로 분리
     public static Profile of(String nickName, String picture, String organization,

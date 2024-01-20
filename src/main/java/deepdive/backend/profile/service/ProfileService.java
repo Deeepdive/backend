@@ -5,7 +5,6 @@ import deepdive.backend.member.repository.MemberRepository;
 import deepdive.backend.member.service.MemberService;
 import deepdive.backend.profile.domain.dto.ProfileRequestDto;
 import deepdive.backend.profile.domain.entity.Profile;
-import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
