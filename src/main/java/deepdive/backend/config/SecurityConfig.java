@@ -5,6 +5,7 @@ import deepdive.backend.auth.service.OauthFailureHandler;
 import deepdive.backend.auth.service.OauthSuccessHandler;
 import deepdive.backend.jwt.filter.JwtFilter;
 import deepdive.backend.jwt.service.JwtService;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,10 +46,11 @@ public class SecurityConfig {
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                 .requestMatchers("/token/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v1/api-docs/**").permitAll()
+                .requestMatchers("/status").permitAll() // 로드밸런서 상태 확인용
+                .requestMatchers(AuthenticateMatchers.swaggerArray).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
