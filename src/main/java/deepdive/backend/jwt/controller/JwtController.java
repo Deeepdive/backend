@@ -27,6 +27,7 @@ public class JwtController {
      */
     @PostMapping("/reissue")
     public ResponseEntity<String> reIssue(@RequestBody @Valid ReIssueDto reIssueDto) {
+        // TODO : 재발급 로직 재고려 해야할듯..
         return ResponseEntity.ok(tokenProvider.reissueAccessToken(reIssueDto));
     }
 }

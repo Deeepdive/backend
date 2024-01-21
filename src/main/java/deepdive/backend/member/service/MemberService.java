@@ -7,7 +7,6 @@ import deepdive.backend.jwt.service.JwtService;
 import deepdive.backend.member.domain.dto.RegisterMemberDto;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
-import deepdive.backend.profile.domain.dto.ProfileRequestDto;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -36,25 +35,11 @@ public class MemberService {
         return member.get();
     }
 
-    /**
-     * 멤버의 자격증 관련 프로필을 업데이트
-     *
-     * @param requestDto 자격증 발급단체, 유형, 강사인지
-     * @return
-     */
-    @Transactional
-    public void updateCertInformation(AuthUserInfo authUser, ProfileRequestDto requestDto) {
-        Member member = findByOauthId(authUser.getOauthId());
+    public Member findByOauthId() {
+        AuthUserInfo authUser = AuthUserInfo.of();
 
-        member.updateCertInformation(requestDto.getCertOrganization(),
-            requestDto.getCertType(), requestDto.getIsTeacher());
-    }
-
-    @Transactional
-    public void updateProfile(AuthUserInfo authUser, ProfileRequestDto requestDto) {
-        Member member = findByOauthId(authUser.getOauthId());
-
-        member.updateProfile(requestDto.getNickName(), requestDto.getProfile());
+        return memberRepository.findByOauthId(authUser.getOauthId())
+            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
     }
 
     @Transactional

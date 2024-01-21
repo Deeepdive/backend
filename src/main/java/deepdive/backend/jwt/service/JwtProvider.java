@@ -1,5 +1,6 @@
 package deepdive.backend.jwt.service;
 
+import deepdive.backend.commonexception.ExceptionStatus;
 import deepdive.backend.jwt.domain.JsonWebToken;
 import deepdive.backend.jwt.domain.dto.ReIssueDto;
 import deepdive.backend.jwt.repository.JwtRepository;
@@ -44,8 +45,10 @@ public class JwtProvider {
     }
 
     public String reissueAccessToken(ReIssueDto reIssueDto) {
+
+        // TODO : dto에서 oauthID 받지 말고, ContextHolder 에서 찾기, email은.. 뭐로하지
         JsonWebToken memberToken = tokenRepository.findByOauthId(reIssueDto.getOauthId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
 
         // TODO : 추후 service 분리
         memberToken.validateRefreshToken(reIssueDto.getRefreshToken());

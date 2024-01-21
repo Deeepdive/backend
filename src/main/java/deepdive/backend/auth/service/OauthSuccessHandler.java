@@ -41,7 +41,7 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         );
 
         log.info("JWT access 토큰 발행 시작");
-        // oauthId를 가지고 accessToken을 발행합니다.
+        // TODO : accessToken 에 oauthID.. 보다는 더 쓸데없는 정보 넣는게 낫지 않을까
         String accessToken = tokenProvider.createAccessToken(oauthId, email);
 
         getRedirectStrategy()
