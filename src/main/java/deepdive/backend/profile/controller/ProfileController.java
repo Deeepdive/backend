@@ -5,10 +5,14 @@ import deepdive.backend.profile.service.ProfileService;
 import deepdive.backend.utils.response.Response;
 import deepdive.backend.utils.response.ResponseMsg;
 import deepdive.backend.utils.response.StatusCode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +31,41 @@ public class ProfileController {
      * @param dto 닉네임, 사진, 알람 동의, 마케팅 동의, CertType 2개, 강사 여부
      * @return
      */
-    @PostMapping("/update")
-    public ResponseEntity<Response> updateProfile(@RequestBody ProfileDto dto) {
-        profileService.update(dto);
+    @Operation(summary = "유저 프로필 등록")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
+    })
+    @PostMapping("/save")
+    public ResponseEntity<Response> saveProfile(@RequestBody ProfileDto dto) {
+        profileService.save(dto);
+
+        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
+            HttpStatus.OK);
+    }
+
+    @Operation(summary = "유저의 기본 프로필 수정 요청")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
+        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
+    })
+    @PatchMapping("/update/default")
+    public ResponseEntity<Response> updateDefaultProfile(@RequestBody ProfileDto dto) {
+        profileService.updateDefaultProfile(dto);
+
+        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
+            HttpStatus.OK);
+    }
+
+    @Operation(summary = "자격증 관련 프로필 수정 요청")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
+    })
+    @PatchMapping("/update/cert")
+    public ResponseEntity<Response> updateCertProfile(@RequestBody ProfileDto dto) {
+        profileService.updateDefaultCertProfile(dto);
 
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
             HttpStatus.OK);
