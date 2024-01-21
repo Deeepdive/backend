@@ -37,7 +37,6 @@ public class Member {
     private Profile profile;
 
     private String email;
-    private String name;
     private String oauthId;
     private String provider;
 

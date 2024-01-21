@@ -21,6 +21,8 @@ public class Profile {
     private Long id;
 
     private String nickName;
+
+    // picture 부분 멀티파트로 수정하기.
     private String picture;
     private Boolean isTeacher;
 
