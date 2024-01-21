@@ -41,4 +41,15 @@ public class Profile {
 
         return profile;
     }
+
+    public void updateDefaultProfile(String nickName, String picture) {
+        this.nickName = nickName;
+        this.picture = picture;
+    }
+
+    public void updateCertProfile(String certOrganization, String certType, Boolean isTeacher) {
+        this.organization = CertOrganization.valueOf(certOrganization);
+        this.certType = CertType.valueOf(certType);
+        this.isTeacher = isTeacher;
+    }
 }
