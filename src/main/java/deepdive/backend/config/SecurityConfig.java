@@ -5,7 +5,6 @@ import deepdive.backend.auth.service.OauthFailureHandler;
 import deepdive.backend.auth.service.OauthSuccessHandler;
 import deepdive.backend.jwt.filter.JwtFilter;
 import deepdive.backend.jwt.service.JwtService;
-import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,11 +41,11 @@ public class SecurityConfig {
         http
             .formLogin(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                 .requestMatchers("/token/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/status").permitAll() // 로드밸런서 상태 확인용

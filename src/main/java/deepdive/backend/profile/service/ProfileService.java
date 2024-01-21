@@ -39,10 +39,12 @@ public class ProfileService {
      */
     @Transactional
     public void updateDefaultProfile(ProfileDto dto) {
-        validateDuplicateNickName(dto.getNickName());
 
         Member member = memberService.findByOauthId();
         Profile profile = member.getProfile();
+        if (!isUnchangedNickName(profile.getNickName(), dto.getNickName())) {
+            validateDuplicateNickName(dto.getNickName());
+        }
 
         profile.updateDefaultProfile(dto.getNickName(), dto.getPicture());
         member.setProfile(profile);
@@ -67,6 +69,10 @@ public class ProfileService {
         if (duplicateNickName.isPresent()) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
+    }
+
+    private boolean isUnchangedNickName(String oldNickName, String newNickName) {
+        return (newNickName.equals(oldNickName));
     }
 
     public ProfileDto showMemberProfile() {
