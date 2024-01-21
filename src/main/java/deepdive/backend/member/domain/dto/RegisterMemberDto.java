@@ -18,6 +18,4 @@ public class RegisterMemberDto {
     private Boolean isAlarm;
     @NotNull
     private Boolean isMarketing;
-    //    @NotNull
-    private String locale;
 }

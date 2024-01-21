@@ -1,11 +1,9 @@
 package deepdive.backend.profile.domain.dto;
 
-import deepdive.backend.profile.domain.entity.Profile;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class ProfileDto {
 
     private String nickName;
@@ -14,13 +12,18 @@ public class ProfileDto {
     private String certType;
     private Boolean isTeacher;
 
-    public static ProfileDto of(Profile profile) {
-        return ProfileDto.builder()
-            .nickName(profile.getNickName())
-            .picture(profile.getPicture())
-            .isTeacher(profile.getIsTeacher())
-            .certOrganization(profile.getOrganization().name())
-            .certType(profile.getCertType().name())
-            .build();
+
+    public ProfileDto() {
+
+    }
+
+    @Builder
+    public ProfileDto(String nickName, String picture, String certOrganization, String certType,
+        Boolean isTeacher) {
+        this.nickName = nickName;
+        this.picture = picture;
+        this.certOrganization = certOrganization;
+        this.certType = certType;
+        this.isTeacher = isTeacher;
     }
 }

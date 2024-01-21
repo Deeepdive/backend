@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profile")
+@RequestMapping("/api/v1/profile")
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -50,7 +50,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
-    @PatchMapping("/update/default")
+    @PatchMapping("")
     public ResponseEntity<Response> updateDefaultProfile(@RequestBody ProfileDto dto) {
         profileService.updateDefaultProfile(dto);
 
@@ -63,7 +63,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
     })
-    @PatchMapping("/update/cert")
+    @PatchMapping("/cert")
     public ResponseEntity<Response> updateCertProfile(@RequestBody ProfileDto dto) {
         profileService.updateDefaultCertProfile(dto);
 
@@ -76,7 +76,7 @@ public class ProfileController {
      *
      * @return 200 OK
      */
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<ProfileDto> memberProfile() {
         ProfileDto responseDTO = profileService.showMemberProfile();
 
