@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    private static final String TARGET_URL = "http://localhost:3000";
     private final MemberService memberService;
     private final JwtProvider tokenProvider;
 
@@ -34,27 +35,26 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String provider = userProfile.getAttributeByKey("provider");
 
         Optional<Member> member = memberService.findByEmail(email);
-
         boolean isRegistered = member.isPresent();
-        member.ifPresent(
-            value -> tokenProvider.updateRefreshToken(value.getOauthId(), value.getEmail())
-        );
 
         log.info("JWT access 토큰 발행 시작");
-        // TODO : accessToken 에 oauthID.. 보다는 더 쓸데없는 정보 넣는게 낫지 않을까
         String accessToken = tokenProvider.createAccessToken(oauthId, email);
+        if (isRegistered) {
+            tokenProvider.updateRefreshToken(oauthId, email);
+        }
+        String redirectUrl = getRedirectUrl(isRegistered, accessToken, provider);
 
-        getRedirectStrategy()
-            .sendRedirect(
-                request,
-                response,
-                UriComponentsBuilder
-                    .fromUriString("http://localhost:3000")
-                    .queryParam("token", accessToken)
-                    .queryParam("provider", provider)
-                    .queryParam("isRegistered", isRegistered)
-                    .build()
-                    .toUriString()
-            );
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+    }
+
+    private String getRedirectUrl(boolean isMemberPresent, String token, String provider) {
+        String path = isMemberPresent ? TARGET_URL : TARGET_URL + "/agreement";
+
+        return UriComponentsBuilder
+            .fromUriString(path)
+            .queryParam("token", token)
+            .queryParam("provider", provider)
+            .build()
+            .toUriString();
     }
 }
