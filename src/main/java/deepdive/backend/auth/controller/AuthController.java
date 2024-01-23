@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    @GetMapping("/login")
+    @GetMapping("/loginBaaam~")
     public ResponseEntity<Response> login(HttpServletRequest request, HttpServletResponse response,
         @CookieValue(value = "ID", required = false) String key) {
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.UNREGISTERED),

@@ -1,9 +1,13 @@
 package deepdive.backend.profile.service;
 
-import deepdive.backend.commonexception.ExceptionStatus;
+import deepdive.backend.dto.profile.ProfileCertRequestDto;
+import deepdive.backend.dto.profile.ProfileCertResponseDto;
+import deepdive.backend.dto.profile.ProfileDefaultDto;
+import deepdive.backend.dto.profile.ProfileRequestDto;
+import deepdive.backend.exception.ExceptionStatus;
+import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
-import deepdive.backend.profile.domain.dto.ProfileDto;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
@@ -16,16 +20,23 @@ import org.springframework.stereotype.Service;
 public class ProfileService {
 
     private final MemberService memberService;
+
     private final ProfileRepository profileRepository;
+    private final ProfileMapper profileMapper;
 
+    /**
+     * 회원의 프로필(기본 정보, 강사 정보)을 최초로 등록합니다.
+     *
+     * @param dto
+     */
     @Transactional
-    public void save(ProfileDto dto) {
-        validateDuplicateNickName(dto.getNickName());
+    public void save(ProfileRequestDto dto) {
+        validateDuplicateNickName(dto.nickName());
 
-        Member member = memberService.getByOauthId();
-        Profile profile = Profile.of(dto.getNickName(), dto.getPicture(),
-            dto.getCertOrganization(),
-            dto.getCertType(), dto.getIsTeacher());
+        Profile profile = Profile.of(dto.nickName(), dto.picture(),
+            dto.certOrganization(),
+            dto.certType(), dto.isTeacher());
+        Member member = memberService.getById();
 
         member.setProfile(profile);
     }
@@ -38,15 +49,15 @@ public class ProfileService {
      * @param dto 유저의 사진, 닉네임이 담긴 프로필
      */
     @Transactional
-    public void updateDefaultProfile(ProfileDto dto) {
+    public void updateDefaultProfile(ProfileDefaultDto dto) {
 
-        Member member = memberService.getByOauthId();
+        Member member = memberService.getById();
         Profile profile = member.getProfile();
-        if (!isUnchangedNickName(profile.getNickName(), dto.getNickName())) {
-            validateDuplicateNickName(dto.getNickName());
+        if (isNewNickName(profile.getNickName(), dto.nickName())) {
+            validateDuplicateNickName(dto.nickName());
         }
 
-        profile.updateDefaultProfile(dto.getNickName(), dto.getPicture());
+        profile.updateDefaultProfile(dto.nickName(), dto.picture());
         member.setProfile(profile);
     }
 
@@ -56,43 +67,38 @@ public class ProfileService {
      * @param dto 발급 기관 정보, 자격증 정보, 강사 정보
      */
     @Transactional
-    public void updateDefaultCertProfile(ProfileDto dto) {
+    public void updateDefaultCertProfile(ProfileCertRequestDto dto) {
         Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
 
-        profile.updateCertProfile(dto.getCertOrganization(), dto.getCertType(), dto.getIsTeacher());
+        profile.updateCertProfile(dto.certOrganization(), dto.certType(), dto.isTeacher());
         member.setProfile(profile);
     }
 
     private void validateDuplicateNickName(String nickName) {
-        Optional<Profile> duplicateNickName = profileRepository.findByNickName(nickName);
-        if (duplicateNickName.isPresent()) {
+        Optional<Profile> duplicateNickNameProfile = profileRepository.findByNickName(nickName);
+        if (duplicateNickNameProfile.isPresent()) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
     }
 
-    private boolean isUnchangedNickName(String oldNickName, String newNickName) {
-        return (newNickName.equals(oldNickName));
+    private boolean isNewNickName(String oldNickName, String newNickName) {
+        return !newNickName.equals(oldNickName);
     }
 
-    public ProfileDto showMemberProfile() {
+    public ProfileDefaultDto showMemberProfile() {
+        Member member = memberService.getById();
+        Profile profile = member.getProfile();
+
+        return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());
+    }
+
+    public ProfileCertResponseDto showCertProfile() {
         Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
 
-        return ProfileDto.builder()
-            .nickName(profile.getNickName())
-            .picture(profile.getPicture())
-            .build();
-    }
-
-    public ProfileDto showCertProfile() {
-        Member member = memberService.getByOauthId();
-        Profile profile = member.getProfile();
-
-        return ProfileDto.builder()
-            .isTeacher(profile.getIsTeacher())
-            .certOrganization(profile.getOrganization().name())
-            .certType(profile.getCertType().name())
-            .build();
+        return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
+            profile.getCertType(),
+            profile.getIsTeacher());
     }
 }

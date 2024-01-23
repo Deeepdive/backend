@@ -5,15 +5,18 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class Response {
+public class Response<T> {
 
-    private int statusCode;
-    private String responseMessage;
+    private final int statusCode;
+    private final T data;
 
-    public static Response of(int statusCode, String responseMessage) {
-        return Response.builder()
-            .statusCode(statusCode)
-            .responseMessage(responseMessage)
-            .build();
+    public Response(int statusCode, T data) {
+        this.statusCode = statusCode;
+        this.data = data;
     }
+
+    public static <T> Response<T> of(int statusCode, T data) {
+        return new Response<>(statusCode, data);
+    }
+
 }

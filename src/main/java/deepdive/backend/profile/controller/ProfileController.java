@@ -1,6 +1,9 @@
 package deepdive.backend.profile.controller;
 
-import deepdive.backend.profile.domain.dto.ProfileDto;
+import deepdive.backend.dto.profile.ProfileCertRequestDto;
+import deepdive.backend.dto.profile.ProfileCertResponseDto;
+import deepdive.backend.dto.profile.ProfileDefaultDto;
+import deepdive.backend.dto.profile.ProfileRequestDto;
 import deepdive.backend.profile.service.ProfileService;
 import deepdive.backend.utils.response.Response;
 import deepdive.backend.utils.response.ResponseMsg;
@@ -31,13 +34,14 @@ public class ProfileController {
      * @param dto 닉네임, 사진, 알람 동의, 마케팅 동의, CertType 2개, 강사 여부
      * @return
      */
-    @Operation(summary = "유저 프로필 등록")
+    @Operation(summary = "유저 프로필 최초 등록")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "JSON parse fail"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
     })
     @PostMapping("/save")
-    public ResponseEntity<Response> saveProfile(@RequestBody ProfileDto dto) {
+    public ResponseEntity<Response> saveProfile(@RequestBody ProfileRequestDto dto) {
         profileService.save(dto);
 
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
@@ -51,7 +55,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
     @PatchMapping("")
-    public ResponseEntity<Response> updateDefaultProfile(@RequestBody ProfileDto dto) {
+    public ResponseEntity<Response> updateDefaultProfile(@RequestBody ProfileDefaultDto dto) {
         profileService.updateDefaultProfile(dto);
 
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
@@ -61,10 +65,11 @@ public class ProfileController {
     @Operation(summary = "자격증 관련 프로필 수정 요청")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "JSON parse fail"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
     })
     @PatchMapping("/cert")
-    public ResponseEntity<Response> updateCertProfile(@RequestBody ProfileDto dto) {
+    public ResponseEntity<Response> updateCertProfile(@RequestBody ProfileCertRequestDto dto) {
         profileService.updateDefaultCertProfile(dto);
 
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
@@ -77,8 +82,8 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("")
-    public ResponseEntity<ProfileDto> memberProfile() {
-        ProfileDto responseDTO = profileService.showMemberProfile();
+    public ResponseEntity<ProfileDefaultDto> memberProfile() {
+        ProfileDefaultDto responseDTO = profileService.showMemberProfile();
 
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -89,8 +94,8 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("/cert")
-    public ResponseEntity<ProfileDto> certProfile() {
-        ProfileDto responseDTO = profileService.showCertProfile();
+    public ResponseEntity<ProfileCertResponseDto> certProfile() {
+        ProfileCertResponseDto responseDTO = profileService.showCertProfile();
 
         return ResponseEntity.ok().body(responseDTO);
     }
