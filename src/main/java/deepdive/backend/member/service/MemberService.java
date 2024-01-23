@@ -26,16 +26,7 @@ public class MemberService {
         return memberRepository.findByEmail(email);
     }
 
-    public Member findByOauthId(String oauthId) {
-        Optional<Member> member = memberRepository.findByOauthId(oauthId);
-        if (member.isEmpty()) {
-            throw ExceptionStatus.NOT_FOUND_USER.asServiceException();
-        }
-
-        return member.get();
-    }
-
-    public Member findByOauthId() {
+    public Member getByOauthId() {
         AuthUserInfo authUser = AuthUserInfo.of();
 
         return memberRepository.findByOauthId(authUser.getOauthId())
@@ -47,6 +38,7 @@ public class MemberService {
         AuthUserInfo authUser = AuthUserInfo.of(); // 처음 등록한 멤버의 oauthId를 ContextHolder에서 꺼내옵니다.
         String oauthId = authUser.getOauthId();
 
+        // 추가 검증 -> dto의 이메일과 DB 내부의 email이 동일하지 않다면 error 반환.
         memberRepository.findByOauthId(authUser.getOauthId())
             .ifPresent(member -> {
                 throw ExceptionStatus.DUPLICATE_REGISTER.asServiceException();
@@ -63,7 +55,7 @@ public class MemberService {
     @Transactional
     public void updateAgreement(AuthUserInfo authUser, Boolean isAlarmAgree,
         Boolean isMarketingAgree) {
-        Member member = findByOauthId(authUser.getOauthId());
+        Member member = getByOauthId();
         member.updateAgreement(isAlarmAgree, isMarketingAgree);
     }
 }

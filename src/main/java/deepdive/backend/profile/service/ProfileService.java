@@ -22,7 +22,7 @@ public class ProfileService {
     public void save(ProfileDto dto) {
         validateDuplicateNickName(dto.getNickName());
 
-        Member member = memberService.findByOauthId();
+        Member member = memberService.getByOauthId();
         Profile profile = Profile.of(dto.getNickName(), dto.getPicture(),
             dto.getCertOrganization(),
             dto.getCertType(), dto.getIsTeacher());
@@ -40,7 +40,7 @@ public class ProfileService {
     @Transactional
     public void updateDefaultProfile(ProfileDto dto) {
 
-        Member member = memberService.findByOauthId();
+        Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
         if (!isUnchangedNickName(profile.getNickName(), dto.getNickName())) {
             validateDuplicateNickName(dto.getNickName());
@@ -57,7 +57,7 @@ public class ProfileService {
      */
     @Transactional
     public void updateDefaultCertProfile(ProfileDto dto) {
-        Member member = memberService.findByOauthId();
+        Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
 
         profile.updateCertProfile(dto.getCertOrganization(), dto.getCertType(), dto.getIsTeacher());
@@ -76,7 +76,7 @@ public class ProfileService {
     }
 
     public ProfileDto showMemberProfile() {
-        Member member = memberService.findByOauthId();
+        Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
 
         return ProfileDto.builder()
@@ -86,7 +86,7 @@ public class ProfileService {
     }
 
     public ProfileDto showCertProfile() {
-        Member member = memberService.findByOauthId();
+        Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
 
         return ProfileDto.builder()

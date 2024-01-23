@@ -22,10 +22,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@Builder
 public class DiveLog {
 
     @Id
@@ -33,10 +38,11 @@ public class DiveLog {
     @Column(name = "divelog_id")
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-    
+
     @Embedded
     private DiveHistory history;
     @Embedded
@@ -60,5 +66,9 @@ public class DiveLog {
     private SuitType suitType;
     @Enumerated(value = EnumType.STRING)
     private WeightType weightType;
+
+    public DiveLog() {
+
+    }
 
 }
