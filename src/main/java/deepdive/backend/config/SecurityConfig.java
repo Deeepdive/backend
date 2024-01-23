@@ -25,17 +25,6 @@ public class SecurityConfig {
     private final OauthSuccessHandler successHandler;
     private final OauthFailureHandler failureHandler;
 
-    /**
-     * kakao 에러 -> ID 관련..
-     * <p>
-     * 기존 client id로 로그인 시 토큰 발급 성공
-     * <p>
-     * 지급된 client id -> failureHandler 타는데 이유가 뭐지 redirect ->
-     *
-     * @param http
-     * @return
-     * @throws Exception
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -46,8 +35,9 @@ public class SecurityConfig {
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/token/**").permitAll()
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/token").permitAll()
+                .requestMatchers("/login/**").permitAll() // OAuth2.0 EndPoint 요청은 인증을 하지 않는다
+                .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers("/status").permitAll() // 로드밸런서 상태 확인용
                 .requestMatchers(AuthenticateMatchers.swaggerArray).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")

@@ -1,7 +1,7 @@
 package deepdive.backend.member.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.commonexception.ExceptionStatus;
+import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.jwt.service.JwtProvider;
 import deepdive.backend.jwt.service.JwtService;
 import deepdive.backend.member.domain.dto.RegisterMemberDto;
@@ -26,6 +26,13 @@ public class MemberService {
         return memberRepository.findByEmail(email);
     }
 
+    public Member getById() {
+        AuthUserInfo authUser = AuthUserInfo.of();
+
+        return memberRepository.findById(authUser.getMemberId())
+            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+    }
+
     public Member getByOauthId() {
         AuthUserInfo authUser = AuthUserInfo.of();
 
@@ -39,7 +46,7 @@ public class MemberService {
         String oauthId = authUser.getOauthId();
 
         // 추가 검증 -> dto의 이메일과 DB 내부의 email이 동일하지 않다면 error 반환.
-        memberRepository.findByOauthId(authUser.getOauthId())
+        memberRepository.findByOauthId(oauthId)
             .ifPresent(member -> {
                 throw ExceptionStatus.DUPLICATE_REGISTER.asServiceException();
             });

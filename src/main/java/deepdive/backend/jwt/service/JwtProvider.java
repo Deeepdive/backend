@@ -1,6 +1,6 @@
 package deepdive.backend.jwt.service;
 
-import deepdive.backend.commonexception.ExceptionStatus;
+import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.jwt.domain.JsonWebToken;
 import deepdive.backend.jwt.domain.dto.ReIssueDto;
 import deepdive.backend.jwt.repository.JwtRepository;
@@ -36,7 +36,7 @@ public class JwtProvider {
     @Transactional
     public void updateRefreshToken(String oauthId, String email) {
         JsonWebToken refreshToken = tokenRepository.findByOauthId(oauthId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+            .orElseThrow(ExceptionStatus.INVALID_ARGUMENT::asServiceException);
 
         log.info("member OauthID : {}", refreshToken.getOauthId());
         String createdRefreshToken = createRefreshToken(oauthId, email);

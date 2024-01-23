@@ -1,6 +1,5 @@
 package deepdive.backend.divelog.service;
 
-import deepdive.backend.commonexception.ExceptionStatus;
 import deepdive.backend.divelog.domain.AirTankInformation;
 import deepdive.backend.divelog.domain.DiveHistory;
 import deepdive.backend.divelog.domain.DiveInformation;
@@ -14,6 +13,7 @@ import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.divelog.domain.dto.DiveLogDto;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.divelog.repository.DiveLogRepository;
+import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import jakarta.persistence.EntityManager;
@@ -53,7 +53,7 @@ public class DiveLogService {
 
     @Transactional
     public void save(DiveLogDto dto) {
-        Member member = memberService.getByOauthId();
+        Member member = memberService.getById();
 
         // TODO : 중복해서 같은 로직을 저장하려 하는 경우 -> 기준은?
         DiveLog diveLog = convertToDiveLog(dto);
