@@ -1,13 +1,13 @@
-package deepdive.backend.commonexception;
+package deepdive.backend.exception;
 
 import lombok.Getter;
 
 @Getter
-public class ServiceException extends RuntimeException {
+public class DomainException extends RuntimeException {
 
     public final ExceptionStatus status;
 
-    public ServiceException(ExceptionStatus status) {
+    public DomainException(ExceptionStatus status) {
         this.status = status;
     }
 
