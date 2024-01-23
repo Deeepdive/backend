@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class AuthUserInfo {
 
     private String oauthId;
+    private Long memberId;
     private String email;
     private String picture;
 

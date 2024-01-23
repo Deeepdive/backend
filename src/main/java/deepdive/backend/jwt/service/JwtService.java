@@ -3,6 +3,8 @@ package deepdive.backend.jwt.service;
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.jwt.domain.JsonWebToken;
 import deepdive.backend.jwt.repository.JwtRepository;
+import deepdive.backend.member.domain.entity.Member;
+import deepdive.backend.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
+    private final MemberRepository memberRepository;
     private final JwtRepository jwtRepository;
     @Value("${jwt.token.secret}")
     private String secret_code;
@@ -46,10 +49,16 @@ public class JwtService {
             .toList();
 
         String oauthId = claims.get("oauthId", String.class);
+        String email = claims.get("email", String.class);
 
+        Long memberId = memberRepository.findByEmail(email)
+            .map(Member::getId)
+            .orElse(-1L);
         // principal 구축
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
             .oauthId(oauthId)
+            .memberId(memberId)
+            .email(email)
             .build();
 
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);
