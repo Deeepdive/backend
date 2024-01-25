@@ -15,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,8 +28,11 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
-    private List<DiveLog> diveLogs = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,
+        targetEntity = DiveLog.class,
+        fetch = FetchType.LAZY,
+        mappedBy = "member")
+    private List<DiveLog> diveLogs;
 
     @Setter
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

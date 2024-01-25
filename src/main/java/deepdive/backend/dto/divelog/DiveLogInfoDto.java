@@ -12,7 +12,7 @@ import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 
-public record DiveLogResponseDto(
+public record DiveLogInfoDto(
     Long id,
     @JsonUnwrapped DiveHistory diveHistory,
     @JsonUnwrapped Review review,

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/profile")
+@RequestMapping("/v1/profile")
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -40,7 +40,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "400", description = "JSON parse fail"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
     })
-    @PostMapping("/save")
+    @PostMapping("/register")
     public ResponseEntity<Response> saveProfile(@RequestBody ProfileRequestDto dto) {
         profileService.save(dto);
 

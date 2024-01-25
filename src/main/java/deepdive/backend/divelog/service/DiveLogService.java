@@ -12,13 +12,15 @@ import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.divelog.repository.DiveLogRepository;
+import deepdive.backend.dto.divelog.DiveLogInfoDto;
+import deepdive.backend.dto.divelog.DiveLogInfoPaginationDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
-import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -70,14 +72,14 @@ public class DiveLogService {
      * @param diveLogId 조회할 diveLogId
      * @return
      */
-    public DiveLogResponseDto showDiveLog(Long diveLogId) {
+    public DiveLogInfoDto showDiveLog(Long diveLogId) {
         Member member = memberService.getByOauthId();
 
         DiveLog diveLog = diveLogRepository.findOneByMemberId(member.getId(), diveLogId)
             .orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 
         log.info("diveLog info = {}", diveLog);
-        return diveLogMapper.toDiveLogResponseDto(diveLog);
+        return diveLogMapper.toDiveLogInfoDto(diveLog);
     }
 
     /**
@@ -105,17 +107,20 @@ public class DiveLogService {
      *
      * @return
      */
-    public Page<DiveLogRequestDto> findAllByPagination(Pageable pageable) {
+    public DiveLogInfoPaginationDto findAllByPagination(Pageable pageable) {
         Member member = memberService.getByOauthId();
 
-        return diveLogRepository.findOneByMemberId(member.getId(), pageable)
-            .map(diveLogMapper::toDiveLogRequestDto);
+        Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(member.getId(), pageable);
+        List<DiveLogInfoDto> result = divLogs.stream()
+            .map(diveLogMapper::toDiveLogInfoDto)
+            .toList();
+
+        return diveLogMapper.toDiveLogInfoPaginationDto(result, divLogs.getTotalElements());
     }
 
-
-    public Integer getDiveLogCount() {
+    public void delete(Long diveLogId) {
         Member member = memberService.getByOauthId();
 
-        return member.getDiveLogCount();
+        diveLogRepository.deleteById(diveLogId);
     }
 }
