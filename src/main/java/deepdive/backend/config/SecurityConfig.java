@@ -3,6 +3,7 @@ package deepdive.backend.config;
 import deepdive.backend.auth.service.CustomOauth2UserService;
 import deepdive.backend.auth.service.OauthFailureHandler;
 import deepdive.backend.auth.service.OauthSuccessHandler;
+import deepdive.backend.exception.CustomAccessDenialHandler;
 import deepdive.backend.jwt.filter.JwtFilter;
 import deepdive.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class SecurityConfig {
     private final CustomOauth2UserService customOauth2UserService;
     private final OauthSuccessHandler successHandler;
     private final OauthFailureHandler failureHandler;
+    private final CustomAccessDenialHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,13 +45,14 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
-//            .exceptionHandling(exception -> exception.accessDeniedHandler())
             .oauth2Login(oauth -> oauth
                 .userInfoEndpoint(user -> user.userService(customOauth2UserService))
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
             )
-            .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+            .logout(logout -> logout.clearAuthentication(true))
+            .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
     }
