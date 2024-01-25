@@ -12,12 +12,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @AllArgsConstructor
 public class AuthUserInfo {
 
+
     private String oauthId;
-    private Long memberId;
     private String email;
-    private String picture;
 
     public static AuthUserInfo of() {
         return (AuthUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
 }

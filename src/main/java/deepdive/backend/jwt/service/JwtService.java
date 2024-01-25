@@ -3,7 +3,6 @@ package deepdive.backend.jwt.service;
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.jwt.domain.JsonWebToken;
 import deepdive.backend.jwt.repository.JwtRepository;
-import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -51,13 +50,8 @@ public class JwtService {
         String oauthId = claims.get("oauthId", String.class);
         String email = claims.get("email", String.class);
 
-        Long memberId = memberRepository.findByEmail(email)
-            .map(Member::getId)
-            .orElse(-1L);
-        // principal 구축
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
             .oauthId(oauthId)
-            .memberId(memberId)
             .email(email)
             .build();
 

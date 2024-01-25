@@ -10,6 +10,7 @@ import deepdive.backend.divelog.domain.UnderwaterVisibility;
 import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
+import deepdive.backend.dto.divelog.DiveLogRequestDto;
 import deepdive.backend.member.domain.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -26,11 +27,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @Builder
+@ToString
 public class DiveLog {
 
     @Id
@@ -44,13 +47,14 @@ public class DiveLog {
     private Member member;
 
     @Embedded
-    private DiveHistory history;
+    private DiveHistory diveHistory;
     @Embedded
     private Review review;
     @Embedded
     private AirTankInformation airTankInformation;
     @Embedded
     private DiveInformation diveInformation;
+
     private Long airTemp;
     private Long weight;
 
@@ -69,6 +73,26 @@ public class DiveLog {
 
     public DiveLog() {
 
+    }
+
+    public void update(DiveLogRequestDto dto) {
+        // enum 타입
+        this.waterType = WaterType.valueOf(dto.waterType());
+        this.purpose = Purpose.valueOf(dto.purpose());
+        this.visibility = UnderwaterVisibility.valueOf(dto.view());
+        this.weather = Weather.valueOf(dto.weather());
+        this.suitType = SuitType.valueOf(dto.suitType());
+        this.weightType = WeightType.valueOf(dto.weightType());
+
+        // 소분류별 객체 분리
+        this.diveHistory = DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddy());
+        this.review = Review.of(dto.reviewType(), dto.reviewComment());
+        this.airTankInformation = AirTankInformation.of(dto.startPressure(), dto.endPressure(),
+            dto.airTankUsage());
+        this.diveInformation = DiveInformation.of(dto.depth(), dto.min(), dto.waterTemp());
+
+        this.airTemp = dto.airTemp();
+        this.weight = dto.weight();
     }
 
 }

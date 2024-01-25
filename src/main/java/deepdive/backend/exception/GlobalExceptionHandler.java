@@ -1,4 +1,4 @@
-package deepdive.backend.config;
+package deepdive.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,4 +16,6 @@ public class GlobalExceptionHandler {
     public String handleIllegalArgumentException(IllegalArgumentException ex) {
         return "잘못된 요청입니다: " + ex.getMessage();
     }
+
+    // 디비 문제가 생겼을 때 -> Internal Error 처리도 해야한다.
 }

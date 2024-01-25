@@ -73,5 +73,4 @@ public class Member {
     public int getDiveLogCount() {
         return diveLogs.size();
     }
-
 }

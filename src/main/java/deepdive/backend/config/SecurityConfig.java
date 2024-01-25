@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
+//            .exceptionHandling(exception -> exception.accessDeniedHandler())
             .oauth2Login(oauth -> oauth
                 .userInfoEndpoint(user -> user.userService(customOauth2UserService))
                 .successHandler(successHandler)

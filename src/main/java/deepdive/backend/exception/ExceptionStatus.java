@@ -16,7 +16,9 @@ public enum ExceptionStatus {
     DUPLICATE_REGISTER(HttpStatus.BAD_REQUEST, "가입한 내역이 존재합니다. 다른 email로 시도해주세요."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "해당 닉네임은 이미 사용중입니다."),
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다"),
-    INVALID_USER_ID(HttpStatus.BAD_REQUEST, "허용되지 않은 ID 값입니다.");
+    INVALID_USER_ID(HttpStatus.BAD_REQUEST, "허용되지 않은 ID 값입니다."),
+    INVALID_REGISTER(HttpStatus.BAD_REQUEST, "SNS 정보와 회원 정보가 일치하지 않습니다."),
+    NOT_FOUND_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다.");
 
     private final int errorCode;
     private final String message;

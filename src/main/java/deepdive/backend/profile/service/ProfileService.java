@@ -13,8 +13,10 @@ import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -36,8 +38,7 @@ public class ProfileService {
         Profile profile = Profile.of(dto.nickName(), dto.picture(),
             dto.certOrganization(),
             dto.certType(), dto.isTeacher());
-        Member member = memberService.getById();
-
+        Member member = memberService.getByOauthId();
         member.setProfile(profile);
     }
 
@@ -51,7 +52,7 @@ public class ProfileService {
     @Transactional
     public void updateDefaultProfile(ProfileDefaultDto dto) {
 
-        Member member = memberService.getById();
+        Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
         if (isNewNickName(profile.getNickName(), dto.nickName())) {
             validateDuplicateNickName(dto.nickName());
@@ -69,10 +70,16 @@ public class ProfileService {
     @Transactional
     public void updateDefaultCertProfile(ProfileCertRequestDto dto) {
         Member member = memberService.getByOauthId();
-        Profile profile = member.getProfile();
+        Profile profile = getByMember(member);
 
+        log.info("dto? = {}", dto);
         profile.updateCertProfile(dto.certOrganization(), dto.certType(), dto.isTeacher());
-        member.setProfile(profile);
+//        member.setProfile(profile);
+    }
+
+    public Profile getByMember(Member member) {
+        return Optional.ofNullable(member.getProfile())
+            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
     }
 
     private void validateDuplicateNickName(String nickName) {
@@ -87,7 +94,7 @@ public class ProfileService {
     }
 
     public ProfileDefaultDto showMemberProfile() {
-        Member member = memberService.getById();
+        Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
 
         return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());

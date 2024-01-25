@@ -1,6 +1,6 @@
 package deepdive.backend.member.controller;
 
-import deepdive.backend.member.domain.dto.RegisterMemberDto;
+import deepdive.backend.dto.member.MemberRegisterRequestDto;
 import deepdive.backend.member.service.MemberService;
 import deepdive.backend.utils.response.Response;
 import deepdive.backend.utils.response.ResponseMsg;
@@ -31,15 +31,16 @@ public class MemberController {
      * @param dto 유저에 대한 기본 정보 - 이메일, 발급자, 동의내역, 접속 장소
      * @return 성공 시 200, 실패 시 401
      */
-    @Operation(summary = "회원 가입 신청", description = "isResgistered = false 유저들을 신규 등록합니다")
+    @Operation(summary = "회원 가입 신청")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "신규 유저 등록"),
+        @ApiResponse(responseCode = "400", description = "SNS 정보와 email이 일치하지 않습니다."),
         @ApiResponse(responseCode = "400", description = "가입한 내역이 존재합니다. 다른 email로 시도해주세요.")
     })
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(
         @Parameter(description = "회원가입 진행 시 필요한 기본 정보")
-        @RequestBody @Valid RegisterMemberDto dto) {
+        @RequestBody @Valid MemberRegisterRequestDto dto) {
         memberService.registerMember(dto);
 
         return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.UNREGISTERED),

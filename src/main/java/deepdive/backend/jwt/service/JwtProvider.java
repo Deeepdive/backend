@@ -66,7 +66,7 @@ public class JwtProvider {
 
     private String createToken(String oauthId, String email, Long expireTime) {
         Claims claims = Jwts.claims().setSubject("UserToken");
-        claims.put("oauthId", oauthId); // 얘는 빼도 될듯?
+        claims.put("oauthId", oauthId);
         claims.put("email", email);
         // TODO : role 분리 생각..
         claims.put("roles", "User");

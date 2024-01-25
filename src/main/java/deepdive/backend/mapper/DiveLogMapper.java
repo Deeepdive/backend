@@ -2,7 +2,9 @@ package deepdive.backend.mapper;
 
 import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
 
-import deepdive.backend.dto.member.MemberRegisterRequestDto;
+import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.dto.divelog.DiveLogRequestDto;
+import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +13,9 @@ import org.springframework.stereotype.Component;
     nullValueMapMappingStrategy = RETURN_DEFAULT,
     nullValueIterableMappingStrategy = RETURN_DEFAULT)
 @Component
-public interface MemberMapper {
+public interface DiveLogMapper {
 
-    MemberRegisterRequestDto toMemberRegisterRequestDto(String email, String provider,
-        Boolean isAlarm, Boolean isMarketing);
+    DiveLogRequestDto toDiveLogRequestDto(DiveLog diveLog);
+
+    DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog);
 }
