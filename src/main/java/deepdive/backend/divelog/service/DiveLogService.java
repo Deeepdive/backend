@@ -119,7 +119,7 @@ public class DiveLogService {
     }
 
     public void delete(Long diveLogId) {
-        Member member = memberService.getByOauthId();
+//        Member member = memberService.getByOauthId();
 
         diveLogRepository.deleteById(diveLogId);
     }
