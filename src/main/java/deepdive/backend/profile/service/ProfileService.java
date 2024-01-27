@@ -115,4 +115,11 @@ public class ProfileService {
             profile.getCertType(),
             profile.getIsTeacher());
     }
+
+    public ProfileDefaultDto getByNickName(String buddy) {
+        Profile profile = profileRepository.findByNickName(buddy)
+            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+
+        return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());
+    }
 }
