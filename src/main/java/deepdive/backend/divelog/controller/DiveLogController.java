@@ -2,8 +2,8 @@ package deepdive.backend.divelog.controller;
 
 import deepdive.backend.divelog.service.DiveLogService;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
-import deepdive.backend.dto.divelog.DiveLogInfoPaginationDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
+import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -78,7 +78,7 @@ public class DiveLogController {
      * @return 유저가 지닌 다이브 로그 정보들을 Response 형식으로 반환합니다.
      */
     @GetMapping("/list")
-    public DiveLogInfoPaginationDto getAllDiveLogsByAsc(Pageable pageable) {
+    public DiveLogResponsePaginationDto getAllDiveLogsByAsc(Pageable pageable) {
 
         return diveLogService.findAllByPagination(pageable);
     }

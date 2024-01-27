@@ -7,11 +7,28 @@ import deepdive.backend.divelog.domain.DiveInformation;
 import deepdive.backend.divelog.domain.Purpose;
 import deepdive.backend.divelog.domain.Review;
 import deepdive.backend.divelog.domain.SuitType;
-import deepdive.backend.divelog.domain.UnderwaterVisibility;
+import deepdive.backend.divelog.domain.UnderWaterVisibility;
 import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 
+/**
+ * DiveLog 단권 조회 결과에 대한 DTO
+ *
+ * @param id
+ * @param diveHistory
+ * @param review
+ * @param airTankInformation
+ * @param diveInformation
+ * @param airTemp
+ * @param weight
+ * @param purpose
+ * @param waterType
+ * @param underWaterVisibility
+ * @param weather
+ * @param suitType
+ * @param weightType
+ */
 public record DiveLogInfoDto(
     Long id,
     @JsonUnwrapped DiveHistory diveHistory,
@@ -22,7 +39,7 @@ public record DiveLogInfoDto(
     Long weight,
     Purpose purpose,
     WaterType waterType,
-    UnderwaterVisibility visibility,
+    UnderWaterVisibility underWaterVisibility,
     Weather weather,
     SuitType suitType,
     WeightType weightType) {

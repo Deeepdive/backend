@@ -4,7 +4,8 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
 
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
-import deepdive.backend.dto.divelog.DiveLogInfoPaginationDto;
+import deepdive.backend.dto.divelog.DiveLogResponseDto;
+import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,9 +18,12 @@ import org.springframework.stereotype.Component;
 @Component
 public interface DiveLogMapper {
 
-    @Mapping(target = "diveHistory", source = "diveLog.diveHistory")
+    @Mapping(target = "diveHistory", source = "diveHistory")
     DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog);
 
-    DiveLogInfoPaginationDto toDiveLogInfoPaginationDto(List<DiveLogInfoDto> result,
+    @Mapping(target = "diveHistory", source = "diveHistory")
+    DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog);
+
+    DiveLogResponsePaginationDto toDiveLogResponsePaginationDto(List<DiveLogResponseDto> result,
         Long totalCount);
 }

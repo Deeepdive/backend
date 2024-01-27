@@ -94,15 +94,15 @@ public class ProfileService {
     }
 
     public ProfileDefaultDto showMemberProfile() {
-        Member member = memberService.getByOauthId();
-        Profile profile = member.getProfile();
+        Profile profile = Optional.ofNullable(memberService.getByOauthId().getProfile())
+            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
 
         return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());
     }
 
     public ProfileCertResponseDto showCertProfile() {
-        Member member = memberService.getByOauthId();
-        Profile profile = member.getProfile();
+        Profile profile = Optional.ofNullable(memberService.getByOauthId().getProfile())
+            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
 
         return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
             profile.getCertType(),

@@ -6,7 +6,7 @@ import deepdive.backend.divelog.domain.DiveInformation;
 import deepdive.backend.divelog.domain.Purpose;
 import deepdive.backend.divelog.domain.Review;
 import deepdive.backend.divelog.domain.SuitType;
-import deepdive.backend.divelog.domain.UnderwaterVisibility;
+import deepdive.backend.divelog.domain.UnderWaterVisibility;
 import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
@@ -27,13 +27,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @Builder
-@ToString
 public class DiveLog {
 
     @Id
@@ -63,7 +61,7 @@ public class DiveLog {
     @Enumerated(value = EnumType.STRING)
     private WaterType waterType;
     @Enumerated(value = EnumType.STRING)
-    private UnderwaterVisibility visibility;
+    private UnderWaterVisibility underWaterVisibility;
     @Enumerated(value = EnumType.STRING)
     private Weather weather;
     @Enumerated(value = EnumType.STRING)
@@ -79,7 +77,7 @@ public class DiveLog {
         // enum 타입
         this.waterType = WaterType.valueOf(dto.waterType());
         this.purpose = Purpose.valueOf(dto.purpose());
-        this.visibility = UnderwaterVisibility.valueOf(dto.view());
+        this.underWaterVisibility = UnderWaterVisibility.valueOf(dto.underWaterVisibility());
         this.weather = Weather.valueOf(dto.weather());
         this.suitType = SuitType.valueOf(dto.suitType());
         this.weightType = WeightType.valueOf(dto.weightType());

@@ -51,7 +51,7 @@ public class ProfileController {
     @Operation(summary = "유저의 기본 프로필 수정 요청")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
-        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 유저입니다."),
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
     @PatchMapping("")

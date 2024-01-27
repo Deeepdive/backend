@@ -1,6 +1,6 @@
 package deepdive.backend.divelog.domain;
 
-public enum UnderwaterVisibility {
+public enum UnderWaterVisibility {
     GOOD,
     AVERAGE,
     POOR

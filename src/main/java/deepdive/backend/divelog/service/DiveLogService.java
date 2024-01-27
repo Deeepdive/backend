@@ -6,15 +6,16 @@ import deepdive.backend.divelog.domain.DiveInformation;
 import deepdive.backend.divelog.domain.Purpose;
 import deepdive.backend.divelog.domain.Review;
 import deepdive.backend.divelog.domain.SuitType;
-import deepdive.backend.divelog.domain.UnderwaterVisibility;
+import deepdive.backend.divelog.domain.UnderWaterVisibility;
 import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
-import deepdive.backend.dto.divelog.DiveLogInfoPaginationDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
+import deepdive.backend.dto.divelog.DiveLogResponseDto;
+import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
 import deepdive.backend.member.domain.entity.Member;
@@ -47,7 +48,7 @@ public class DiveLogService {
             .weight(dto.weight())
             .purpose(Purpose.valueOf(dto.purpose()))
             .waterType(WaterType.valueOf(dto.waterType()))
-            .visibility(UnderwaterVisibility.valueOf(dto.view()))
+            .underWaterVisibility(UnderWaterVisibility.valueOf(dto.underWaterVisibility()))
             .weather(Weather.valueOf(dto.weather()))
             .suitType(SuitType.valueOf(dto.suitType()))
             .weightType(WeightType.valueOf(dto.weightType()))
@@ -107,15 +108,15 @@ public class DiveLogService {
      *
      * @return
      */
-    public DiveLogInfoPaginationDto findAllByPagination(Pageable pageable) {
+    public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
         Member member = memberService.getByOauthId();
 
         Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(member.getId(), pageable);
-        List<DiveLogInfoDto> result = divLogs.stream()
-            .map(diveLogMapper::toDiveLogInfoDto)
+        List<DiveLogResponseDto> result = divLogs.stream()
+            .map(diveLogMapper::toDiveLogResponseDto)
             .toList();
 
-        return diveLogMapper.toDiveLogInfoPaginationDto(result, divLogs.getTotalElements());
+        return diveLogMapper.toDiveLogResponsePaginationDto(result, divLogs.getTotalElements());
     }
 
     public void delete(Long diveLogId) {
