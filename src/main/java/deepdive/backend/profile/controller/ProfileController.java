@@ -83,7 +83,7 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("")
-    public ResponseEntity<ProfileDefaultDto> memberProfile() {
+    public ResponseEntity<ProfileDefaultDto> getMemberProfile() {
         ProfileDefaultDto responseDTO = profileService.showMemberProfile();
 
         return ResponseEntity.ok().body(responseDTO);
@@ -95,14 +95,14 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("/cert")
-    public ResponseEntity<ProfileCertResponseDto> certProfile() {
+    public ResponseEntity<ProfileCertResponseDto> getCertProfile() {
         ProfileCertResponseDto responseDTO = profileService.showCertProfile();
 
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @GetMapping("/buddy")
-    public ProfileDefaultDto buddyProfile(@RequestParam String buddy) {
-        return profileService.getByNickName(buddy);
+    public boolean isExistBuddyProfile(@RequestParam String buddy) {
+        return profileService.isExistingNickName(buddy);
     }
 }

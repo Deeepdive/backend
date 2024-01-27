@@ -89,13 +89,6 @@ public class ProfileService {
             .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
     }
 
-    private void validateDuplicateNickName(String nickName) {
-        Optional<Profile> duplicateNickNameProfile = profileRepository.findByNickName(nickName);
-        if (duplicateNickNameProfile.isPresent()) {
-            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
-        }
-    }
-
     private boolean isNewNickName(String oldNickName, String newNickName) {
         return !newNickName.equals(oldNickName);
     }
@@ -114,12 +107,5 @@ public class ProfileService {
         return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
             profile.getCertType(),
             profile.getIsTeacher());
-    }
-
-    public ProfileDefaultDto getByNickName(String buddy) {
-        Profile profile = profileRepository.findByNickName(buddy)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
-
-        return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());
     }
 }
