@@ -33,13 +33,21 @@ public class ProfileService {
      */
     @Transactional
     public void save(ProfileRequestDto dto) {
-        validateDuplicateNickName(dto.nickName());
+        if (isExistingNickName(dto.nickName())) {
+            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
+        }
 
         Profile profile = Profile.of(dto.nickName(), dto.picture(),
             dto.certOrganization(),
             dto.certType(), dto.isTeacher());
         Member member = memberService.getByOauthId();
         member.setProfile(profile);
+    }
+
+    public boolean isExistingNickName(String nickName) {
+
+        return profileRepository.findByNickName(nickName)
+            .isPresent();
     }
 
     /**
@@ -54,8 +62,9 @@ public class ProfileService {
 
         Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
-        if (isNewNickName(profile.getNickName(), dto.nickName())) {
-            validateDuplicateNickName(dto.nickName());
+        if (isNewNickName(profile.getNickName(), dto.nickName())
+            && isExistingNickName(dto.nickName())) {
+            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
 
         profile.updateDefaultProfile(dto.nickName(), dto.picture());
@@ -69,12 +78,10 @@ public class ProfileService {
      */
     @Transactional
     public void updateDefaultCertProfile(ProfileCertRequestDto dto) {
-        Member member = memberService.getByOauthId();
-        Profile profile = getByMember(member);
+        Profile profile = getByMember(memberService.getByOauthId());
 
         log.info("dto? = {}", dto);
         profile.updateCertProfile(dto.certOrganization(), dto.certType(), dto.isTeacher());
-//        member.setProfile(profile);
     }
 
     public Profile getByMember(Member member) {
