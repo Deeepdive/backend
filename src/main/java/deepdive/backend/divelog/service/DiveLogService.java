@@ -39,7 +39,7 @@ public class DiveLogService {
 
     public DiveLog convertToDiveLog(DiveLogRequestDto dto) {
         return DiveLog.builder()
-            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddy()))
+            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddies()))
             .review(Review.of(dto.reviewType(), dto.reviewComment()))
             .airTankInformation(AirTankInformation.of(dto.startPressure(), dto.endPressure(),
                 dto.airTankUsage()))
@@ -71,7 +71,7 @@ public class DiveLogService {
      * 유저의 ID값을 FK로 갖는 diveLog를 반환합니다.
      *
      * @param diveLogId 조회할 diveLogId
-     * @return
+     * @return diveLogInfo
      */
     public DiveLogInfoDto showDiveLog(Long diveLogId) {
         Member member = memberService.getByOauthId();
@@ -106,7 +106,7 @@ public class DiveLogService {
      * <p>
      * 오름차순, 내림차순 정렬
      *
-     * @return
+     * @return Page 형식, 간략화한 diveLogResponse
      */
     public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
         Member member = memberService.getByOauthId();
@@ -120,8 +120,6 @@ public class DiveLogService {
     }
 
     public void delete(Long diveLogId) {
-//        Member member = memberService.getByOauthId();
-
         diveLogRepository.deleteById(diveLogId);
     }
 }
