@@ -14,6 +14,7 @@ import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
+import deepdive.backend.dto.profile.ProfileDefaultDto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-01-27T13:17:22+0900",
+    date = "2024-02-02T21:29:32+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
 )
 @Component
@@ -68,21 +69,23 @@ public class DiveLogMapperImpl implements DiveLogMapper {
     }
 
     @Override
-    public DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog) {
+    public DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog, List<ProfileDefaultDto> buddyProfiles) {
 
-        DiveHistory diveHistory = null;
         Long id = null;
+        DiveHistory diveHistory = null;
         Purpose purpose = null;
         if ( diveLog != null ) {
-            diveHistory = diveLog.getDiveHistory();
             id = diveLog.getId();
+            diveHistory = diveLog.getDiveHistory();
             purpose = diveLog.getPurpose();
         }
-
-        DiveLogResponseDto diveLogResponseDto = new DiveLogResponseDto( id, diveHistory, purpose );
-
-        if ( diveLog != null ) {
+        List<ProfileDefaultDto> buddyProfiles1 = null;
+        List<ProfileDefaultDto> list = buddyProfiles;
+        if ( list != null ) {
+            buddyProfiles1 = new ArrayList<ProfileDefaultDto>( list );
         }
+
+        DiveLogResponseDto diveLogResponseDto = new DiveLogResponseDto( id, diveHistory, purpose, buddyProfiles1 );
 
         return diveLogResponseDto;
     }

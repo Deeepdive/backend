@@ -16,10 +16,13 @@ import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
 import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
+import deepdive.backend.dto.profile.ProfileDefaultDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
+import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
+import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +40,12 @@ public class DiveLogService {
     private final MemberService memberService;
     private final DiveLogMapper diveLogMapper;
 
+    private final ProfileService profileService;
+    private final ProfileMapper profileMapper;
+
     public DiveLog convertToDiveLog(DiveLogRequestDto dto) {
         return DiveLog.builder()
-            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddies()))
+            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddyIds()))
             .review(Review.of(dto.reviewType(), dto.reviewComment()))
             .airTankInformation(AirTankInformation.of(dto.startPressure(), dto.endPressure(),
                 dto.airTankUsage()))
@@ -59,6 +65,7 @@ public class DiveLogService {
     @Transactional
     public Long save(DiveLogRequestDto dto) {
         // TODO : 중복해서 같은 로직을 저장하려 하는 경우 -> 기준은?
+        profileService.getBuddiesProfiles(dto.buddyIds());
         DiveLog diveLog = convertToDiveLog(dto);
         DiveLog savedDiveLog = diveLogRepository.save(diveLog);
 
@@ -113,13 +120,19 @@ public class DiveLogService {
 
         Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(member.getId(), pageable);
         List<DiveLogResponseDto> result = divLogs.stream()
-            .map(diveLogMapper::toDiveLogResponseDto)
-            .toList();
+            .map(diveLog -> {
+                List<Long> buddyIds = diveLog.getDiveHistory().getBuddyIds();
+                List<ProfileDefaultDto> buddiesProfiles = profileService.getBuddiesProfiles(
+                    buddyIds);
+                return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
 
+            }).toList();
+        
         return diveLogMapper.toDiveLogResponsePaginationDto(result, divLogs.getTotalElements());
     }
 
     public void delete(Long diveLogId) {
         diveLogRepository.deleteById(diveLogId);
     }
+
 }
