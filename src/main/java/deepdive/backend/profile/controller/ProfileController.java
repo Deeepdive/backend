@@ -101,8 +101,14 @@ public class ProfileController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    /**
+     * db에 존재하는 nickname 인지 검수하고, 존재한다면 해당 Profile ID 반환
+     *
+     * @param buddy nickName
+     * @return profileId
+     */
     @GetMapping("/buddy")
-    public boolean isExistBuddyProfile(@RequestParam String buddy) {
-        return profileService.isExistingNickName(buddy);
+    public Long isExistBuddyProfile(@RequestParam String buddy) {
+        return profileService.getIdByNickName(buddy);
     }
 }

@@ -11,6 +11,7 @@ import deepdive.backend.member.service.MemberService;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,5 +108,21 @@ public class ProfileService {
         return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
             profile.getCertType(),
             profile.getIsTeacher());
+    }
+
+    public List<ProfileDefaultDto> getBuddiesProfiles(List<Long> buddyIds) {
+
+        return profileRepository.findAllById(buddyIds)
+            .stream()
+            .map(profile -> profileMapper.toProfileDefaultDto(profile.getNickName(),
+                profile.getPicture()))
+            .toList();
+    }
+
+    public Long getIdByNickName(String nickName) {
+        Profile profile = profileRepository.findByNickName(nickName)
+            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+
+        return profile.getId();
     }
 }
