@@ -8,20 +8,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private static final String TARGET_URL = "http://localhost:3000";
     private final MemberService memberService;
     private final JwtProvider tokenProvider;
 
@@ -39,22 +38,26 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         log.info("JWT access 토큰 발행 시작");
         String accessToken = tokenProvider.createAccessToken(oauthId, email);
+
+        generateResponse(response, accessToken, isRegistered);
         if (isRegistered) {
             tokenProvider.updateRefreshToken(oauthId, email);
         }
-        String redirectUrl = getRedirectUrl(isRegistered, accessToken, provider);
-
-        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
-    private String getRedirectUrl(boolean isMemberPresent, String token, String provider) {
-        String path = isMemberPresent ? TARGET_URL : TARGET_URL + "/agreement";
+    private void generateResponse(HttpServletResponse response, String accessToken,
+        boolean isRegistered) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-        return UriComponentsBuilder
-            .fromUriString(path)
-            .queryParam("token", token)
-            .queryParam("provider", provider)
-            .build()
-            .toUriString();
+        if (isRegistered) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter writer = response.getWriter();
+
+        writer.print("{\"accessToken\":\"" + accessToken + "\"}");
+        writer.flush();
     }
+
 }
