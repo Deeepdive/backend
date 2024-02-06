@@ -31,8 +31,8 @@ import deepdive.backend.divelog.domain.WeightType;
  */
 public record DiveLogInfoDto(
     Long id,
-    @JsonUnwrapped DiveHistory diveHistory,
     @JsonUnwrapped Review review,
+    @JsonUnwrapped DiveHistory diveHistory,
     @JsonUnwrapped AirTankInformation airTankInformation,
     @JsonUnwrapped DiveInformation diveInformation,
     Long airTemp,

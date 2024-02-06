@@ -45,9 +45,9 @@ public class DiveLog {
     private Member member;
 
     @Embedded
-    private DiveHistory diveHistory;
-    @Embedded
     private Review review;
+    @Embedded
+    private DiveHistory diveHistory;
     @Embedded
     private AirTankInformation airTankInformation;
     @Embedded
@@ -83,8 +83,8 @@ public class DiveLog {
         this.weightType = WeightType.valueOf(dto.weightType());
 
         // 소분류별 객체 분리
-        this.diveHistory = DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddyIds());
         this.review = Review.of(dto.reviewType(), dto.reviewComment());
+        this.diveHistory = DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddyIds());
         this.airTankInformation = AirTankInformation.of(dto.startPressure(), dto.endPressure(),
             dto.airTankUsage());
         this.diveInformation = DiveInformation.of(dto.depth(), dto.min(), dto.waterTemp());

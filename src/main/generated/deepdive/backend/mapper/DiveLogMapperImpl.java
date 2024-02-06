@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-02-02T21:29:32+0900",
+    date = "2024-02-06T21:57:11+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
 )
 @Component
@@ -60,7 +60,7 @@ public class DiveLogMapperImpl implements DiveLogMapper {
             weightType = diveLog.getWeightType();
         }
 
-        DiveLogInfoDto diveLogInfoDto = new DiveLogInfoDto( id, diveHistory, review, airTankInformation, diveInformation, airTemp, weight, purpose, waterType, underWaterVisibility, weather, suitType, weightType );
+        DiveLogInfoDto diveLogInfoDto = new DiveLogInfoDto( id, review, diveHistory, airTankInformation, diveInformation, airTemp, weight, purpose, waterType, underWaterVisibility, weather, suitType, weightType );
 
         if ( diveLog != null ) {
         }
