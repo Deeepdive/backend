@@ -19,7 +19,6 @@ import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import deepdive.backend.dto.profile.ProfileDefaultDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
-import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import deepdive.backend.profile.service.ProfileService;
@@ -41,7 +40,6 @@ public class DiveLogService {
     private final DiveLogMapper diveLogMapper;
 
     private final ProfileService profileService;
-    private final ProfileMapper profileMapper;
 
     public DiveLog convertToDiveLog(DiveLogRequestDto dto) {
         return DiveLog.builder()
@@ -127,7 +125,7 @@ public class DiveLogService {
                 return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
 
             }).toList();
-        
+
         return diveLogMapper.toDiveLogResponsePaginationDto(result, divLogs.getTotalElements());
     }
 
