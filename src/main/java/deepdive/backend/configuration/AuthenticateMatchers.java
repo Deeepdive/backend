@@ -1,4 +1,4 @@
-package deepdive.backend.config;
+package deepdive.backend.configuration;
 
 import lombok.NoArgsConstructor;
 
@@ -11,6 +11,6 @@ public class AuthenticateMatchers {
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html",
-        
+
     };
 }

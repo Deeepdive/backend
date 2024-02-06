@@ -2,6 +2,7 @@ package deepdive.backend.profile.domain.entity;
 
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,8 +27,10 @@ public class Profile {
     private String picture;
     private Boolean isTeacher;
 
+    @Nullable
     @Enumerated(EnumType.STRING)
     private CertOrganization organization;
+    @Nullable
     @Enumerated(EnumType.STRING)
     private CertType certType;
 

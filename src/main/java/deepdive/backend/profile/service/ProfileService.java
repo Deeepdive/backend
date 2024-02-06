@@ -11,6 +11,7 @@ import deepdive.backend.member.service.MemberService;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +34,21 @@ public class ProfileService {
      */
     @Transactional
     public void save(ProfileRequestDto dto) {
-        validateDuplicateNickName(dto.nickName());
+        if (isExistingNickName(dto.nickName())) {
+            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
+        }
 
         Profile profile = Profile.of(dto.nickName(), dto.picture(),
             dto.certOrganization(),
             dto.certType(), dto.isTeacher());
         Member member = memberService.getByOauthId();
         member.setProfile(profile);
+    }
+
+    public boolean isExistingNickName(String nickName) {
+
+        return profileRepository.findByNickName(nickName)
+            .isPresent();
     }
 
     /**
@@ -54,8 +63,9 @@ public class ProfileService {
 
         Member member = memberService.getByOauthId();
         Profile profile = member.getProfile();
-        if (isNewNickName(profile.getNickName(), dto.nickName())) {
-            validateDuplicateNickName(dto.nickName());
+        if (isNewNickName(profile.getNickName(), dto.nickName())
+            && isExistingNickName(dto.nickName())) {
+            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
 
         profile.updateDefaultProfile(dto.nickName(), dto.picture());
@@ -69,24 +79,15 @@ public class ProfileService {
      */
     @Transactional
     public void updateDefaultCertProfile(ProfileCertRequestDto dto) {
-        Member member = memberService.getByOauthId();
-        Profile profile = getByMember(member);
+        Profile profile = getByMember(memberService.getByOauthId());
 
         log.info("dto? = {}", dto);
         profile.updateCertProfile(dto.certOrganization(), dto.certType(), dto.isTeacher());
-//        member.setProfile(profile);
     }
 
     public Profile getByMember(Member member) {
         return Optional.ofNullable(member.getProfile())
             .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
-    }
-
-    private void validateDuplicateNickName(String nickName) {
-        Optional<Profile> duplicateNickNameProfile = profileRepository.findByNickName(nickName);
-        if (duplicateNickNameProfile.isPresent()) {
-            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
-        }
     }
 
     private boolean isNewNickName(String oldNickName, String newNickName) {
@@ -107,5 +108,21 @@ public class ProfileService {
         return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
             profile.getCertType(),
             profile.getIsTeacher());
+    }
+
+    public List<ProfileDefaultDto> getBuddiesProfiles(List<Long> buddyIds) {
+
+        return profileRepository.findAllById(buddyIds)
+            .stream()
+            .map(profile -> profileMapper.toProfileDefaultDto(profile.getNickName(),
+                profile.getPicture()))
+            .toList();
+    }
+
+    public Long getIdByNickName(String nickName) {
+        Profile profile = profileRepository.findByNickName(nickName)
+            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+
+        return profile.getId();
     }
 }

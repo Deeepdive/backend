@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -82,7 +83,7 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("")
-    public ResponseEntity<ProfileDefaultDto> memberProfile() {
+    public ResponseEntity<ProfileDefaultDto> getMemberProfile() {
         ProfileDefaultDto responseDTO = profileService.showMemberProfile();
 
         return ResponseEntity.ok().body(responseDTO);
@@ -94,9 +95,20 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("/cert")
-    public ResponseEntity<ProfileCertResponseDto> certProfile() {
+    public ResponseEntity<ProfileCertResponseDto> getCertProfile() {
         ProfileCertResponseDto responseDTO = profileService.showCertProfile();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    /**
+     * db에 존재하는 nickname 인지 검수하고, 존재한다면 해당 Profile ID 반환
+     *
+     * @param buddy nickName
+     * @return profileId
+     */
+    @GetMapping("/buddy")
+    public Long isExistBuddyProfile(@RequestParam String buddy) {
+        return profileService.getIdByNickName(buddy);
     }
 }

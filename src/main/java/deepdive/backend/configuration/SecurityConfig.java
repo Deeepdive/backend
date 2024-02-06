@@ -1,4 +1,4 @@
-package deepdive.backend.config;
+package deepdive.backend.configuration;
 
 import deepdive.backend.auth.service.CustomOauth2UserService;
 import deepdive.backend.auth.service.OauthFailureHandler;

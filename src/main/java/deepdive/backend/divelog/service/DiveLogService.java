@@ -16,10 +16,12 @@ import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
 import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
+import deepdive.backend.dto.profile.ProfileDefaultDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
+import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +39,11 @@ public class DiveLogService {
     private final MemberService memberService;
     private final DiveLogMapper diveLogMapper;
 
+    private final ProfileService profileService;
+
     public DiveLog convertToDiveLog(DiveLogRequestDto dto) {
         return DiveLog.builder()
-            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddy()))
+            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddyIds()))
             .review(Review.of(dto.reviewType(), dto.reviewComment()))
             .airTankInformation(AirTankInformation.of(dto.startPressure(), dto.endPressure(),
                 dto.airTankUsage()))
@@ -59,6 +63,7 @@ public class DiveLogService {
     @Transactional
     public Long save(DiveLogRequestDto dto) {
         // TODO : 중복해서 같은 로직을 저장하려 하는 경우 -> 기준은?
+        profileService.getBuddiesProfiles(dto.buddyIds());
         DiveLog diveLog = convertToDiveLog(dto);
         DiveLog savedDiveLog = diveLogRepository.save(diveLog);
 
@@ -71,7 +76,7 @@ public class DiveLogService {
      * 유저의 ID값을 FK로 갖는 diveLog를 반환합니다.
      *
      * @param diveLogId 조회할 diveLogId
-     * @return
+     * @return diveLogInfo
      */
     public DiveLogInfoDto showDiveLog(Long diveLogId) {
         Member member = memberService.getByOauthId();
@@ -106,22 +111,26 @@ public class DiveLogService {
      * <p>
      * 오름차순, 내림차순 정렬
      *
-     * @return
+     * @return Page 형식, 간략화한 diveLogResponse
      */
     public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
         Member member = memberService.getByOauthId();
 
         Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(member.getId(), pageable);
         List<DiveLogResponseDto> result = divLogs.stream()
-            .map(diveLogMapper::toDiveLogResponseDto)
-            .toList();
+            .map(diveLog -> {
+                List<Long> buddyIds = diveLog.getDiveHistory().getBuddyIds();
+                List<ProfileDefaultDto> buddiesProfiles = profileService.getBuddiesProfiles(
+                    buddyIds);
+                return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
+
+            }).toList();
 
         return diveLogMapper.toDiveLogResponsePaginationDto(result, divLogs.getTotalElements());
     }
 
     public void delete(Long diveLogId) {
-//        Member member = memberService.getByOauthId();
-
         diveLogRepository.deleteById(diveLogId);
     }
+
 }

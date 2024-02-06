@@ -1,4 +1,4 @@
-package deepdive.backend.config;
+package deepdive.backend.configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
