@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class DiveHistory {
 
-    private LocalDate date;
+    private LocalDate diveDate;
     private String site;
     private String point;
     //    private String buddies; // List<Long> 타입으로 profile ID들 받는 걸로 변경
@@ -18,7 +18,7 @@ public class DiveHistory {
 
     public static DiveHistory of(LocalDate date, String site, String point, List<Long> buddyIds) {
         DiveHistory diveHistory = new DiveHistory();
-        diveHistory.date = date;
+        diveHistory.diveDate = date;
         diveHistory.site = site;
         diveHistory.point = point;
         diveHistory.buddyIds = buddyIds;

@@ -9,7 +9,6 @@ import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import deepdive.backend.dto.profile.ProfileDefaultDto;
 import java.util.List;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring",
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface DiveLogMapper {
 
-    @Mapping(target = "diveHistory", source = "diveLog.diveHistory")
     DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog);
 
     DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog,
