@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-02-06T21:57:11+0900",
+    date = "2024-02-09T15:07:32+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
 )
 @Component
@@ -31,9 +31,12 @@ public class DiveLogMapperImpl implements DiveLogMapper {
     @Override
     public DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog) {
 
-        DiveHistory diveHistory = null;
+        if ( diveLog != null ) {
+        }
+
         Long id = null;
         Review review = null;
+        DiveHistory diveHistory = null;
         AirTankInformation airTankInformation = null;
         DiveInformation diveInformation = null;
         Long airTemp = null;
@@ -44,21 +47,6 @@ public class DiveLogMapperImpl implements DiveLogMapper {
         Weather weather = null;
         SuitType suitType = null;
         WeightType weightType = null;
-        if ( diveLog != null ) {
-            diveHistory = diveLog.getDiveHistory();
-            id = diveLog.getId();
-            review = diveLog.getReview();
-            airTankInformation = diveLog.getAirTankInformation();
-            diveInformation = diveLog.getDiveInformation();
-            airTemp = diveLog.getAirTemp();
-            weight = diveLog.getWeight();
-            purpose = diveLog.getPurpose();
-            waterType = diveLog.getWaterType();
-            underWaterVisibility = diveLog.getUnderWaterVisibility();
-            weather = diveLog.getWeather();
-            suitType = diveLog.getSuitType();
-            weightType = diveLog.getWeightType();
-        }
 
         DiveLogInfoDto diveLogInfoDto = new DiveLogInfoDto( id, review, diveHistory, airTankInformation, diveInformation, airTemp, weight, purpose, waterType, underWaterVisibility, weather, suitType, weightType );
 
@@ -71,19 +59,15 @@ public class DiveLogMapperImpl implements DiveLogMapper {
     @Override
     public DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog, List<ProfileDefaultDto> buddyProfiles) {
 
-        Long id = null;
-        DiveHistory diveHistory = null;
-        Purpose purpose = null;
-        if ( diveLog != null ) {
-            id = diveLog.getId();
-            diveHistory = diveLog.getDiveHistory();
-            purpose = diveLog.getPurpose();
-        }
         List<ProfileDefaultDto> buddyProfiles1 = null;
         List<ProfileDefaultDto> list = buddyProfiles;
         if ( list != null ) {
             buddyProfiles1 = new ArrayList<ProfileDefaultDto>( list );
         }
+
+        Long id = null;
+        DiveHistory diveHistory = null;
+        Purpose purpose = null;
 
         DiveLogResponseDto diveLogResponseDto = new DiveLogResponseDto( id, diveHistory, purpose, buddyProfiles1 );
 
