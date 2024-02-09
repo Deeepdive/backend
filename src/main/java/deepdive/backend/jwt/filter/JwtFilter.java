@@ -32,7 +32,6 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("accessToken 추출을 시작합니다");
         String token = extractToken(request).orElse(null);
 
         if (token != null) {
