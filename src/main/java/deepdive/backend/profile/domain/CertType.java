@@ -1,6 +1,5 @@
 package deepdive.backend.profile.domain;
 
-import deepdive.backend.exception.DomainException;
 import deepdive.backend.exception.ExceptionStatus;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +15,6 @@ public enum CertType {
         return Arrays.stream(values())
             .filter(certType -> certType.name().equals(typeName))
             .findFirst()
-            .orElseThrow(() -> new DomainException(ExceptionStatus.INVALID_TYPE));
+            .orElseThrow(ExceptionStatus.INVALID_CERT_TYPE::asServiceException);
     }
 }
