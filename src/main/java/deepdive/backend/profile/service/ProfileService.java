@@ -58,10 +58,13 @@ public class ProfileService {
 
         Profile profile = getByMember(memberService.getByOauthId());
         if (organization.equals(CertOrganization.ETC)) {
+            if (profilePolicyService.isBlankString(dto.etc())) {
+                throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
+            }
             profile.updateEtcCertProfile(organization, dto.isTeacher(), dto.etc());
             return;
         }
-        if (!profilePolicyService.validateMatchResult(organization, certType)) {
+        if (!profilePolicyService.isValidMatchCertProfile(organization, certType)) {
             throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
         }
         profile.updateCertProfile(organization, certType, dto.isTeacher());
@@ -128,7 +131,8 @@ public class ProfileService {
 
         return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
             profile.getCertType(),
-            profile.getIsTeacher());
+            profile.getIsTeacher(),
+            profile.getEtc());
     }
 
     public List<ProfileDefaultDto> getBuddiesProfiles(List<Long> buddyIds) {

@@ -61,7 +61,7 @@ public class Profile {
         this.etc = null;
     }
 
-    public void updateEtcCertProfile(CertOrganization etcOrganization, boolean isTeacher,
+    public void updateEtcCertProfile(CertOrganization etcOrganization, Boolean isTeacher,
         @NotBlank String etc) {
         this.certType = null;
         this.organization = etcOrganization;

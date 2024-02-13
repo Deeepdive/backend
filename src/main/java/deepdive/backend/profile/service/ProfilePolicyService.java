@@ -10,7 +10,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfilePolicyService {
 
-    public boolean validateMatchResult(CertOrganization organization, CertType type) {
+    public boolean isBlankString(String str) {
+        return str == null || str.isBlank();
+    }
+
+    public boolean isValidMatchCertProfile(CertOrganization organization, CertType type) {
         return isValidCommonCertMatch(organization, type) || isValidNoneCert(organization, type);
     }
 
