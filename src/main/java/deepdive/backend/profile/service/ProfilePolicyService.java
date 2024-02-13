@@ -1,6 +1,5 @@
 package deepdive.backend.profile.service;
 
-import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
 import java.util.List;
@@ -11,11 +10,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfilePolicyService {
 
-    public boolean isValidCertProfile(CertOrganization organization, CertType type) {
-        if (isCommonOrganization(organization) && !isCommonCertType(type)) {
-            throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
-        }
-        return true;
+    public boolean validateMatchResult(CertOrganization organization, CertType type) {
+        return isValidCommonCertMatch(organization, type) || isValidNoneCert(organization, type);
+    }
+
+    public boolean isValidCommonCertMatch(CertOrganization organization, CertType type) {
+        return isCommonOrganization(organization) && isCommonCertType(type);
+    }
+
+    public boolean isValidNoneCert(CertOrganization organization, CertType certType) {
+        return organization.equals(CertOrganization.NONE) && certType.equals(CertType.NONE);
     }
 
     public boolean isCommonOrganization(CertOrganization certOrganization) {

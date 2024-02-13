@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -61,7 +62,7 @@ public class Profile {
     }
 
     public void updateEtcCertProfile(CertOrganization etcOrganization, boolean isTeacher,
-        String etc) {
+        @NotBlank String etc) {
         this.certType = null;
         this.organization = etcOrganization;
         this.isTeacher = isTeacher;

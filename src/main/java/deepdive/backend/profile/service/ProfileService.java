@@ -8,6 +8,8 @@ import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
+import deepdive.backend.profile.domain.CertOrganization;
+import deepdive.backend.profile.domain.CertType;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
@@ -25,22 +27,58 @@ public class ProfileService {
     private final MemberService memberService;
 
     private final ProfileRepository profileRepository;
+    private final ProfilePolicyService profilePolicyService;
     private final ProfileMapper profileMapper;
 
     /**
-     * 회원의 프로필(기본 정보, 강사 정보)을 최초로 등록합니다.
+     * 회원의 기본 프로필(닉네임, 사진)을 최초로 등록합니다.
      *
-     * @param dto
+     * @param dto 회원의 닉네임, 사진 url
      */
     @Transactional
-    public void save(ProfileRequestDto dto) {
+    public void saveDefaultProfile(ProfileDefaultDto dto) {
         if (isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
 
-        Profile profile = Profile.of(dto.nickName(), dto.picture(),
-            dto.certOrganization(),
-            dto.certType(), dto.isTeacher());
+        Profile profile = Profile.defaultProfile(dto.nickName(), dto.picture());
+        Member member = memberService.getByOauthId();
+        member.setProfile(profile);
+    }
+
+    /**
+     * 회원의 자격증 관련 프로필을 저장합니다.
+     *
+     * @param dto 기관명, 자격증명, 강사, 비고
+     */
+    @Transactional
+    public void saveCertProfile(ProfileCertRequestDto dto) {
+        CertOrganization organization = CertOrganization.of(dto.certOrganization());
+        CertType certType = CertType.of(dto.certType());
+
+        Profile profile = getByMember(memberService.getByOauthId());
+        if (organization.equals(CertOrganization.ETC)) {
+            profile.updateEtcCertProfile(organization, dto.isTeacher(), dto.etc());
+            return;
+        }
+        if (!profilePolicyService.validateMatchResult(organization, certType)) {
+            throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
+        }
+        profile.updateCertProfile(organization, certType, dto.isTeacher());
+    }
+
+    /**
+     * 5개 정보를 모두 저장하는 로직
+     *
+     * @param dto
+     */
+    @Transactional
+    public void saveProfile(ProfileRequestDto dto) {
+        if (isExistingNickName(dto.nickName())) {
+            throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
+        }
+        Profile profile = Profile.defaultProfile(dto.nickName(), dto.picture());
+        // etc인지 가르는 로직
         Member member = memberService.getByOauthId();
         member.setProfile(profile);
     }
@@ -61,28 +99,13 @@ public class ProfileService {
     @Transactional
     public void updateDefaultProfile(ProfileDefaultDto dto) {
 
-        Member member = memberService.getByOauthId();
-        Profile profile = member.getProfile();
+        Profile profile = getByMember(memberService.getByOauthId());
         if (isNewNickName(profile.getNickName(), dto.nickName())
             && isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
 
         profile.updateDefaultProfile(dto.nickName(), dto.picture());
-        member.setProfile(profile);
-    }
-
-    /**
-     * 유저의 자격증 관련 프로필을 업데이트합니다.
-     *
-     * @param dto 발급 기관 정보, 자격증 정보, 강사 정보
-     */
-    @Transactional
-    public void updateDefaultCertProfile(ProfileCertRequestDto dto) {
-        Profile profile = getByMember(memberService.getByOauthId());
-
-        log.info("dto? = {}", dto);
-        profile.updateCertProfile(dto.certOrganization(), dto.certType(), dto.isTeacher());
     }
 
     public Profile getByMember(Member member) {
@@ -95,15 +118,13 @@ public class ProfileService {
     }
 
     public ProfileDefaultDto showMemberProfile() {
-        Profile profile = Optional.ofNullable(memberService.getByOauthId().getProfile())
-            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+        Profile profile = getByMember(memberService.getByOauthId());
 
         return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());
     }
 
     public ProfileCertResponseDto showCertProfile() {
-        Profile profile = Optional.ofNullable(memberService.getByOauthId().getProfile())
-            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+        Profile profile = getByMember(memberService.getByOauthId());
 
         return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
             profile.getCertType(),

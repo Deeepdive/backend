@@ -7,6 +7,7 @@ import deepdive.backend.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,12 +35,12 @@ public class ProfileController {
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
     })
     @PostMapping("/default")
-    public void saveDefaultProfile(@RequestBody ProfileDefaultDto dto) {
+    public void saveDefaultProfile(@RequestBody @Valid ProfileDefaultDto dto) {
         profileService.saveDefaultProfile(dto);
     }
 
     @PostMapping("/cert")
-    public void saveCertProfile(@RequestBody ProfileCertRequestDto dto) {
+    public void saveCertProfile(@RequestBody @Valid ProfileCertRequestDto dto) {
         profileService.saveCertProfile(dto);
     }
 
@@ -49,7 +50,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
     @PatchMapping("/default")
-    public void updateDefaultProfile(@RequestBody ProfileDefaultDto dto) {
+    public void updateDefaultProfile(@RequestBody @Valid ProfileDefaultDto dto) {
         profileService.updateDefaultProfile(dto);
     }
 
