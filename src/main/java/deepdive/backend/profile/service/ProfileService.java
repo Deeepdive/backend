@@ -2,7 +2,8 @@ package deepdive.backend.profile.service;
 
 import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
-import deepdive.backend.dto.profile.ProfileDefaultDto;
+import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
+import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.dto.profile.ProfileRequestDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.ProfileMapper;
@@ -10,6 +11,7 @@ import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
+import deepdive.backend.profile.domain.Pictures;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
@@ -36,12 +38,13 @@ public class ProfileService {
      * @param dto 회원의 닉네임, 사진 url
      */
     @Transactional
-    public void saveDefaultProfile(ProfileDefaultDto dto) {
+    public void saveDefaultProfile(ProfileDefaultRequestDto dto) {
         if (isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
+        String url = Pictures.getByNumber(dto.urlNumber());
 
-        Profile profile = Profile.defaultProfile(dto.nickName(), dto.picture());
+        Profile profile = Profile.defaultProfile(dto.nickName(), url);
         Member member = memberService.getByOauthId();
         member.setProfile(profile);
     }
@@ -54,8 +57,6 @@ public class ProfileService {
     @Transactional
     public void saveCertProfile(ProfileCertRequestDto dto) {
         CertOrganization organization = CertOrganization.of(dto.certOrganization());
-        CertType certType = CertType.of(dto.certType());
-
         Profile profile = getByMember(memberService.getByOauthId());
         if (organization.equals(CertOrganization.ETC)) {
             if (profilePolicyService.isBlankString(dto.etc())) {
@@ -64,6 +65,8 @@ public class ProfileService {
             profile.updateEtcCertProfile(organization, dto.isTeacher(), dto.etc());
             return;
         }
+
+        CertType certType = CertType.of(dto.certType());
         if (!profilePolicyService.isValidMatchCertProfile(organization, certType)) {
             throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
         }
@@ -100,15 +103,15 @@ public class ProfileService {
      * @param dto 유저의 사진, 닉네임이 담긴 프로필
      */
     @Transactional
-    public void updateDefaultProfile(ProfileDefaultDto dto) {
+    public void updateDefaultProfile(ProfileDefaultRequestDto dto) {
 
         Profile profile = getByMember(memberService.getByOauthId());
         if (isNewNickName(profile.getNickName(), dto.nickName())
             && isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
-
-        profile.updateDefaultProfile(dto.nickName(), dto.picture());
+        String url = Pictures.getByNumber(dto.urlNumber());
+        profile.updateDefaultProfile(dto.nickName(), url);
     }
 
     public Profile getByMember(Member member) {
@@ -120,10 +123,11 @@ public class ProfileService {
         return !newNickName.equals(oldNickName);
     }
 
-    public ProfileDefaultDto showMemberProfile() {
+    public ProfileDefaultResponseDto showMemberProfile() {
         Profile profile = getByMember(memberService.getByOauthId());
 
-        return profileMapper.toProfileDefaultDto(profile.getNickName(), profile.getPicture());
+        return profileMapper.toProfileDefaultResponseDto(profile.getNickName(),
+            profile.getPicture());
     }
 
     public ProfileCertResponseDto showCertProfile() {
@@ -135,11 +139,11 @@ public class ProfileService {
             profile.getEtc());
     }
 
-    public List<ProfileDefaultDto> getBuddiesProfiles(List<Long> buddyIds) {
+    public List<ProfileDefaultResponseDto> getBuddiesProfiles(List<Long> buddyIds) {
 
         return profileRepository.findAllById(buddyIds)
             .stream()
-            .map(profile -> profileMapper.toProfileDefaultDto(profile.getNickName(),
+            .map(profile -> profileMapper.toProfileDefaultResponseDto(profile.getNickName(),
                 profile.getPicture()))
             .toList();
     }

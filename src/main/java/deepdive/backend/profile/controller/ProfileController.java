@@ -2,7 +2,8 @@ package deepdive.backend.profile.controller;
 
 import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
-import deepdive.backend.dto.profile.ProfileDefaultDto;
+import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
+import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,10 +36,15 @@ public class ProfileController {
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
     })
     @PostMapping("/default")
-    public void saveDefaultProfile(@RequestBody @Valid ProfileDefaultDto dto) {
+    public void saveDefaultProfile(@RequestBody @Valid ProfileDefaultRequestDto dto) {
         profileService.saveDefaultProfile(dto);
     }
 
+    @Operation(summary = "자격증 프로필 등록 및 수정")
+    @ApiResponses({
+        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다"),
+        @ApiResponse(responseCode = "400", description = "")
+    })
     @PostMapping("/cert")
     public void saveCertProfile(@RequestBody @Valid ProfileCertRequestDto dto) {
         profileService.saveCertProfile(dto);
@@ -50,7 +56,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
     @PatchMapping("/default")
-    public void updateDefaultProfile(@RequestBody @Valid ProfileDefaultDto dto) {
+    public void updateDefaultProfile(@RequestBody @Valid ProfileDefaultRequestDto dto) {
         profileService.updateDefaultProfile(dto);
     }
 
@@ -60,7 +66,7 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("")
-    public ProfileDefaultDto getMemberProfile() {
+    public ProfileDefaultResponseDto getMemberProfile() {
 
         return profileService.showMemberProfile();
     }
