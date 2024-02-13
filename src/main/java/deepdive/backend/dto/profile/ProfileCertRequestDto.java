@@ -7,6 +7,7 @@ package deepdive.backend.dto.profile;
  * @param certType
  * @param isTeacher
  */
-public record ProfileCertRequestDto(String certOrganization, String certType, Boolean isTeacher) {
+public record ProfileCertRequestDto(String certOrganization, String certType, Boolean isTeacher,
+                                    String etc) {
 
 }
