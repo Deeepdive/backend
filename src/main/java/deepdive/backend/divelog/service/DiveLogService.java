@@ -16,7 +16,7 @@ import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
 import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
-import deepdive.backend.dto.profile.ProfileDefaultDto;
+import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
 import deepdive.backend.member.domain.entity.Member;
@@ -120,7 +120,7 @@ public class DiveLogService {
         List<DiveLogResponseDto> result = divLogs.stream()
             .map(diveLog -> {
                 List<Long> buddyIds = diveLog.getDiveHistory().getBuddyIds();
-                List<ProfileDefaultDto> buddiesProfiles = profileService.getBuddiesProfiles(
+                List<ProfileDefaultResponseDto> buddiesProfiles = profileService.getBuddiesProfiles(
                     buddyIds);
                 return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
 
