@@ -1,6 +1,7 @@
 package deepdive.backend.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,5 +20,12 @@ public class ExceptionController {
         return ResponseEntity
             .status(e.status.getErrorCode())
             .body(e.status);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> validExceptionHandler(MethodArgumentNotValidException e) {
+        return ResponseEntity
+            .status(e.getStatusCode())
+            .body(e.getDetailMessageArguments());
     }
 }

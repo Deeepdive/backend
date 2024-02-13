@@ -19,5 +19,5 @@ public interface ProfileMapper {
     ProfileDefaultDto toProfileDefaultDto(String nickName, String picture);
 
     ProfileCertResponseDto toProfileCertResponseDto(CertOrganization certOrganization,
-        CertType certType, Boolean isTeacher);
+        CertType certType, Boolean isTeacher, String etc);
 }

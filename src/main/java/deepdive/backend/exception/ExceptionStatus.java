@@ -18,6 +18,9 @@ public enum ExceptionStatus {
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 입력입니다"),
     INVALID_USER_ID(HttpStatus.BAD_REQUEST, "허용되지 않은 ID 값입니다."),
     INVALID_REGISTER(HttpStatus.BAD_REQUEST, "SNS 정보와 회원 정보가 일치하지 않습니다."),
+    INVALID_ORGANIZATION_TYPE(HttpStatus.BAD_REQUEST, "알 수 없는 기관입니다."),
+    INVALID_CERT_TYPE(HttpStatus.BAD_REQUEST, "알 수 없는 자격증 명입니다."),
+    INVALID_MATCH_PROFILE(HttpStatus.BAD_REQUEST, "발급 기관과 자격증 유형이 일치하지 않습니다."),
     NOT_FOUND_PROFILE(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다.");
 
     private final int errorCode;
