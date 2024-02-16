@@ -15,6 +15,6 @@ public enum CertOrganization {
         return Arrays.stream(values())
             .filter(certOrganization -> certOrganization.name().equals(organizationName))
             .findFirst()
-            .orElseThrow(ExceptionStatus.INVALID_ORGANIZATION_TYPE::asServiceException);
+            .orElseThrow(ExceptionStatus.INVALID_ORGANIZATION_TYPE::asDomainException);
     }
 }

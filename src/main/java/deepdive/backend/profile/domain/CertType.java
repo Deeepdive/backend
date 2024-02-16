@@ -15,6 +15,6 @@ public enum CertType {
         return Arrays.stream(values())
             .filter(certType -> certType.name().equals(typeName))
             .findFirst()
-            .orElseThrow(ExceptionStatus.INVALID_CERT_TYPE::asServiceException);
+            .orElseThrow(ExceptionStatus.INVALID_CERT_TYPE::asDomainException);
     }
 }

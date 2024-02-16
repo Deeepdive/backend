@@ -35,7 +35,7 @@ public class ProfileController {
     @ApiResponses({
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
     })
-    @PostMapping("/default")
+    @PostMapping("")
     public void saveDefaultProfile(@RequestBody @Valid ProfileDefaultRequestDto dto) {
         profileService.saveDefaultProfile(dto);
     }
@@ -55,7 +55,7 @@ public class ProfileController {
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저입니다."),
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
-    @PatchMapping("/default")
+    @PatchMapping("")
     public void updateDefaultProfile(@RequestBody @Valid ProfileDefaultRequestDto dto) {
         profileService.updateDefaultProfile(dto);
     }
@@ -85,11 +85,11 @@ public class ProfileController {
     /**
      * db에 존재하는 nickname 인지 검수하고, 존재한다면 해당 Profile ID 반환
      *
-     * @param buddy nickName
+     * @param nickName 닉네임
      * @return profileId
      */
-    @GetMapping("/buddy")
-    public Long isExistBuddyProfile(@RequestParam String buddy) {
-        return profileService.getIdByNickName(buddy);
+    @GetMapping("/check-nickname")
+    public Long isExistBuddyProfile(@RequestParam(value = "nickName") String nickName) {
+        return profileService.getIdByNickName(nickName);
     }
 }
