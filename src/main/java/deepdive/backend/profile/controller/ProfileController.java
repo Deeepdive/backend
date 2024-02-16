@@ -2,18 +2,14 @@ package deepdive.backend.profile.controller;
 
 import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
-import deepdive.backend.dto.profile.ProfileDefaultDto;
-import deepdive.backend.dto.profile.ProfileRequestDto;
+import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
+import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.profile.service.ProfileService;
-import deepdive.backend.utils.response.Response;
-import deepdive.backend.utils.response.ResponseMsg;
-import deepdive.backend.utils.response.StatusCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,44 +33,31 @@ public class ProfileController {
      */
     @Operation(summary = "유저 프로필 최초 등록")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "JSON parse fail"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
     })
-    @PostMapping("/register")
-    public ResponseEntity<Response> saveProfile(@RequestBody ProfileRequestDto dto) {
-        profileService.save(dto);
+    @PostMapping("")
+    public void saveDefaultProfile(@RequestBody @Valid ProfileDefaultRequestDto dto) {
+        profileService.saveDefaultProfile(dto);
+    }
 
-        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
-            HttpStatus.OK);
+    @Operation(summary = "자격증 프로필 등록 및 수정")
+    @ApiResponses({
+        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다"),
+        @ApiResponse(responseCode = "400", description = "")
+    })
+    @PostMapping("/cert")
+    public void saveCertProfile(@RequestBody @Valid ProfileCertRequestDto dto) {
+        profileService.saveCertProfile(dto);
     }
 
     @Operation(summary = "유저의 기본 프로필 수정 요청")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "프로필 수정 성공"),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 유저입니다."),
         @ApiResponse(responseCode = "409", description = "해당 닉네임은 이미 사용중입니다.")
     })
     @PatchMapping("")
-    public ResponseEntity<Response> updateDefaultProfile(@RequestBody ProfileDefaultDto dto) {
+    public void updateDefaultProfile(@RequestBody @Valid ProfileDefaultRequestDto dto) {
         profileService.updateDefaultProfile(dto);
-
-        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
-            HttpStatus.OK);
-    }
-
-    @Operation(summary = "자격증 관련 프로필 수정 요청")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "JSON parse fail"),
-        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다."),
-    })
-    @PatchMapping("/cert")
-    public ResponseEntity<Response> updateCertProfile(@RequestBody ProfileCertRequestDto dto) {
-        profileService.updateDefaultCertProfile(dto);
-
-        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.PROFILE_UPDATE_SUCCESS),
-            HttpStatus.OK);
     }
 
     /**
@@ -83,10 +66,9 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("")
-    public ResponseEntity<ProfileDefaultDto> getMemberProfile() {
-        ProfileDefaultDto responseDTO = profileService.showMemberProfile();
+    public ProfileDefaultResponseDto getMemberProfile() {
 
-        return ResponseEntity.ok().body(responseDTO);
+        return profileService.showMemberProfile();
     }
 
     /**
@@ -95,20 +77,19 @@ public class ProfileController {
      * @return 200 OK
      */
     @GetMapping("/cert")
-    public ResponseEntity<ProfileCertResponseDto> getCertProfile() {
-        ProfileCertResponseDto responseDTO = profileService.showCertProfile();
+    public ProfileCertResponseDto getCertProfile() {
 
-        return ResponseEntity.ok().body(responseDTO);
+        return profileService.showCertProfile();
     }
 
     /**
      * db에 존재하는 nickname 인지 검수하고, 존재한다면 해당 Profile ID 반환
      *
-     * @param buddy nickName
+     * @param nickName 닉네임
      * @return profileId
      */
-    @GetMapping("/buddy")
-    public Long isExistBuddyProfile(@RequestParam String buddy) {
-        return profileService.getIdByNickName(buddy);
+    @GetMapping("/check-nickname")
+    public Long isExistBuddyProfile(@RequestParam(value = "nickName") String nickName) {
+        return profileService.getIdByNickName(nickName);
     }
 }

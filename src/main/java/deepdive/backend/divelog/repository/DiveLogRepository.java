@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiveLogRepository extends JpaRepository<DiveLog, Long> {
 
-    Page<DiveLog> findOneByMemberId(Long memberId, Pageable pageable);
 
     @Query("SELECT dl "
         + "FROM DiveLog dl "
@@ -25,6 +24,8 @@ public interface DiveLogRepository extends JpaRepository<DiveLog, Long> {
     @Query(value = "SELECT dl "
         + "FROM DiveLog dl "
         + "WHERE dl.member.id = :memberId",
-        countQuery = "SELECT count(dl) FROM DiveLog dl WHERE dl.member.id = :memberId")
+        countQuery = "SELECT count(dl) "
+            + "FROM DiveLog dl "
+            + "WHERE dl.member.id = :memberId")
     Page<DiveLog> findAllByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }

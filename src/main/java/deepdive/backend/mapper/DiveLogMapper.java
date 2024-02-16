@@ -6,7 +6,7 @@ import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogResponseDto;
 import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
-import deepdive.backend.dto.profile.ProfileDefaultDto;
+import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
@@ -18,11 +18,12 @@ import org.springframework.stereotype.Component;
 @Component
 public interface DiveLogMapper {
 
-    DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog);
+    DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog, List<String> buddyNames);
 
     DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog,
-        List<ProfileDefaultDto> buddyProfiles);
+        List<ProfileDefaultResponseDto> buddyProfiles);
 
     DiveLogResponsePaginationDto toDiveLogResponsePaginationDto(List<DiveLogResponseDto> result,
         Long totalCount);
+
 }

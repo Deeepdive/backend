@@ -2,7 +2,6 @@ package deepdive.backend.profile.domain.entity;
 
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,9 +10,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Profile {
 
     @Id
@@ -26,25 +27,21 @@ public class Profile {
     // picture 부분 멀티파트로 수정하기.
     private String picture;
     private Boolean isTeacher;
+    private String etc;
 
-    @Nullable
     @Enumerated(EnumType.STRING)
     private CertOrganization organization;
-    @Nullable
     @Enumerated(EnumType.STRING)
     private CertType certType;
 
-    // TODO : service 단으로 분리
-    public static Profile of(String nickName, String picture, String organization,
-        String type, Boolean isTeacher) {
-        Profile profile = new Profile();
-        profile.nickName = nickName;
-        profile.picture = picture;
-        profile.organization = CertOrganization.valueOf(organization);
-        profile.certType = CertType.valueOf(type);
-        profile.isTeacher = isTeacher;
+    protected Profile(String nickName, String picture) {
+        this.nickName = nickName;
+        this.picture = picture;
+    }
 
-        return profile;
+    public static Profile defaultProfile(String nickName, String picture) {
+
+        return new Profile(nickName, picture);
     }
 
     public void updateDefaultProfile(String nickName, String picture) {
@@ -52,9 +49,19 @@ public class Profile {
         this.picture = picture;
     }
 
-    public void updateCertProfile(String certOrganization, String certType, Boolean isTeacher) {
-        this.organization = CertOrganization.valueOf(certOrganization);
-        this.certType = CertType.valueOf(certType);
+    public void updateCertProfile(CertOrganization certOrganization, CertType certType,
+        Boolean isTeacher) {
+        this.organization = certOrganization;
+        this.certType = certType;
         this.isTeacher = isTeacher;
+        this.etc = null;
+    }
+
+    public void updateEtcCertProfile(CertOrganization etcOrganization, Boolean isTeacher,
+        String etc) {
+        this.certType = null;
+        this.organization = etcOrganization;
+        this.isTeacher = isTeacher;
+        this.etc = etc;
     }
 }

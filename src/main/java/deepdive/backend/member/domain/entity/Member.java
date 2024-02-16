@@ -28,16 +28,16 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
     @OneToMany(cascade = CascadeType.ALL,
         targetEntity = DiveLog.class,
         fetch = FetchType.LAZY,
         mappedBy = "member")
     private List<DiveLog> diveLogs;
-
-    @Setter
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
 
     private String email;
     private String oauthId;
@@ -49,15 +49,12 @@ public class Member {
     private Boolean isAlarmAgree;
     private Boolean isMarketingAgree;
 
-    public static Member defaultInformation(String oauthId, String email, String provider,
-        Boolean isAlarmAgree,
-        Boolean isMarketingAgree) {
+
+    public static Member of(String email, String provider, String oauthId) {
         Member member = new Member();
-        member.oauthId = oauthId;
         member.email = email;
         member.provider = provider;
-        member.isAlarmAgree = isAlarmAgree;
-        member.isMarketingAgree = isMarketingAgree;
+        member.oauthId = oauthId;
 
         return member;
     }
@@ -69,10 +66,5 @@ public class Member {
 
     public void addDiveLog(DiveLog diveLog) {
         this.diveLogs.add(diveLog);
-        diveLog.setMember(this);
-    }
-
-    public int getDiveLogCount() {
-        return diveLogs.size();
     }
 }

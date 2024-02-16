@@ -17,6 +17,8 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+/src/main/generated/deepdive/backend/mapper/*.java
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

@@ -15,6 +15,7 @@ public class AuthUserInfo {
 
     private String oauthId;
     private String email;
+    private Long memberId;
 
     public static AuthUserInfo of() {
         return (AuthUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
