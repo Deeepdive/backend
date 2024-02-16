@@ -1,19 +1,22 @@
 package deepdive.backend.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.jwt.domain.JsonWebToken;
-import deepdive.backend.jwt.repository.JwtRepository;
+import deepdive.backend.dto.token.TokenInfo;
+import deepdive.backend.jwt.domain.dto.ReIssueDto;
+import deepdive.backend.member.domain.entity.Member;
+import deepdive.backend.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import jakarta.transaction.Transactional;
 import java.security.Key;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +32,52 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final JwtRepository jwtRepository;
+    private final MemberService memberService;
     @Value("${jwt.token.secret}")
     private String secret_code;
+    @Value("${refreshtoken.expires}")
+    private Long refreshTokenExpiration;
+    @Value("${accesstoken.expires}")
+    private Long accessTokenExpiration;
+    @Value("${issuer}")
+    private String issuer;
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = parseToken(token);
+    public TokenInfo generateToken(Long memberId, String oauthId) {
+        return new TokenInfo(createAccessToken(memberId), createRefreshToken(oauthId));
+    }
+
+    public String createRefreshToken(String oauthId) {
+        Claims claims = Jwts.claims().setSubject("UserToken");
+        claims.put("roles", "User");
+        claims.put("oauth", oauthId);
+        Date now = new Date();
+
+        return Jwts.builder()
+            .setClaims(claims)
+            .setExpiration(new Date(now.getTime() + 600 * refreshTokenExpiration))
+            .signWith(generateSecretKey(secret_code), SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    public String createAccessToken(Long memberId) {
+        Claims claims = Jwts.claims().setSubject("UserToken");
+        // TODO : role 분리 생각..
+        claims.put("roles", "User");
+        claims.put("memberId", memberId);
+        Date now = new Date();
+
+        return Jwts.builder()
+            .setSubject("UserToken")
+            .setClaims(claims)
+            .setIssuer(issuer)
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime() + 600 * accessTokenExpiration))
+            .signWith(generateSecretKey(secret_code), SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    public Authentication getAuthentication(String accessToken) {
+        Claims claims = parseToken(accessToken);
         log.info("token info: {}", claims);
 
         if (claims.get("roles") == null) {
@@ -45,28 +88,33 @@ public class JwtService {
             .map(SimpleGrantedAuthority::new)
             .toList();
 
-        String oauthId = claims.get("oauthId", String.class);
-        String email = claims.get("email", String.class);
+        Long memberId = claims.get("memberId", Long.class);
 
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
-            .oauthId(oauthId)
-            .email(email)
+            .memberId(memberId)
             .build();
 
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);
     }
 
-    private Claims parseToken(String accessToken) {
-        log.info("토큰이 존재하나여.. : {}", accessToken);
+    public String reissueAccessToken(ReIssueDto reIssueDto) {
 
+        // refresh encrypt 후에 괜찮은 애라면 재발급 ㄱㄱ
+        Claims claims = parseToken(reIssueDto.getRefreshToken());
+        String oauthId = claims.get("oauthId", String.class);
+        Member member = memberService.getByOauthId(oauthId);
+
+        return createAccessToken(member.getId());
+    }
+
+    private Claims parseToken(String token) {
         try {
             return Jwts.parserBuilder()
                 .setSigningKey(generateSecretKey(secret_code))
                 .build()
-                .parseClaimsJws(accessToken)
+                .parseClaimsJws(token)
                 .getBody();
         } catch (MalformedJwtException e) {
-            // TODO : 추후에 CustomException 구축
             throw new JwtException("잘못된 형식의 토큰입니다");
         } catch (ExpiredJwtException e) {
             throw new JwtException("만료된 토큰입니다.");
@@ -82,12 +130,5 @@ public class JwtService {
     private Key generateSecretKey(String secretCode) {
         String encodeSecretCode = Base64.getEncoder().encodeToString(secretCode.getBytes());
         return Keys.hmacShaKeyFor(encodeSecretCode.getBytes());
-    }
-
-    @Transactional
-    public void saveRefreshToken(String oauthId, String refreshToken) {
-        JsonWebToken jsonWebToken = new JsonWebToken(oauthId, refreshToken);
-
-        jwtRepository.save(jsonWebToken);
     }
 }
