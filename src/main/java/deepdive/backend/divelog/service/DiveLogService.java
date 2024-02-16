@@ -1,15 +1,5 @@
 package deepdive.backend.divelog.service;
 
-import deepdive.backend.divelog.domain.AirTankInformation;
-import deepdive.backend.divelog.domain.DiveHistory;
-import deepdive.backend.divelog.domain.DiveInformation;
-import deepdive.backend.divelog.domain.Purpose;
-import deepdive.backend.divelog.domain.Review;
-import deepdive.backend.divelog.domain.SuitType;
-import deepdive.backend.divelog.domain.UnderWaterVisibility;
-import deepdive.backend.divelog.domain.WaterType;
-import deepdive.backend.divelog.domain.Weather;
-import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
@@ -21,6 +11,7 @@ import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
+import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -41,33 +32,27 @@ public class DiveLogService {
 
     private final ProfileService profileService;
 
-    public DiveLog convertToDiveLog(DiveLogRequestDto dto) {
-        return DiveLog.builder()
-            .diveHistory(DiveHistory.of(dto.date(), dto.site(), dto.point(), dto.buddyIds()))
-            .review(Review.of(dto.reviewType(), dto.reviewComment()))
-            .airTankInformation(AirTankInformation.of(dto.startPressure(), dto.endPressure(),
-                dto.airTankUsage()))
-            .diveInformation(DiveInformation.of(dto.depth(), dto.min(), dto.waterTemp()))
-            .airTemp(dto.airTemp())
-            .weight(dto.weight())
-            .purpose(Purpose.valueOf(dto.purpose()))
-            .waterType(WaterType.valueOf(dto.waterType()))
-            .underWaterVisibility(UnderWaterVisibility.valueOf(dto.underWaterVisibility()))
-            .weather(Weather.valueOf(dto.weather()))
-            .suitType(SuitType.valueOf(dto.suitType()))
-            .weightType(WeightType.valueOf(dto.weightType()))
-            .member(memberService.getByOauthId())
-            .build();
-    }
 
+    /**
+     * DiveLog 를 저장하는 기능
+     * <p>
+     * dto를 통해 DiveLog를 만들고, member, profiles를 세팅
+     * <p>
+     * 컬럼이 너무 많아서 dto에 의존하는 형식ㅇ..
+     *
+     * @param dto
+     * @return 저장된 diveLog id
+     */
     @Transactional
     public Long save(DiveLogRequestDto dto) {
-        // TODO : 중복해서 같은 로직을 저장하려 하는 경우 -> 기준은?
-        profileService.getBuddiesProfiles(dto.buddyIds());
-        DiveLog diveLog = convertToDiveLog(dto);
-        DiveLog savedDiveLog = diveLogRepository.save(diveLog);
+        List<Profile> buddies = profileService.getProfiles(dto.profiles());
+        DiveLog diveLog = DiveLog.of(dto, buddies);
+        Member member = memberService.getMember();
 
-        return savedDiveLog.getId();
+        diveLog.setMember(member);
+        member.addDiveLog(diveLog);
+
+        return diveLogRepository.save(diveLog).getId();
     }
 
     /**
@@ -79,13 +64,13 @@ public class DiveLogService {
      * @return diveLogInfo
      */
     public DiveLogInfoDto showDiveLog(Long diveLogId) {
-        Member member = memberService.getByOauthId();
+        Long memberId = memberService.getMemberId();
 
-        DiveLog diveLog = diveLogRepository.findOneByMemberId(member.getId(), diveLogId)
+        DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
             .orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 
-        log.info("diveLog info = {}", diveLog);
-        return diveLogMapper.toDiveLogInfoDto(diveLog);
+        List<String> buddies = profileService.getProfileNames(diveLog.getProfiles());
+        return diveLogMapper.toDiveLogInfoDto(diveLog, buddies);
     }
 
     /**
@@ -96,12 +81,13 @@ public class DiveLogService {
      */
     @Transactional
     public void updateDiveLog(Long diveLogId, DiveLogRequestDto dto) {
-        Member member = memberService.getByOauthId();
+        Long memberId = memberService.getMemberId();
 
-        DiveLog diveLog = diveLogRepository.findOneByMemberId(member.getId(), diveLogId)
+        DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
             .orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+        List<Profile> buddies = profileService.getProfiles(dto.profiles());
 
-        diveLog.update(dto);
+        diveLog.update(dto, buddies);
     }
 
     /**
@@ -114,14 +100,13 @@ public class DiveLogService {
      * @return Page 형식, 간략화한 diveLogResponse
      */
     public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
-        Member member = memberService.getByOauthId();
+        Long memberId = memberService.getMemberId();
 
-        Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(member.getId(), pageable);
+        Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(memberId, pageable);
         List<DiveLogResponseDto> result = divLogs.stream()
             .map(diveLog -> {
-                List<Long> buddyIds = diveLog.getDiveHistory().getBuddyIds();
-                List<ProfileDefaultResponseDto> buddiesProfiles = profileService.getBuddiesProfiles(
-                    buddyIds);
+                List<ProfileDefaultResponseDto> buddiesProfiles =
+                    profileService.getBuddiesProfiles(diveLog.getProfiles());
                 return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
 
             }).toList();
@@ -132,5 +117,4 @@ public class DiveLogService {
     public void delete(Long diveLogId) {
         diveLogRepository.deleteById(diveLogId);
     }
-
 }

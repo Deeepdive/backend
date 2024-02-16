@@ -1,9 +1,8 @@
 package deepdive.backend.dto.divelog;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import deepdive.backend.divelog.domain.DiveHistory;
 import deepdive.backend.divelog.domain.Purpose;
 import deepdive.backend.dto.profile.ProfileDefaultDto;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -14,9 +13,12 @@ import java.util.List;
  * @param purpose
  * @param buddyProfiles -> 여러 버디들의 defaultProfile, 총 개수
  */
-public record DiveLogResponseDto(Long id,
-                                 @JsonUnwrapped DiveHistory diveHistory,
-                                 Purpose purpose,
-                                 List<ProfileDefaultDto> buddyProfiles) {
+public record DiveLogResponseDto(
+    Long id,
+    LocalDate diveDate,
+    String center,
+    String point,
+    Purpose purpose,
+    List<ProfileDefaultDto> buddyProfiles) {
 
 }

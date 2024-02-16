@@ -18,11 +18,12 @@ import org.springframework.stereotype.Component;
 @Component
 public interface DiveLogMapper {
 
-    DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog);
+    DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog, List<String> buddyNames);
 
     DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog,
         List<ProfileDefaultResponseDto> buddyProfiles);
 
     DiveLogResponsePaginationDto toDiveLogResponsePaginationDto(List<DiveLogResponseDto> result,
         Long totalCount);
+
 }

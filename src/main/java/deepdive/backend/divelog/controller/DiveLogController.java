@@ -7,7 +7,6 @@ import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +44,7 @@ public class DiveLogController {
      * @return 200 OK, 404 NOT_FOUND_USER
      */
     @PatchMapping("/{diveLogId}")
-    public ResponseEntity update(@PathVariable Long diveLogId,
+    public ResponseEntity update(@PathVariable(value = "diveLogId") Long diveLogId,
         @RequestBody @Valid DiveLogRequestDto diveLogRequestDto) {
         diveLogService.updateDiveLog(diveLogId, diveLogRequestDto);
 
@@ -59,10 +58,8 @@ public class DiveLogController {
      * @return 200 OK 다이브 로그의 정보들, 404 diveLogNotFound
      */
     @GetMapping("/{diveLogId}")
-    public ResponseEntity<DiveLogInfoDto> show(@PathVariable Long diveLogId) {
-        DiveLogInfoDto dto = diveLogService.showDiveLog(diveLogId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    public DiveLogInfoDto show(@PathVariable(value = "diveLogId") Long diveLogId) {
+        return diveLogService.showDiveLog(diveLogId);
     }
 
     @DeleteMapping("/{diveLogId}")
