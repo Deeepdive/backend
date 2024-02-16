@@ -7,8 +7,5 @@ import lombok.Getter;
 public class ReIssueDto {
 
     @NotBlank
-    private String oauthId;
-
-    @NotBlank
     private String refreshToken;
 }

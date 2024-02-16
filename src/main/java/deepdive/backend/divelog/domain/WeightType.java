@@ -1,8 +1,8 @@
 package deepdive.backend.divelog.domain;
 
 public enum WeightType {
-    RIGHT,
-    GOOD,
+    LIGHT,
+    NORMAL,
     HEAVY
 
 }

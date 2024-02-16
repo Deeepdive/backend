@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .failureHandler(failureHandler)
             )
             .exceptionHandling(exception -> exception.authenticationEntryPoint(
-                new HttpStatusEntryPoint(HttpStatus.NOT_FOUND)))
+                new HttpStatusEntryPoint(HttpStatus.BAD_REQUEST)))
             .logout(logout -> logout.clearAuthentication(true))
             .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 

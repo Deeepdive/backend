@@ -1,6 +1,9 @@
 package deepdive.backend.dto.profile;
 
-public record ProfileDefaultResponseDto(String nickName,
-                                        String picture) {
+public record ProfileDefaultResponseDto(
+    Long id,
+    String nickName,
+    String picture
+) {
 
 }
