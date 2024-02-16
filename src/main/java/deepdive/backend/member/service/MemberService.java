@@ -3,8 +3,6 @@ package deepdive.backend.member.service;
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.dto.member.MemberRegisterRequestDto;
 import deepdive.backend.exception.ExceptionStatus;
-import deepdive.backend.jwt.service.JwtProvider;
-import deepdive.backend.jwt.service.JwtService;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -18,53 +16,42 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final JwtProvider tokenProvider;
-    private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
-    public Member getByOauthId() {
-        AuthUserInfo authUser = AuthUserInfo.of();
+    public Member getMember() {
+        return getById(getMemberId());
+    }
 
-        return memberRepository.findByOauthId(authUser.getOauthId())
+    public Member getById(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+    }
+
+    public Member getByOauthId(String oauthId) {
+        return memberRepository.findByOauthId(oauthId)
             .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
     }
 
     @Transactional
-    public void registerMember(MemberRegisterRequestDto dto) {
-        AuthUserInfo authUser = AuthUserInfo.of(); // 처음 등록한 멤버의 oauthId를 ContextHolder에서 꺼내옵니다.
-        String oauthId = authUser.getOauthId();
+    public Member save(String email, String provider, String oauthId) {
+        Member member = Member.of(email, provider, oauthId);
 
-        // email이 이미 등록되어 있다면, 에러 반환
-        // 주어진 DTO의 email, oauthId, provider가 동일하다면 -> 회원이 맞다.
-        // db에 올린다
-        validateRegistInformation(authUser, dto);
-
-        Member member = Member.defaultInformation(oauthId, dto.email(), dto.provider(),
-            dto.isAlarm(), dto.isMarketing());
-        memberRepository.save(member);
-
-        String refreshToken = tokenProvider.createRefreshToken(oauthId, member.getEmail());
-        jwtService.saveRefreshToken(oauthId, refreshToken);
-    }
-
-    private void validateRegistInformation(AuthUserInfo authUser, MemberRegisterRequestDto dto) {
-        memberRepository.findByEmail(dto.email())
-            .ifPresent(member -> {
-                throw ExceptionStatus.DUPLICATE_REGISTER.asServiceException();
-            });
-        // TODO : provider, oauthID로 추가 검증?
-        if (!authUser.getEmail().equals(dto.email())) {
-            throw ExceptionStatus.INVALID_REGISTER.asServiceException();
-        }
+        return memberRepository.save(member);
     }
 
     @Transactional
-    public void updateAgreement(Boolean isAlarmAgree, Boolean isMarketingAgree) {
-        Member member = getByOauthId();
-        member.updateAgreement(isAlarmAgree, isMarketingAgree);
+    public void registerMember(MemberRegisterRequestDto dto) {
+        Member member = memberRepository.findByEmail(dto.email())
+            .orElseThrow(ExceptionStatus.INVALID_REGISTER::asServiceException);
+
+        member.updateAgreement(dto.isAlarm(), dto.isMarketing());
+    }
+
+    public Long getMemberId() {
+        return AuthUserInfo.of().getMemberId();
     }
 }

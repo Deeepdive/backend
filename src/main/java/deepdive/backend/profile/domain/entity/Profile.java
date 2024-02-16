@@ -2,7 +2,6 @@ package deepdive.backend.profile.domain.entity;
 
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,7 +9,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,10 +29,8 @@ public class Profile {
     private Boolean isTeacher;
     private String etc;
 
-    @Nullable
     @Enumerated(EnumType.STRING)
     private CertOrganization organization;
-    @Nullable
     @Enumerated(EnumType.STRING)
     private CertType certType;
 
@@ -62,7 +58,7 @@ public class Profile {
     }
 
     public void updateEtcCertProfile(CertOrganization etcOrganization, Boolean isTeacher,
-        @NotBlank String etc) {
+        String etc) {
         this.certType = null;
         this.organization = etcOrganization;
         this.isTeacher = isTeacher;
