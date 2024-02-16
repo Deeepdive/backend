@@ -26,6 +26,6 @@ public enum Pictures {
             .filter(element -> element.number == number)
             .findFirst()
             .map(Pictures::getUrl)
-            .orElseThrow(ExceptionStatus.INVALID_NUMBER_TYPE::asServiceException);
+            .orElseThrow(ExceptionStatus.INVALID_NUMBER_TYPE::asDomainException);
     }
 }
