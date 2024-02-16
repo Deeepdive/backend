@@ -39,13 +39,14 @@ public class ProfileService {
      */
     @Transactional
     public void saveDefaultProfile(ProfileDefaultRequestDto dto) {
+        String url = Pictures.getByNumber(dto.urlNumber());
         if (isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
-        String url = Pictures.getByNumber(dto.urlNumber());
 
+        Member member = memberService.getMember();
         Profile profile = Profile.defaultProfile(dto.nickName(), url);
-        Member member = memberService.getByOauthId();
+
         member.setProfile(profile);
     }
 
@@ -57,7 +58,8 @@ public class ProfileService {
     @Transactional
     public void saveCertProfile(ProfileCertRequestDto dto) {
         CertOrganization organization = CertOrganization.of(dto.certOrganization());
-        Profile profile = getByMember(memberService.getByOauthId());
+        Profile profile = getByMember();
+
         if (organization.equals(CertOrganization.ETC)) {
             if (profilePolicyService.isBlankString(dto.etc())) {
                 throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
@@ -85,8 +87,7 @@ public class ProfileService {
         }
         Profile profile = Profile.defaultProfile(dto.nickName(), dto.picture());
         // etc인지 가르는 로직
-        Member member = memberService.getByOauthId();
-        member.setProfile(profile);
+        profileRepository.save(profile);
     }
 
     public boolean isExistingNickName(String nickName) {
@@ -104,18 +105,18 @@ public class ProfileService {
      */
     @Transactional
     public void updateDefaultProfile(ProfileDefaultRequestDto dto) {
+        String url = Pictures.getByNumber(dto.urlNumber());
+        Profile profile = getByMember();
 
-        Profile profile = getByMember(memberService.getByOauthId());
         if (isNewNickName(profile.getNickName(), dto.nickName())
             && isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
-        String url = Pictures.getByNumber(dto.urlNumber());
         profile.updateDefaultProfile(dto.nickName(), url);
     }
 
-    public Profile getByMember(Member member) {
-        return Optional.ofNullable(member.getProfile())
+    public Profile getByMember() {
+        return Optional.ofNullable(memberService.getMember().getProfile())
             .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
     }
 
@@ -124,34 +125,52 @@ public class ProfileService {
     }
 
     public ProfileDefaultResponseDto showMemberProfile() {
-        Profile profile = getByMember(memberService.getByOauthId());
+        Profile profile = getByMember();
 
-        return profileMapper.toProfileDefaultResponseDto(profile.getNickName(),
+        return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
             profile.getPicture());
     }
 
     public ProfileCertResponseDto showCertProfile() {
-        Profile profile = getByMember(memberService.getByOauthId());
+        Profile profile = getByMember();
 
-        return profileMapper.toProfileCertResponseDto(profile.getOrganization(),
+        if (profile.getIsTeacher() == null) {
+            throw ExceptionStatus.NOT_FOUND_PROFILE.asServiceException();
+        }
+
+        return profileMapper.toProfileCertResponseDto(
+            profile.getOrganization(),
             profile.getCertType(),
             profile.getIsTeacher(),
             profile.getEtc());
     }
 
-    public List<ProfileDefaultResponseDto> getBuddiesProfiles(List<Long> buddyIds) {
+    public List<Profile> getProfiles(List<Long> ids) {
+        return profileRepository.findAllById(ids);
+    }
 
-        return profileRepository.findAllById(buddyIds)
-            .stream()
-            .map(profile -> profileMapper.toProfileDefaultResponseDto(profile.getNickName(),
-                profile.getPicture()))
+    public List<ProfileDefaultResponseDto> getBuddiesProfiles(List<Profile> profiles) {
+        return profiles.stream()
+            .map(profile ->
+                profileMapper.toProfileDefaultResponseDto(
+                    profile.getId(),
+                    profile.getNickName(),
+                    profile.getPicture())
+            )
             .toList();
     }
 
     public Long getIdByNickName(String nickName) {
         Profile profile = profileRepository.findByNickName(nickName)
             .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+        if (profile.equals(getByMember())) {
+            throw ExceptionStatus.INVALID_BUDDY_PROFILE.asServiceException();
+        }
 
         return profile.getId();
+    }
+
+    public List<String> getProfileNames(List<Profile> profiles) {
+        return profileRepository.findNickNames(profiles);
     }
 }
