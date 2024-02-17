@@ -18,6 +18,6 @@ public class OauthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         AuthenticationException exception) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.getWriter().write("login Fail, check your server log");
-        log.info("로그인 실패 = {}", exception.getMessage());
+        log.error("로그인 실패 = {}", exception.getMessage());
     }
 }
