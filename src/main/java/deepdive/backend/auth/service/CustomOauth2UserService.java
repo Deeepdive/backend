@@ -23,6 +23,7 @@ public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequ
     public UserProfile loadUser(OAuth2UserRequest userRequest)
         throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService = new DefaultOAuth2UserService();
+        log.info("loadUser 실행합니다.");
         OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
