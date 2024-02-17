@@ -49,6 +49,7 @@ public class JwtService {
     public String createRefreshToken(String oauthId) {
         Claims claims = Jwts.claims().setSubject("UserToken");
         claims.put("roles", "User");
+        
         claims.put("oauth", oauthId);
         Date now = new Date();
 
