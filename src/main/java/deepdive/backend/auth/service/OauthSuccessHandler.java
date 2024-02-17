@@ -34,6 +34,7 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String email = userProfile.getAttributeByKey("email");
         String oauthId = userProfile.getAttributeByKey("id");
         String provider = userProfile.getAttributeByKey("provider");
+        log.info("{}로 로그인을 시작합니다, email = {}", provider, email);
 
         Member member = memberService.findByEmail(email)
             .orElseGet(() -> memberService.save(email, provider, oauthId));
