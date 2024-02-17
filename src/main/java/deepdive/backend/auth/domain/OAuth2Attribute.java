@@ -5,9 +5,11 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@ToString
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class OAuth2Attribute {

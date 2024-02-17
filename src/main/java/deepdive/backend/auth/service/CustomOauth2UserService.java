@@ -32,6 +32,10 @@ public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuth2Attribute oAuth2Attribute =
             OAuth2Attribute.of(provider, userNameAttributeName, attributes);
+
+        log.info("provider = {}", provider);
+        log.info("oauth2AttributeInfo = {}", oAuth2Attribute);
+
         Map<String, Object> memberAttribute = oAuth2Attribute.convertToMap();
 
         // TODO : 추후 admin 계정 추가 시 ROLE 부분 리팩
