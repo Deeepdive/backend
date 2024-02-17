@@ -37,8 +37,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/token").permitAll()
                 .requestMatchers("/login/**").permitAll() // OAuth2.0 EndPoint 요청은 인증을 하지 않는다
+                .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
-                .requestMatchers("/status").permitAll() // 로드밸런서 상태 확인용
                 .requestMatchers(AuthenticateMatchers.swaggerArray).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
