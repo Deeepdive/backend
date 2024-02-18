@@ -17,7 +17,6 @@ import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,8 @@ public class ProfileService {
 
     private final ProfileRepository profileRepository;
     private final ProfilePolicyService profilePolicyService;
+    private final ProfileQueryService profileQueryService;
+    private final ProfileCommandService profileCommandService;
     private final ProfileMapper profileMapper;
 
     /**
@@ -83,17 +84,30 @@ public class ProfileService {
      * @param dto
      */
     @Transactional
-    public void saveProfile(ProfileRequestDto dto) {
+    public void updateProfile(ProfileRequestDto dto) {
+        String url = Pictures.getByNumber(dto.pictureNumber());
+        CertOrganization organization = CertOrganization.of(dto.certOrganization());
+        Profile profile = getByMember();
+
+        if (organization.equals(CertOrganization.ETC)) {
+            if (profilePolicyService.isBlankString(dto.etc())) {
+                throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
+            }
+            profileCommandService.updateEtcProfile(profile, dto.nickName(), url,
+                organization, dto.isTeacher(), dto.etc());
+            return;
+        }
+        CertType certType = CertType.of(dto.certType());
+        if (!profilePolicyService.isValidMatchCertProfile(organization, certType)) {
+            throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
+        }
         if (isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
-        CertOrganization organization = CertOrganization.of(dto.certOrganization());
 
-        Profile profile = Profile.defaultProfile(dto.nickName(), dto.picture());
-
-        Member member = memberQueryService.getMember();
-
-
+        profileCommandService.updateCommonProfile(profile,
+            dto.nickName(), url,
+            organization, certType, dto.isTeacher());
     }
 
     public boolean isExistingNickName(String nickName) {
@@ -122,8 +136,7 @@ public class ProfileService {
     }
 
     public Profile getByMember() {
-        return Optional.ofNullable(memberQueryService.getMember().getProfile())
-            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+        return memberQueryService.getMember().getProfile();
     }
 
     private boolean isNewNickName(String oldNickName, String newNickName) {
@@ -151,10 +164,6 @@ public class ProfileService {
             profile.getEtc());
     }
 
-    public List<Profile> getProfiles(List<Long> ids) {
-        return profileRepository.findAllById(ids);
-    }
-
     public List<ProfileDefaultResponseDto> getBuddiesProfiles(List<Profile> profiles) {
         return profiles.stream()
             .map(profile ->
@@ -167,17 +176,12 @@ public class ProfileService {
     }
 
     public Long getIdByNickName(String nickName) {
-        Profile profile = profileRepository.findByNickName(nickName)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+        Profile profile = profileQueryService.getByNickName(nickName);
         if (profile.equals(getByMember())) {
             throw ExceptionStatus.INVALID_BUDDY_PROFILE.asServiceException();
         }
 
         return profile.getId();
-    }
-
-    public List<String> getProfileNames(List<Profile> profiles) {
-        return profileRepository.findNickNames(profiles);
     }
 
     public ProfileResponseDto showProfile() {

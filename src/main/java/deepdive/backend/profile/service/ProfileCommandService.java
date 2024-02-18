@@ -1,5 +1,7 @@
 package deepdive.backend.profile.service;
 
+import deepdive.backend.profile.domain.CertOrganization;
+import deepdive.backend.profile.domain.CertType;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import java.util.Random;
@@ -44,5 +46,16 @@ public class ProfileCommandService {
 
         return profileRepository.findByNickName(nickName)
             .isPresent();
+    }
+
+    public void updateEtcProfile(Profile profile, String nickName, String url,
+        CertOrganization organization, Boolean isTeacher, String etc) {
+
+        profile.saveCertProfile(nickName, url, organization, isTeacher, etc);
+    }
+
+    public void updateCommonProfile(Profile profile, String nickName, String url,
+        CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
+        profile.saveCommonProfile(nickName, url, certOrganization, certType, isTeacher);
     }
 }
