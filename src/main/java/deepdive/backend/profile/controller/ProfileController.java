@@ -4,6 +4,7 @@ import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
+import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,15 +61,20 @@ public class ProfileController {
         profileService.updateDefaultProfile(dto);
     }
 
+    @GetMapping("/")
+    public ProfileResponseDto getMemberProfile() {
+        return profileService.showProfile();
+    }
+
     /**
      * 유저의 사진, 닉네임이 담긴 기본 프로필 관련 정보를 반환합니다.
      *
      * @return 200 OK
      */
-    @GetMapping("")
-    public ProfileDefaultResponseDto getMemberProfile() {
+    @GetMapping("/default")
+    public ProfileDefaultResponseDto getDefaultProfile() {
 
-        return profileService.showMemberProfile();
+        return profileService.showDefaultProfile();
     }
 
     /**
