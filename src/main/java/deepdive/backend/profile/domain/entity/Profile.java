@@ -34,14 +34,17 @@ public class Profile {
     @Enumerated(EnumType.STRING)
     private CertType certType;
 
-    protected Profile(String nickName, String picture) {
+    protected Profile(String nickName) {
         this.nickName = nickName;
-        this.picture = picture;
     }
 
     public static Profile defaultProfile(String nickName, String picture) {
 
-        return new Profile(nickName, picture);
+        return new Profile(nickName);
+    }
+
+    public static Profile of(String nickName) {
+        return new Profile(nickName);
     }
 
     public void updateDefaultProfile(String nickName, String picture) {
