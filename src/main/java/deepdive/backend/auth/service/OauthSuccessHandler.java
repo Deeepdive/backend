@@ -6,7 +6,8 @@ import deepdive.backend.dto.token.TokenInfo;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.jwt.service.JwtService;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.member.service.MemberService;
+import deepdive.backend.member.service.MemberCommandService;
+import deepdive.backend.member.service.MemberQueryService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +24,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
+    private final MemberCommandService memberCommandService;
     private final JwtService jwtService;
 
     @Override
@@ -36,8 +38,8 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String provider = userProfile.getAttributeByKey("provider");
         log.info("{}로 로그인을 시작합니다, email = {}", provider, email);
 
-        Member member = memberService.findByEmail(email)
-            .orElseGet(() -> memberService.save(email, provider, oauthId));
+        Member member = memberQueryService.findByEmail(email)
+            .orElseGet(() -> memberCommandService.save(email, provider, oauthId));
 
         // 이메일은 같지만, provider가 다른 경우
         validateDuplicateEmailRegister(provider, member);

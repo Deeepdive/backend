@@ -1,12 +1,10 @@
 package deepdive.backend.member.service;
 
-import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.dto.member.MemberRegisterRequestDto;
-import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.member.repository.MemberRepository;
+import deepdive.backend.profile.domain.entity.Profile;
+import deepdive.backend.profile.service.ProfileCommandService;
 import jakarta.transaction.Transactional;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,42 +14,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+    private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
 
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
-
-    public Member getMember() {
-        return getById(getMemberId());
-    }
-
-    public Member getById(Long memberId) {
-        return memberRepository.findById(memberId)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
-    }
-
-    public Member getByOauthId(String oauthId) {
-        return memberRepository.findByOauthId(oauthId)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
-    }
-
-    @Transactional
-    public Member save(String email, String provider, String oauthId) {
-        Member member = Member.of(email, provider, oauthId);
-
-        return memberRepository.save(member);
-    }
+    private final ProfileCommandService profileCommandService;
 
     @Transactional
     public void registerMember(MemberRegisterRequestDto dto) {
-        Member member = memberRepository.findByEmail(dto.email())
-            .orElseThrow(ExceptionStatus.INVALID_REGISTER::asServiceException);
+        Member member = memberQueryService.getByEmail(dto.email());
+        Profile profile = profileCommandService.createDefaultProfile();
 
-        member.updateAgreement(dto.isAlarm(), dto.isMarketing());
+        memberCommandService.updateMemberInfo(member, dto.isAlarm(), dto.isMarketing(), dto.os());
+        memberCommandService.updateProfile(member, profile);
     }
 
-    public Long getMemberId() {
-        return AuthUserInfo.of().getMemberId();
+    @Transactional
+    public void delete() {
+        Member member = memberQueryService.getMember();
+        memberCommandService.delete(member);
     }
+
 }
