@@ -5,6 +5,7 @@ import deepdive.backend.dto.profile.ProfileCertResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.dto.profile.ProfileRequestDto;
+import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
@@ -124,7 +125,7 @@ public class ProfileService {
         return !newNickName.equals(oldNickName);
     }
 
-    public ProfileDefaultResponseDto showMemberProfile() {
+    public ProfileDefaultResponseDto showDefaultProfile() {
         Profile profile = getByMember();
 
         return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
@@ -172,5 +173,11 @@ public class ProfileService {
 
     public List<String> getProfileNames(List<Profile> profiles) {
         return profileRepository.findNickNames(profiles);
+    }
+
+    public ProfileResponseDto showProfile() {
+        Profile profile = getByMember();
+
+        return profileMapper.toProfileResponseDto(profile);
     }
 }
