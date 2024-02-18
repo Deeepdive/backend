@@ -1,5 +1,6 @@
 package deepdive.backend.member.service;
 
+import deepdive.backend.member.domain.Os;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import deepdive.backend.profile.domain.entity.Profile;
@@ -13,7 +14,7 @@ public class MemberCommandService {
 
     private final MemberRepository memberRepository;
 
-    public void updateMemberInfo(Member member, boolean isAlarm, boolean isMarketing, String os) {
+    public void updateMemberInfo(Member member, boolean isAlarm, boolean isMarketing, Os os) {
         member.updateAgreement(isAlarm, isMarketing, os);
     }
 

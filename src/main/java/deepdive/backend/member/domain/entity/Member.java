@@ -59,10 +59,10 @@ public class Member {
         return member;
     }
 
-    public void updateAgreement(Boolean isAlarmAgree, Boolean isMarketingAgree, String os) {
+    public void updateAgreement(Boolean isAlarmAgree, Boolean isMarketingAgree, Os os) {
         this.isAlarmAgree = isAlarmAgree;
         this.isMarketingAgree = isMarketingAgree;
-        this.os = Os.valueOf(os);
+        this.os = os;
     }
 
     public void addDiveLog(DiveLog diveLog) {
