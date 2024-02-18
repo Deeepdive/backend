@@ -9,7 +9,7 @@ import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.member.service.MemberService;
+import deepdive.backend.member.service.MemberQueryService;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
 import deepdive.backend.profile.domain.Pictures;
@@ -27,7 +27,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final MemberService memberService;
+
+    private final MemberQueryService memberQueryService;
 
     private final ProfileRepository profileRepository;
     private final ProfilePolicyService profilePolicyService;
@@ -45,7 +46,7 @@ public class ProfileService {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
 
-        Member member = memberService.getMember();
+        Member member = memberQueryService.getMember();
         Profile profile = Profile.defaultProfile(dto.nickName(), url);
 
         member.setProfile(profile);
@@ -86,9 +87,13 @@ public class ProfileService {
         if (isExistingNickName(dto.nickName())) {
             throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
         }
+        CertOrganization organization = CertOrganization.of(dto.certOrganization());
+
         Profile profile = Profile.defaultProfile(dto.nickName(), dto.picture());
-        // etc인지 가르는 로직
-        profileRepository.save(profile);
+
+        Member member = memberQueryService.getMember();
+
+
     }
 
     public boolean isExistingNickName(String nickName) {
@@ -117,7 +122,7 @@ public class ProfileService {
     }
 
     public Profile getByMember() {
-        return Optional.ofNullable(memberService.getMember().getProfile())
+        return Optional.ofNullable(memberQueryService.getMember().getProfile())
             .orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
     }
 
@@ -180,4 +185,5 @@ public class ProfileService {
 
         return profileMapper.toProfileResponseDto(profile);
     }
+
 }

@@ -1,5 +1,6 @@
 package deepdive.backend.divelog.service;
 
+import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
@@ -10,10 +11,11 @@ import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.member.service.MemberService;
+import deepdive.backend.member.service.MemberQueryService;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +28,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DiveLogService {
 
+    private static final Integer AVAILABLE_DATE = 2;
+
     private final DiveLogRepository diveLogRepository;
-    private final MemberService memberService;
     private final DiveLogMapper diveLogMapper;
 
+    private final MemberQueryService memberQueryService;
     private final ProfileService profileService;
 
 
@@ -45,14 +49,23 @@ public class DiveLogService {
      */
     @Transactional
     public Long save(DiveLogRequestDto dto) {
+        validateDiveDate(dto.diveDate());
         List<Profile> buddies = profileService.getProfiles(dto.profiles());
         DiveLog diveLog = DiveLog.of(dto, buddies);
-        Member member = memberService.getMember();
+        Member member = memberQueryService.getMember();
 
         diveLog.setMember(member);
         member.addDiveLog(diveLog);
 
         return diveLogRepository.save(diveLog).getId();
+    }
+
+    private void validateDiveDate(LocalDate localDate) {
+        LocalDate limitDate = LocalDate.now().plusDays(AVAILABLE_DATE);
+
+        if (localDate.isAfter(limitDate)) {
+            throw ExceptionStatus.INVALID_DIVE_DATE.asServiceException();
+        }
     }
 
     /**
@@ -64,7 +77,7 @@ public class DiveLogService {
      * @return diveLogInfo
      */
     public DiveLogInfoDto showDiveLog(Long diveLogId) {
-        Long memberId = memberService.getMemberId();
+        Long memberId = AuthUserInfo.of().getMemberId();
 
         DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
             .orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
@@ -81,7 +94,7 @@ public class DiveLogService {
      */
     @Transactional
     public void updateDiveLog(Long diveLogId, DiveLogRequestDto dto) {
-        Long memberId = memberService.getMemberId();
+        Long memberId = AuthUserInfo.of().getMemberId();
 
         DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
             .orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
@@ -100,7 +113,7 @@ public class DiveLogService {
      * @return Page 형식, 간략화한 diveLogResponse
      */
     public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
-        Long memberId = memberService.getMemberId();
+        Long memberId = AuthUserInfo.of().getMemberId();
 
         Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(memberId, pageable);
         List<DiveLogResponseDto> result = divLogs.stream()
