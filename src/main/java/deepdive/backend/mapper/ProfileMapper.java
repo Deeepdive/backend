@@ -4,8 +4,10 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
 
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
+import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
+import deepdive.backend.profile.domain.entity.Profile;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -20,4 +22,6 @@ public interface ProfileMapper {
 
     ProfileCertResponseDto toProfileCertResponseDto(CertOrganization certOrganization,
         CertType certType, Boolean isTeacher, String etc);
+
+    ProfileResponseDto toProfileResponseDto(Profile profile);
 }

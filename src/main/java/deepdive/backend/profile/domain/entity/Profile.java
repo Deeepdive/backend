@@ -34,14 +34,17 @@ public class Profile {
     @Enumerated(EnumType.STRING)
     private CertType certType;
 
-    protected Profile(String nickName, String picture) {
+    protected Profile(String nickName) {
         this.nickName = nickName;
-        this.picture = picture;
     }
 
     public static Profile defaultProfile(String nickName, String picture) {
 
-        return new Profile(nickName, picture);
+        return new Profile(nickName);
+    }
+
+    public static Profile of(String nickName) {
+        return new Profile(nickName);
     }
 
     public void updateDefaultProfile(String nickName, String picture) {
@@ -63,5 +66,18 @@ public class Profile {
         this.organization = etcOrganization;
         this.isTeacher = isTeacher;
         this.etc = etc;
+    }
+
+    public void saveCertProfile(String nickName, String url,
+        CertOrganization organization, Boolean isTeacher, String etc) {
+        this.nickName = nickName;
+        this.picture = url;
+        updateEtcCertProfile(organization, isTeacher, etc);
+    }
+
+    public void saveCommonProfile(String nickName, String picture,
+        CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
+        updateDefaultProfile(nickName, picture);
+        updateCertProfile(certOrganization, certType, isTeacher);
     }
 }
