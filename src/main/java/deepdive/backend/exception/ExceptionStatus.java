@@ -27,6 +27,7 @@ public enum ExceptionStatus {
     INVALID_NUMBER_TYPE(HttpStatus.BAD_REQUEST, "번호와 일치하는 url이 존재하지 않습니다."),
     INVALID_DIVE_DATE(HttpStatus.BAD_REQUEST, "현재 날짜(한국 기준)보다 이틀 이후의 date는 입력할 수 없습니다."),
     NOT_FOUND_PROFILE(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다."),
+    INVALID_NICKNAME(HttpStatus.NOT_FOUND, "닉네임은 영문, 숫자, 길이는 20자 이하여야합니다."),
     INVALID_OS(HttpStatus.NOT_FOUND, "IOS, ANDROID 형식이 올바르지 않습니다."),
     INVALID_BUDDY_PROFILE(HttpStatus.BAD_REQUEST, "스스로 buddy로 추가할 수 없습니다"),
     INVALID_ENUM_TYPE(HttpStatus.BAD_REQUEST, "Enum 타입이 일치하지 않습니다.");

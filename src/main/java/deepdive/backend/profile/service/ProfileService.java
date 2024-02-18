@@ -17,6 +17,7 @@ import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,9 @@ public class ProfileService {
     public void updateProfile(ProfileRequestDto dto) {
         String url = Pictures.getByNumber(dto.pictureNumber());
         CertOrganization organization = CertOrganization.of(dto.certOrganization());
+        if (!validateNickName(dto.nickName())) {
+            throw ExceptionStatus.INVALID_NICKNAME.asServiceException();
+        }
         Profile profile = getByMember();
 
         if (organization.equals(CertOrganization.ETC)) {
@@ -108,6 +112,16 @@ public class ProfileService {
         profileCommandService.updateCommonProfile(profile,
             dto.nickName(), url,
             organization, certType, dto.isTeacher());
+    }
+
+    private boolean validateNickName(String nickName) {
+        if (nickName.length() > 20) {
+            throw ExceptionStatus.INVALID_NICKNAME.asServiceException();
+        }
+        String regex = "^[a-z0-9]+$";
+        Pattern pattern = Pattern.compile(regex);
+
+        return pattern.matcher(nickName).matches();
     }
 
     public boolean isExistingNickName(String nickName) {
