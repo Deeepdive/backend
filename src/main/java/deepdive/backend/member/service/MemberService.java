@@ -1,6 +1,8 @@
 package deepdive.backend.member.service;
 
+import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.exception.ExceptionStatus;
+import deepdive.backend.member.domain.Provider;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.transaction.Transactional;
@@ -23,11 +25,17 @@ public class MemberService {
     @Transactional
     public Member registerMember(String email, String provider, String oauthId,
         Boolean isMarketing) {
+        String oauthIdByToken = AuthUserInfo.of().getOauthId();
+        if (!oauthIdByToken.equals(oauthId)) {
+            throw ExceptionStatus.INVALID_REGISTER_TOKEN.asServiceException();
+        }
+
         Optional<Member> duplicateMember = memberQueryService.findByOauthId(oauthId);
         if (duplicateMember.isPresent()) {
             throw ExceptionStatus.DUPLICATE_REGISTER.asServiceException();
         }
-        
+
+        Provider.of(provider);
         Profile profile = new Profile();
         Member member = Member.of(email, provider, oauthId, isMarketing);
         member.setProfile(profile);

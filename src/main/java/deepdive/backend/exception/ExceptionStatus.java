@@ -13,7 +13,7 @@ public enum ExceptionStatus {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
     NOT_FOUND_USER_BY_EMAIL(HttpStatus.NOT_FOUND, "이메일과 일치하는 유저가 존재하지 않습니다."),
     NOT_FOUND_LOG(HttpStatus.NOT_FOUND, "존재하지 않는 로그입니다."),
-    DUPLICATE_REGISTER(HttpStatus.BAD_REQUEST, "가입한 내역이 존재합니다. 다른 email로 시도해주세요."),
+    DUPLICATE_REGISTER(HttpStatus.BAD_REQUEST, "가입한 내역이 존재합니다. 다른 sns로 시도해주세요."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "해당 닉네임은 이미 사용중입니다."),
     DUPLICATE_GOOGLE(HttpStatus.CONFLICT, "google sns로 가입한 이력이 있습니다."),
     DUPLICATE_NAVER(HttpStatus.CONFLICT, "naver sns로 가입한 이력이 있습니다."),
@@ -31,6 +31,7 @@ public enum ExceptionStatus {
     NOT_FOUND_PROFILE(HttpStatus.NOT_FOUND, "프로필이 존재하지 않습니다."),
     INVALID_NICKNAME(HttpStatus.NOT_FOUND, "닉네임은 영문, 숫자, 길이는 20자 이하여야합니다."),
     INVALID_OS(HttpStatus.NOT_FOUND, "IOS, ANDROID 형식이 올바르지 않습니다."),
+    INVALID_REGISTER_TOKEN(HttpStatus.UNAUTHORIZED, "login 시 요청한 oauthId가 일치하지 않습니다."),
     INVALID_BUDDY_PROFILE(HttpStatus.BAD_REQUEST, "스스로 buddy로 추가할 수 없습니다"),
     INVALID_ENUM_TYPE(HttpStatus.BAD_REQUEST, "Enum 타입이 일치하지 않습니다.");
 
