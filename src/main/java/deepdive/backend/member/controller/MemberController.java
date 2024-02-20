@@ -6,7 +6,6 @@ import deepdive.backend.dto.token.TokenInfo;
 import deepdive.backend.jwt.service.JwtService;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
-import deepdive.backend.utils.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,15 +52,15 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public Response<TokenInfo> commonLogin(@RequestBody @Valid MemberLoginRequestDto dto) {
+    public ResponseEntity<TokenInfo> commonLogin(@RequestBody @Valid MemberLoginRequestDto dto) {
         if (!memberService.isRegisteredMember(dto.oauthId())) {
             String registerToken = jwtService.createRegisterToken(dto.oauthId());
             log.info("신규 유저 로그인");
-            return Response.of(200, new TokenInfo(registerToken, ""));
+            return ResponseEntity.ok().body(new TokenInfo(registerToken, ""));
         }
         log.info("기존 유저의 refreshToken 발급");
         Long memberId = memberService.getValidMemberByLoginInfo(dto.oauthId(), dto.email());
-        return Response.of(201, jwtService.generateToken(memberId, dto.oauthId()));
+        return ResponseEntity.status(201).body(jwtService.generateToken(memberId, dto.oauthId()));
     }
 
     @DeleteMapping("")
