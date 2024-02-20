@@ -1,30 +1,33 @@
 package deepdive.backend.member.controller;
 
+import deepdive.backend.dto.member.MemberLoginRequestDto;
 import deepdive.backend.dto.member.MemberRegisterRequestDto;
+import deepdive.backend.dto.token.TokenInfo;
+import deepdive.backend.jwt.service.JwtService;
+import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberService;
 import deepdive.backend.utils.response.Response;
-import deepdive.backend.utils.response.ResponseMsg;
-import deepdive.backend.utils.response.StatusCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/member")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtService jwtService;
 
     /**
      * 마케팅 동의를 마친 회원을 등록합니다.
@@ -39,13 +42,25 @@ public class MemberController {
         @ApiResponse(responseCode = "400", description = "가입한 내역이 존재합니다. 다른 email로 시도해주세요.")
     })
     @PostMapping("/register")
-    public ResponseEntity<Response> registerUser(
+    public TokenInfo registerUser(
         @Parameter(description = "회원가입 진행 시 필요한 기본 정보")
         @RequestBody @Valid MemberRegisterRequestDto dto) {
-        memberService.registerMember(dto);
 
-        return new ResponseEntity<>(Response.of(StatusCode.OK, ResponseMsg.UNREGISTERED),
-            HttpStatus.OK);
+        Member member = memberService.registerMember(dto.email(), dto.provider(), dto.oauthId(),
+            dto.isMarketing());
+        return jwtService.generateToken(member.getId(), member.getOauthId());
+    }
+
+    @PostMapping("/login")
+    public Response<TokenInfo> commonLogin(@RequestBody @Valid MemberLoginRequestDto dto) {
+        if (!memberService.isRegisteredMember(dto.oauthId())) {
+            String registerToken = jwtService.createRegisterToken(dto.oauthId());
+            log.info("신규 유저 로그인");
+            return Response.of(200, new TokenInfo(registerToken, ""));
+        }
+        log.info("기존 유저의 refreshToken 발급");
+        Long memberId = memberService.getValidMemberByLoginInfo(dto.oauthId(), dto.email());
+        return Response.of(201, jwtService.generateToken(memberId, dto.oauthId()));
     }
 
     @DeleteMapping("")

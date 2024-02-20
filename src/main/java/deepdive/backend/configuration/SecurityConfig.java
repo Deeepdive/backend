@@ -8,11 +8,13 @@ import deepdive.backend.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -38,19 +40,19 @@ public class SecurityConfig {
                 .requestMatchers("/token").permitAll()
                 .requestMatchers("/login/**").permitAll() // OAuth2.0 EndPoint 요청은 인증을 하지 않는다
                 .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/auth/register").permitAll()
+                .requestMatchers("/v1/member/login").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers(AuthenticateMatchers.swaggerArray).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
-            .oauth2Login(oauth -> oauth
-                .userInfoEndpoint(user -> user.userService(customOauth2UserService))
-                .successHandler(successHandler)
-                .failureHandler(failureHandler)
-            )
-//            .exceptionHandling(exception -> exception.authenticationEntryPoint(
-//                new HttpStatusEntryPoint(HttpStatus.BAD_REQUEST)))
+//            .oauth2Login(oauth -> oauth
+//                .userInfoEndpoint(user -> user.userService(customOauth2UserService))
+//                .successHandler(successHandler)
+//                .failureHandler(failureHandler)
+//            )
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(
+                new HttpStatusEntryPoint(HttpStatus.BAD_REQUEST)))
             .logout(logout -> logout.clearAuthentication(true))
             .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 

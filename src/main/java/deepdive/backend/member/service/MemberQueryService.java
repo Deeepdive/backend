@@ -36,4 +36,13 @@ public class MemberQueryService {
         return memberRepository.findByEmail(email)
             .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
     }
+
+    public Member getByOauthId(String oauthId) {
+        return memberRepository.findByOauthId(oauthId)
+            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+    }
+
+    public Optional<Member> findByOauthId(String oauthId) {
+        return memberRepository.findByOauthId(oauthId);
+    }
 }

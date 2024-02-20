@@ -39,7 +39,7 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         log.info("{}로 로그인을 시작합니다, email = {}", provider, email);
 
         Member member = memberQueryService.findByEmail(email)
-            .orElseGet(() -> memberCommandService.save(email, provider, oauthId));
+            .orElseGet(() -> memberCommandService.saveByOauthInfo(email, provider, oauthId));
 
         // 이메일은 같지만, provider가 다른 경우
         validateDuplicateEmailRegister(provider, member);

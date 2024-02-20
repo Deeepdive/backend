@@ -43,12 +43,11 @@ public class JwtService {
     private String issuer;
 
     public TokenInfo generateToken(Long memberId, String oauthId) {
-        return new TokenInfo(createAccessToken(memberId), createRefreshToken(oauthId));
+        return new TokenInfo(createAccessToken(memberId, oauthId), createRefreshToken(oauthId));
     }
 
     public String createRefreshToken(String oauthId) {
-        Claims claims = Jwts.claims().setSubject("UserToken");
-        claims.put("roles", "User");
+        Claims claims = generateClaimFormat();
 
         claims.put("oauth", oauthId);
         Date now = new Date();
@@ -60,19 +59,37 @@ public class JwtService {
             .compact();
     }
 
-    public String createAccessToken(Long memberId) {
-        Claims claims = Jwts.claims().setSubject("UserToken");
-        // TODO : role 분리 생각..
-        claims.put("roles", "User");
+    public String createAccessToken(Long memberId, String oauthId) {
+        Claims claims = generateClaimFormat();
         claims.put("memberId", memberId);
+        claims.put("oauthId", oauthId);
         Date now = new Date();
 
         return Jwts.builder()
-            .setSubject("UserToken")
             .setClaims(claims)
             .setIssuer(issuer)
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + 600 * accessTokenExpiration))
+            .signWith(generateSecretKey(secret_code), SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    private Claims generateClaimFormat() {
+        Claims claims = Jwts.claims().setSubject("UserToken");
+        claims.put("roles", "User");
+        return claims;
+    }
+
+    public String createRegisterToken(String oauthId) {
+        Claims claims = generateClaimFormat();
+        claims.put("oauthId", oauthId);
+        Date now = new Date();
+
+        return Jwts.builder()
+            .setClaims(claims)
+            .setIssuer(issuer)
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime() + 60 * 1000 * 60)) // 60 * 1000 -> 1분으로 변환
             .signWith(generateSecretKey(secret_code), SignatureAlgorithm.HS256)
             .compact();
     }
@@ -90,11 +107,14 @@ public class JwtService {
             .toList();
 
         Long memberId = claims.get("memberId", Long.class);
+        String oauthId = claims.get("oauthId", String.class);
 
         AuthUserInfo authUserInfo = AuthUserInfo.builder()
             .memberId(memberId)
+            .oauthId(oauthId)
             .build();
 
+        log.info("authUerInfo 생성");
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);
     }
 
@@ -103,9 +123,9 @@ public class JwtService {
         // refresh encrypt 후에 괜찮은 애라면 재발급 ㄱㄱ
         Claims claims = parseToken(reIssueDto.getRefreshToken());
         String oauthId = claims.get("oauthId", String.class);
-        Member member = memberQueryService.getMember();
+        Member member = memberQueryService.getByOauthId(oauthId);
 
-        return createAccessToken(member.getId());
+        return createAccessToken(member.getId(), member.getOauthId());
     }
 
     private Claims parseToken(String token) {
