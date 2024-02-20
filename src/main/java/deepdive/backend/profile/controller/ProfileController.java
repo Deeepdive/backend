@@ -95,7 +95,8 @@ public class ProfileController {
      * @return profileId
      */
     @GetMapping("/check-nickname")
-    public Long isExistBuddyProfile(@RequestParam(value = "nickName") String nickName) {
+    public ProfileDefaultResponseDto isExistBuddyProfile(
+        @RequestParam(value = "nickName") String nickName) {
         return profileService.getIdByNickName(nickName);
     }
 }

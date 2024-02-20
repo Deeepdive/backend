@@ -189,13 +189,14 @@ public class ProfileService {
             .toList();
     }
 
-    public Long getIdByNickName(String nickName) {
+    public ProfileDefaultResponseDto getIdByNickName(String nickName) {
         Profile profile = profileQueryService.getByNickName(nickName);
         if (profile.equals(getByMember())) {
             throw ExceptionStatus.INVALID_BUDDY_PROFILE.asServiceException();
         }
 
-        return profile.getId();
+        return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
+            profile.getPicture());
     }
 
     public ProfileResponseDto showProfile() {

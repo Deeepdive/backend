@@ -48,6 +48,7 @@ public class MemberController {
 
         Member member = memberService.registerMember(dto.email(), dto.provider(), dto.oauthId(),
             dto.isMarketing());
+        log.info("신규 유저 회원가입 완료");
         return jwtService.generateToken(member.getId(), member.getOauthId());
     }
 
