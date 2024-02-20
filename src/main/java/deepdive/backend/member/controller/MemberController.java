@@ -56,11 +56,11 @@ public class MemberController {
         if (!memberService.isRegisteredMember(dto.oauthId())) {
             String registerToken = jwtService.createRegisterToken(dto.oauthId());
             log.info("신규 유저 로그인");
-            return ResponseEntity.ok().body(new TokenInfo(registerToken, ""));
+            return ResponseEntity.status(403).body(new TokenInfo(registerToken, ""));
         }
         log.info("기존 유저의 refreshToken 발급");
         Long memberId = memberService.getValidMemberByLoginInfo(dto.oauthId(), dto.email());
-        return ResponseEntity.status(201).body(jwtService.generateToken(memberId, dto.oauthId()));
+        return ResponseEntity.status(200).body(jwtService.generateToken(memberId, dto.oauthId()));
     }
 
     @DeleteMapping("")
