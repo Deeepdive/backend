@@ -61,7 +61,7 @@ public class ProfileController {
         profileService.updateDefaultProfile(dto);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ProfileResponseDto getMemberProfile() {
         return profileService.showProfile();
     }
