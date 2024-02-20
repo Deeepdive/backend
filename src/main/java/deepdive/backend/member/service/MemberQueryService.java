@@ -45,4 +45,6 @@ public class MemberQueryService {
     public Optional<Member> findByOauthId(String oauthId) {
         return memberRepository.findByOauthId(oauthId);
     }
+
+
 }

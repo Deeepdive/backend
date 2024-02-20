@@ -4,6 +4,7 @@ import static deepdive.backend.member.domain.Provider.APPLE;
 import static deepdive.backend.member.domain.Provider.GOOGLE;
 import static deepdive.backend.member.domain.Provider.KAKAO;
 
+import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.member.domain.Provider;
 import deepdive.backend.member.domain.entity.Member;
@@ -43,8 +44,15 @@ public class MemberPolicyService {
         }
     }
 
-    public Member validateLoginInfo(String oauthId) {
-        return memberRepository.findByOauthId(oauthId)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+    public void validateRegisterInfo(String oauthId) {
+        String oauthIdByRegisterToken = AuthUserInfo.of().getOauthId();
+        if (!oauthIdByRegisterToken.equals(oauthId)) {
+            throw ExceptionStatus.INVALID_REGISTER_TOKEN.asServiceException();
+        }
+
+        memberRepository.findByOauthId(oauthId).ifPresent(member -> {
+            throw ExceptionStatus.DUPLICATE_REGISTER.asServiceException();
+        });
+
     }
 }
