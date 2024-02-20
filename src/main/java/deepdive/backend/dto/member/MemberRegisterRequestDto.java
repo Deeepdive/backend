@@ -10,6 +10,7 @@ public record MemberRegisterRequestDto(
     String provider,
     @NotNull
     String oauthId,
+    @NotNull
     Boolean isMarketing
 ) {
 
