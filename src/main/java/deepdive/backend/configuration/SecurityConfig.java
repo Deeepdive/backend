@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/login/**").permitAll() // OAuth2.0 EndPoint 요청은 인증을 하지 않는다
                 .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/v1/member/login").permitAll()
+                .requestMatchers("/v1/profile/default-img").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers(AuthenticateMatchers.swaggerArray).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
