@@ -2,6 +2,7 @@ package deepdive.backend.profile.controller;
 
 import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
+import deepdive.backend.dto.profile.ProfileDefaultImageDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.dto.profile.ProfileRequestDto;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -98,5 +100,10 @@ public class ProfileController {
     public ProfileDefaultResponseDto isExistBuddyProfile(
         @RequestParam(value = "nickName") String nickName) {
         return profileService.getIdByNickName(nickName);
+    }
+
+    @GetMapping("/default-img")
+    public List<ProfileDefaultImageDto> getDefaultImages() {
+        return profileService.getDefaultImages();
     }
 }

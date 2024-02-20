@@ -3,6 +3,7 @@ package deepdive.backend.mapper;
 import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
 
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
+import deepdive.backend.dto.profile.ProfileDefaultImageDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.profile.domain.CertOrganization;
@@ -24,4 +25,6 @@ public interface ProfileMapper {
         CertType certType, Boolean isTeacher, String etc);
 
     ProfileResponseDto toProfileResponseDto(Profile profile);
+
+    ProfileDefaultImageDto toProfileDefaultImageDto(Integer id, String picture);
 }

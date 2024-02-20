@@ -2,6 +2,7 @@ package deepdive.backend.profile.service;
 
 import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
+import deepdive.backend.dto.profile.ProfileDefaultImageDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.dto.profile.ProfileRequestDto;
@@ -16,6 +17,7 @@ import deepdive.backend.profile.domain.Pictures;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -205,4 +207,10 @@ public class ProfileService {
         return profileMapper.toProfileResponseDto(profile);
     }
 
+    public List<ProfileDefaultImageDto> getDefaultImages() {
+        return Arrays.stream(Pictures.values())
+            .map(picture ->
+                profileMapper.toProfileDefaultImageDto(picture.ordinal() + 1, picture.getUrl()))
+            .toList();
+    }
 }
