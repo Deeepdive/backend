@@ -9,9 +9,11 @@ import jakarta.validation.constraints.NotEmpty;
  * @param certType
  * @param isTeacher
  */
-public record ProfileCertRequestDto(@NotEmpty String certOrganization,
-                                    String certType,
-                                    Boolean isTeacher,
-                                    String etc) {
+public record ProfileCertRequestDto(
+    @NotEmpty
+    String certOrganization,
+    String certType,
+    Boolean isTeacher,
+    String etc) {
 
 }

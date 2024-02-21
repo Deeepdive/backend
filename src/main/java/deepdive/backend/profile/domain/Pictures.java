@@ -6,17 +6,17 @@ import lombok.Getter;
 
 public enum Pictures {
     FIRST(1,
-        "https://github.com/Deeepdive/backend/assets/92019454/a71b756d-5cd7-43c9-8980-693be851099a"),
+        "https://velog.velcdn.com/images/saewoo1/post/9173615f-8d0d-4b96-9d01-2dbbb2a96c52/image.png"),
     SECOND(2,
-        "https://github.com/Deeepdive/backend/assets/92019454/e4d9e3bf-acc5-4d01-9dba-2fa68d4812c2"),
+        "https://velog.velcdn.com/images/saewoo1/post/20e767b4-04ec-4083-a0d5-2a56435159ff/image.png"),
     THIRD(3,
-        "https://github.com/Deeepdive/backend/assets/92019454/f764648d-5559-4bdb-99ec-73d7add5f2cd"),
+        "https://velog.velcdn.com/images/saewoo1/post/91f6abd9-2782-4066-a6a3-e2f6ea72b8a6/image.png"),
     FOURTH(4,
-        "https://github.com/Deeepdive/backend/assets/92019454/80106dbb-0f90-496a-b5b2-6fba7b1fadc1"),
+        "https://velog.velcdn.com/images/saewoo1/post/4c5890d1-472a-49f6-84a9-71af3d4ad0ff/image.png"),
     FIFTH(5,
-        "https://github.com/Deeepdive/backend/assets/92019454/47a41bfd-dac3-4ee5-a631-487fc1142e99"),
+        "https://velog.velcdn.com/images/saewoo1/post/ec4830be-906a-4b6b-9423-b6a44c7574c0/image.png"),
     SIXTH(6,
-        "https://github.com/Deeepdive/backend/assets/92019454/692fae28-6d71-4a94-a185-ba42de9a352f");
+        "https://velog.velcdn.com/images/saewoo1/post/3fb43c2e-e234-418a-8439-ec46fadce550/image.png");
 
     private final int number;
     @Getter

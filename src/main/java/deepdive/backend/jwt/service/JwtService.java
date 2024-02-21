@@ -2,7 +2,6 @@ package deepdive.backend.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.dto.token.TokenInfo;
-import deepdive.backend.jwt.domain.dto.ReIssueDto;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberQueryService;
 import io.jsonwebtoken.Claims;
@@ -118,10 +117,10 @@ public class JwtService {
         return new UsernamePasswordAuthenticationToken(authUserInfo, "", authorities);
     }
 
-    public String reissueAccessToken(ReIssueDto reIssueDto) {
+    public String reissueAccessToken(TokenInfo reIssueDto) {
 
         // refresh encrypt 후에 괜찮은 애라면 재발급 ㄱㄱ
-        Claims claims = parseToken(reIssueDto.getRefreshToken());
+        Claims claims = parseToken(reIssueDto.refreshToken());
         String oauthId = claims.get("oauthId", String.class);
         Member member = memberQueryService.getByOauthId(oauthId);
 

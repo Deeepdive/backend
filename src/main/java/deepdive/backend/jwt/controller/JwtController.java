@@ -1,8 +1,7 @@
 package deepdive.backend.jwt.controller;
 
-import deepdive.backend.jwt.domain.dto.ReIssueDto;
+import deepdive.backend.dto.token.TokenInfo;
 import deepdive.backend.jwt.service.JwtService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/jwt")
+@RequestMapping("/v1/jwt")
 @RequiredArgsConstructor
 public class JwtController {
 
@@ -25,7 +24,7 @@ public class JwtController {
      * @return
      */
     @PostMapping("/reissue")
-    public String reIssue(@RequestBody @Valid ReIssueDto reIssueDto) {
+    public String reIssue(@RequestBody TokenInfo reIssueDto) {
         // TODO : 재발급 로직 재고려 해야할듯..
         return jwtService.reissueAccessToken(reIssueDto);
     }
