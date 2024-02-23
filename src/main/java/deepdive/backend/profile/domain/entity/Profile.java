@@ -17,67 +17,67 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Profile {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "profile_id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "profile_id")
+	private Long id;
 
-    private String nickName;
+	private String nickName;
 
-    // picture 부분 멀티파트로 수정하기.
-    private String picture;
-    private Boolean isTeacher;
-    private String etc;
+	// picture 부분 멀티파트로 수정하기.
+	private String picture;
+	private Boolean isTeacher;
+	private String etc;
 
-    @Enumerated(EnumType.STRING)
-    private CertOrganization organization;
-    @Enumerated(EnumType.STRING)
-    private CertType certType;
+	@Enumerated(EnumType.STRING)
+	private CertOrganization certOrganization;
+	@Enumerated(EnumType.STRING)
+	private CertType certType;
 
-    protected Profile(String nickName) {
-        this.nickName = nickName;
-    }
+	protected Profile(String nickName) {
+		this.nickName = nickName;
+	}
 
-    public static Profile defaultProfile(String nickName, String picture) {
+	public static Profile defaultProfile(String nickName, String picture) {
 
-        return new Profile(nickName);
-    }
+		return new Profile(nickName);
+	}
 
-    public static Profile of(String nickName) {
-        return new Profile(nickName);
-    }
+	public static Profile of(String nickName) {
+		return new Profile(nickName);
+	}
 
-    public void updateDefaultProfile(String nickName, String picture) {
-        this.nickName = nickName;
-        this.picture = picture;
-    }
+	public void updateDefaultProfile(String nickName, String picture) {
+		this.nickName = nickName;
+		this.picture = picture;
+	}
 
-    public void updateCertProfile(CertOrganization certOrganization, CertType certType,
-        Boolean isTeacher) {
-        this.organization = certOrganization;
-        this.certType = certType;
-        this.isTeacher = isTeacher;
-        this.etc = null;
-    }
+	public void updateCertProfile(CertOrganization certOrganization, CertType certType,
+		Boolean isTeacher) {
+		this.certOrganization = certOrganization;
+		this.certType = certType;
+		this.isTeacher = isTeacher;
+		this.etc = null;
+	}
 
-    public void updateEtcCertProfile(CertOrganization etcOrganization, Boolean isTeacher,
-        String etc) {
-        this.certType = null;
-        this.organization = etcOrganization;
-        this.isTeacher = isTeacher;
-        this.etc = etc;
-    }
+	public void updateEtcCertProfile(CertOrganization etcOrganization, Boolean isTeacher,
+		String etc) {
+		this.certType = null;
+		this.certOrganization = etcOrganization;
+		this.isTeacher = isTeacher;
+		this.etc = etc;
+	}
 
-    public void saveCertProfile(String nickName, String url,
-        CertOrganization organization, Boolean isTeacher, String etc) {
-        this.nickName = nickName;
-        this.picture = url;
-        updateEtcCertProfile(organization, isTeacher, etc);
-    }
+	public void saveCertProfile(String nickName, String url,
+		CertOrganization organization, Boolean isTeacher, String etc) {
+		this.nickName = nickName;
+		this.picture = url;
+		updateEtcCertProfile(organization, isTeacher, etc);
+	}
 
-    public void saveCommonProfile(String nickName, String picture,
-        CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
-        updateDefaultProfile(nickName, picture);
-        updateCertProfile(certOrganization, certType, isTeacher);
-    }
+	public void saveCommonProfile(String nickName, String picture,
+		CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
+		updateDefaultProfile(nickName, picture);
+		updateCertProfile(certOrganization, certType, isTeacher);
+	}
 }
