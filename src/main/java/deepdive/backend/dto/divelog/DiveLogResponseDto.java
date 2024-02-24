@@ -14,11 +14,11 @@ import java.util.List;
  * @param buddyProfiles -> 여러 버디들의 defaultProfile, 총 개수
  */
 public record DiveLogResponseDto(
-    Long id,
-    LocalDate diveDate,
-    String center,
-    String point,
-    Purpose purpose,
-    List<ProfileDefaultDto> buddyProfiles) {
+	Long id,
+	LocalDate diveDate,
+	String center,
+	String point,
+	Purpose purpose,
+	List<ProfileDefaultDto> buddiesProfile) {
 
 }

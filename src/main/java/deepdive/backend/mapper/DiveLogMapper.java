@@ -12,18 +12,19 @@ import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring",
-    nullValueMappingStrategy = RETURN_DEFAULT,
-    nullValueMapMappingStrategy = RETURN_DEFAULT,
-    nullValueIterableMappingStrategy = RETURN_DEFAULT)
+	nullValueMappingStrategy = RETURN_DEFAULT,
+	nullValueMapMappingStrategy = RETURN_DEFAULT,
+	nullValueIterableMappingStrategy = RETURN_DEFAULT)
 @Component
 public interface DiveLogMapper {
 
-    DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog, List<String> buddyNames);
+	DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog,
+		List<ProfileDefaultResponseDto> buddiesProfile);
 
-    DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog,
-        List<ProfileDefaultResponseDto> buddyProfiles);
+	DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog,
+		List<ProfileDefaultResponseDto> buddyProfiles);
 
-    DiveLogResponsePaginationDto toDiveLogResponsePaginationDto(List<DiveLogResponseDto> result,
-        Long totalCount);
+	DiveLogResponsePaginationDto toDiveLogResponsePaginationDto(List<DiveLogResponseDto> result,
+		Long totalCount);
 
 }

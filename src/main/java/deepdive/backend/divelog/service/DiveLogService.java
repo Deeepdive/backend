@@ -10,6 +10,7 @@ import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.DiveLogMapper;
+import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberQueryService;
 import deepdive.backend.profile.domain.entity.Profile;
@@ -37,6 +38,7 @@ public class DiveLogService {
 	private final MemberQueryService memberQueryService;
 	private final ProfileService profileService;
 	private final ProfileQueryService profileQueryService;
+	private final ProfileMapper profileMapper;
 
 
 	/**
@@ -58,10 +60,14 @@ public class DiveLogService {
 
 		diveLog.setMember(member);
 		member.addDiveLog(diveLog);
-		List<String> buddyNames = profileQueryService.getProfileNames(buddies);
 
 		DiveLog saved = diveLogRepository.save(diveLog);
-		return diveLogMapper.toDiveLogInfoDto(saved, buddyNames);
+		List<ProfileDefaultResponseDto> result = buddies.stream()
+			.map(profile ->
+				profileMapper.toProfileDefaultResponseDto(
+					profile.getId(), profile.getNickName(), profile.getPicture()))
+			.toList();
+		return diveLogMapper.toDiveLogInfoDto(saved, result);
 	}
 
 	private void validateDiveDate(LocalDate localDate) {
@@ -86,8 +92,15 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
 			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 
-		List<String> buddies = profileQueryService.getProfileNames(diveLog.getProfiles());
-		return diveLogMapper.toDiveLogInfoDto(diveLog, buddies);
+		List<Profile> profiles = diveLog.getProfiles();
+		List<ProfileDefaultResponseDto> result = profiles.stream()
+			.map(profile ->
+				profileMapper.toProfileDefaultResponseDto(
+					profile.getId(), profile.getNickName(), profile.getPicture())
+			)
+			.toList();
+
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
 	}
 
 	/**

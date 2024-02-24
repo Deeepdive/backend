@@ -2,14 +2,13 @@ package deepdive.backend.divelog.domain;
 
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.profile.domain.entity.Profile;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-@Entity
+//@Entity
 public class DiveLogProfile {
 
 	@Id
