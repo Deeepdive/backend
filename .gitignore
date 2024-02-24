@@ -9,6 +9,7 @@ build/
 /*/bin
 /*/out
 /*/*/out
+/src/main/generated/deepdive/backend/mapper/*
 
 ### STS ###
 .apt_generated
@@ -22,7 +23,6 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-/src/main/generated/deepdive/backend/mapper/*.java
 
 ### IntelliJ IDEA ###
 .idea
