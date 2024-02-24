@@ -1,5 +1,6 @@
 package deepdive.backend.divelog.domain.entity;
 
+import deepdive.backend.divelog.domain.DiveLogProfile;
 import deepdive.backend.divelog.domain.Purpose;
 import deepdive.backend.divelog.domain.ReviewType;
 import deepdive.backend.divelog.domain.SuitType;
@@ -9,7 +10,6 @@ import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,8 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,8 +27,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@NamedEntityGraph(name = "DiveLog.withProfiles",
-	attributeNodes = @NamedAttributeNode("profiles"))
 @Getter
 public class DiveLog {
 
@@ -39,14 +35,13 @@ public class DiveLog {
 	@Column(name = "divelog_id")
 	private Long id;
 
-	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@Setter
-	@OneToMany(targetEntity = Profile.class, fetch = FetchType.LAZY)
-	private List<Profile> profiles;
+	@OneToMany(mappedBy = "diveLog")
+	private List<DiveLogProfile> profiles;
 
 	// TODO : 나중에 객체화 하기..
 	@Enumerated(value = EnumType.STRING)
@@ -88,7 +83,7 @@ public class DiveLog {
 
 	}
 
-	public static DiveLog of(DiveLogRequestDto dto, List<Profile> profiles) {
+	public static DiveLog of(DiveLogRequestDto dto, Member member) {
 		DiveLog diveLog = new DiveLog();
 		diveLog.purpose = Purpose.valueOf(dto.purpose());
 		diveLog.underWaterVisibility = UnderWaterVisibility.valueOf(dto.underWaterVisibility());
@@ -112,13 +107,12 @@ public class DiveLog {
 
 		diveLog.airTemp = dto.airTemp();
 		diveLog.weight = dto.weight();
-
-		diveLog.profiles = profiles;
+		diveLog.member = member;
 
 		return diveLog;
 	}
 
-	public void update(DiveLogRequestDto dto, List<Profile> buddies) {
+	public void update(DiveLogRequestDto dto) {
 		// enum 타입
 		this.waterType = WaterType.valueOf(dto.waterType());
 		this.reviewType = ReviewType.valueOf(dto.reviewType());
@@ -132,7 +126,6 @@ public class DiveLog {
 		this.diveDate = dto.diveDate();
 		this.center = dto.center();
 		this.point = dto.point();
-		this.profiles = buddies;
 		this.startPressure = dto.startPressure();
 		this.endPressure = dto.endPressure();
 		this.airTankUsage = dto.airTankUsage();
@@ -143,4 +136,5 @@ public class DiveLog {
 		this.airTemp = dto.airTemp();
 		this.weight = dto.weight();
 	}
+
 }

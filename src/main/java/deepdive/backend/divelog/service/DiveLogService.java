@@ -1,7 +1,9 @@
 package deepdive.backend.divelog.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
+import deepdive.backend.divelog.domain.DiveLogProfile;
 import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.divelog.repository.DiveLogProfileRepository;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
@@ -40,6 +42,8 @@ public class DiveLogService {
 	private final ProfileQueryService profileQueryService;
 	private final ProfileMapper profileMapper;
 
+	private final DiveLogProfileRepository diveLogProfileRepository;
+
 
 	/**
 	 * DiveLog 를 저장하는 기능
@@ -54,20 +58,21 @@ public class DiveLogService {
 	@Transactional
 	public DiveLogInfoDto save(DiveLogRequestDto dto) {
 		validateDiveDate(dto.diveDate());
-		List<Profile> buddies = profileQueryService.getProfiles(dto.profiles());
-		DiveLog diveLog = DiveLog.of(dto, buddies);
 		Member member = memberQueryService.getMember();
-
-		diveLog.setMember(member);
+		DiveLog diveLog = diveLogRepository.save(DiveLog.of(dto, member));
 		member.addDiveLog(diveLog);
 
-		DiveLog saved = diveLogRepository.save(diveLog);
+		List<Profile> buddies = profileQueryService.getProfiles(dto.profiles());
+		buddies.stream()
+			.map(profile -> DiveLogProfile.of(diveLog, profile))
+			.forEach(diveLogProfileRepository::save);
+
 		List<ProfileDefaultResponseDto> result = buddies.stream()
 			.map(profile ->
 				profileMapper.toProfileDefaultResponseDto(
 					profile.getId(), profile.getNickName(), profile.getPicture()))
 			.toList();
-		return diveLogMapper.toDiveLogInfoDto(saved, result);
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
 	}
 
 	private void validateDiveDate(LocalDate localDate) {
@@ -92,7 +97,7 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
 			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 
-		List<Profile> profiles = diveLog.getProfiles();
+		List<Profile> profiles = getProfilesByDiveLogId(diveLogId);
 		List<ProfileDefaultResponseDto> result = profiles.stream()
 			.map(profile ->
 				profileMapper.toProfileDefaultResponseDto(
@@ -101,6 +106,14 @@ public class DiveLogService {
 			.toList();
 
 		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
+	}
+
+	private List<Profile> getProfilesByDiveLogId(Long diveLogId) {
+		List<DiveLogProfile> diveLogProfiles = diveLogProfileRepository.findByDiveLogId(diveLogId);
+
+		return diveLogProfiles.stream()
+			.map(DiveLogProfile::getProfile)
+			.toList();
 	}
 
 	/**
@@ -115,9 +128,17 @@ public class DiveLogService {
 
 		DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId)
 			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
-		List<Profile> buddies = profileQueryService.getProfiles(dto.profiles());
 
-		diveLog.update(dto, buddies);
+		List<DiveLogProfile> oldDiveLogProfiles =
+			diveLogProfileRepository.findByDiveLogId(diveLogId);
+		diveLogProfileRepository.deleteAll(oldDiveLogProfiles);
+
+		List<Profile> newProfiles = profileQueryService.getProfiles(dto.profiles());
+		newProfiles.stream()
+			.map(profile -> DiveLogProfile.of(diveLog, profile))
+			.forEach(diveLogProfileRepository::save);
+
+		diveLog.update(dto);
 	}
 
 	/**
@@ -133,10 +154,14 @@ public class DiveLogService {
 		Long memberId = AuthUserInfo.of().getMemberId();
 
 		Page<DiveLog> divLogs = diveLogRepository.findAllByMemberId(memberId, pageable);
+
 		List<DiveLogResponseDto> result = divLogs.stream()
 			.map(diveLog -> {
+				List<Profile> profiles = diveLog.getProfiles().stream()
+					.map(DiveLogProfile::getProfile)
+					.toList();
 				List<ProfileDefaultResponseDto> buddiesProfiles =
-					profileService.getBuddiesProfiles(diveLog.getProfiles());
+					profileService.getBuddiesProfiles(profiles);
 				return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
 
 			}).toList();

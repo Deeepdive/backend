@@ -22,7 +22,7 @@ public interface DiveLogMapper {
 		List<ProfileDefaultResponseDto> buddiesProfile);
 
 	DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog,
-		List<ProfileDefaultResponseDto> buddyProfiles);
+		List<ProfileDefaultResponseDto> buddiesProfile);
 
 	DiveLogResponsePaginationDto toDiveLogResponsePaginationDto(List<DiveLogResponseDto> result,
 		Long totalCount);
