@@ -1,5 +1,6 @@
 package deepdive.backend.profile.domain.entity;
 
+import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
 import jakarta.persistence.Column;
@@ -9,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.List;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +19,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Profile {
+
+	private static final Integer MAX_LEN = 20;
+	private static final Integer MIN_LEN = 4;
+	private static final String REGEX = "^[a-z0-9]+$";
+	private static final List<String> INVALID_WORDS = List.of("admin", "deepdive", "master",
+		"error");
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +56,21 @@ public class Profile {
 		return new Profile(nickName);
 	}
 
+	private void validateNickName(String nickName) {
+		Pattern pattern = Pattern.compile(REGEX);
+		if (nickName.length() > MAX_LEN || nickName.length() < MIN_LEN
+			|| !pattern.matcher(nickName).matches() || isContainInvalidWords(nickName)) {
+			throw ExceptionStatus.INVALID_NICKNAME.asDomainException();
+		}
+	}
+
+	private boolean isContainInvalidWords(String nickName) {
+		String result = nickName.toLowerCase();
+		return INVALID_WORDS.contains(result);
+	}
+
 	public void updateDefaultProfile(String nickName, String picture) {
+		validateNickName(nickName);
 		this.nickName = nickName;
 		this.picture = picture;
 	}
