@@ -32,6 +32,7 @@ public enum ExceptionStatus {
 	INVALID_NICKNAME_TYPE(HttpStatus.NOT_FOUND, "닉네임은 4 ~ 20자 사이의 영문, 숫자로 이루어져야합니다."),
 	INVALID_WORD_CONTAIN(HttpStatus.NOT_FOUND, "금칙어가 포함되어 있습니다."),
 	INVALID_OS(HttpStatus.NOT_FOUND, "IOS, ANDROID 형식이 올바르지 않습니다."),
+	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 refreshToken 입니다."),
 	INVALID_REGISTER_TOKEN(HttpStatus.UNAUTHORIZED, "login 시 요청한 oauthId가 일치하지 않습니다."),
 	INVALID_BUDDY_PROFILE(HttpStatus.BAD_REQUEST, "스스로 buddy로 추가할 수 없습니다"),
 	INVALID_ENUM_TYPE(HttpStatus.BAD_REQUEST, "Enum 타입이 일치하지 않습니다.");

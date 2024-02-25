@@ -2,6 +2,7 @@ package deepdive.backend.jwt.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.dto.token.TokenInfo;
+import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberQueryService;
 import io.jsonwebtoken.Claims;
@@ -31,6 +32,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
+	private static final String OAUTH_ID = "oauthId";
+	private static final String MEMBER_ID = "memberId";
+
 	private final MemberQueryService memberQueryService;
 	@Value("${jwt.token.secret}")
 	private String secret_code;
@@ -48,7 +52,7 @@ public class JwtService {
 	public String createRefreshToken(String oauthId) {
 		Claims claims = generateClaimFormat();
 
-		claims.put("oauthId", oauthId);
+		claims.put(OAUTH_ID, oauthId);
 		Date now = new Date();
 
 		return Jwts.builder()
@@ -60,8 +64,8 @@ public class JwtService {
 
 	public String createAccessToken(Long memberId, String oauthId) {
 		Claims claims = generateClaimFormat();
-		claims.put("memberId", memberId);
-		claims.put("oauthId", oauthId);
+		claims.put(MEMBER_ID, memberId);
+		claims.put(OAUTH_ID, oauthId);
 		Date now = new Date();
 
 		return Jwts.builder()
@@ -81,7 +85,7 @@ public class JwtService {
 
 	public String createRegisterToken(String oauthId) {
 		Claims claims = generateClaimFormat();
-		claims.put("oauthId", oauthId);
+		claims.put(OAUTH_ID, oauthId);
 		Date now = new Date();
 
 		return Jwts.builder()
@@ -119,9 +123,13 @@ public class JwtService {
 
 	public String reissueAccessToken(TokenInfo reIssueDto) {
 
-		// refresh encrypt 후에 괜찮은 애라면 재발급 ㄱㄱ
-		Claims claims = parseToken(reIssueDto.refreshToken());
-		String oauthId = claims.get("oauthId", String.class);
+		Claims claims;
+		try {
+			claims = parseToken(reIssueDto.refreshToken());
+		} catch (JwtException e) {
+			throw ExceptionStatus.INVALID_REFRESH_TOKEN.asServiceException();
+		}
+		String oauthId = claims.get(OAUTH_ID, String.class);
 		log.info("oauthID = {}", oauthId);
 		Member member = memberQueryService.getByOauthId(oauthId);
 
