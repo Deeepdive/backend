@@ -48,7 +48,7 @@ public class JwtService {
 	public String createRefreshToken(String oauthId) {
 		Claims claims = generateClaimFormat();
 
-		claims.put("oauth", oauthId);
+		claims.put("oauthId", oauthId);
 		Date now = new Date();
 
 		return Jwts.builder()
@@ -122,6 +122,7 @@ public class JwtService {
 		// refresh encrypt 후에 괜찮은 애라면 재발급 ㄱㄱ
 		Claims claims = parseToken(reIssueDto.refreshToken());
 		String oauthId = claims.get("oauthId", String.class);
+		log.info("oauthID = {}", oauthId);
 		Member member = memberQueryService.getByOauthId(oauthId);
 
 		return createAccessToken(member.getId(), member.getOauthId());
