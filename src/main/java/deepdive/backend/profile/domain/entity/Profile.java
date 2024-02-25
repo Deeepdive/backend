@@ -73,9 +73,8 @@ public class Profile {
 	}
 
 	public void updateDefaultProfile(String nickName, String picture) {
-		validateNickName(nickName);
-		this.nickName = nickName;
-		this.picture = picture;
+		updateDefaultImage(picture);
+		updateNickName(nickName);
 	}
 
 	public void updateCertProfile(CertOrganization certOrganization, CertType certType,
@@ -105,5 +104,14 @@ public class Profile {
 		CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
 		updateDefaultProfile(nickName, picture);
 		updateCertProfile(certOrganization, certType, isTeacher);
+	}
+
+	public void updateDefaultImage(String url) {
+		this.picture = url;
+	}
+
+	public void updateNickName(String newNickName) {
+		validateNickName(nickName);
+		this.nickName = newNickName;
 	}
 }

@@ -1,6 +1,7 @@
 package deepdive.backend.dto.profile;
 
-import jakarta.validation.constraints.NotEmpty;
+import deepdive.backend.profile.domain.CertOrganization;
+import deepdive.backend.profile.domain.CertType;
 
 /**
  * 자격증 관련 업데이트 RequestBody
@@ -10,10 +11,10 @@ import jakarta.validation.constraints.NotEmpty;
  * @param isTeacher
  */
 public record ProfileCertRequestDto(
-    @NotEmpty
-    String certOrganization,
-    String certType,
-    Boolean isTeacher,
-    String etc) {
+	CertOrganization certOrganization,
+	CertType certType,
+	Boolean isTeacher,
+	String etc
+) {
 
 }

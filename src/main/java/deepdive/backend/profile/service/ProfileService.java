@@ -40,7 +40,7 @@ public class ProfileService {
 	private final ProfileMapper profileMapper;
 
 	/**
-	 * 회원의 기본 프로필(닉네임, 사진)을 최초로 등록합니다.
+	 * 회원의 기본 프로필(닉네임, 사진)을 등록합니다.
 	 *
 	 * @param dto 회원의 닉네임, 사진 url
 	 */
@@ -64,22 +64,22 @@ public class ProfileService {
 	 */
 	@Transactional
 	public void saveCertProfile(ProfileCertRequestDto dto) {
-		CertOrganization organization = CertOrganization.of(dto.certOrganization());
 		Profile profile = getByMember();
 
-		if (organization.equals(CertOrganization.ETC)) {
-			if (profilePolicyService.isBlankString(dto.etc())) {
-				throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
-			}
-			profile.updateEtcCertProfile(organization, dto.isTeacher(), dto.etc());
+		CertOrganization certOrganization = dto.certOrganization();
+		if (certOrganization.equals(CertOrganization.ETC)) {
+//			if (profilePolicyService.isBlankString(dto.etc())) {
+//				throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
+//			}
+			profile.updateEtcCertProfile(certOrganization, dto.isTeacher(), dto.etc());
 			return;
 		}
 
-		CertType certType = CertType.of(dto.certType());
-		if (!profilePolicyService.isValidMatchCertProfile(organization, certType)) {
+		CertType certType = dto.certType();
+		if (!profilePolicyService.isValidMatchCertProfile(certOrganization, certType)) {
 			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
 		}
-		profile.updateCertProfile(organization, certType, dto.isTeacher());
+		profile.updateCertProfile(certOrganization, certType, dto.isTeacher());
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ProfileService {
 		String url = Pictures.getByNumber(dto.pictureNumber());
 		CertOrganization organization = CertOrganization.of(dto.certOrganization());
 		if (!validateNickName(dto.nickName())) {
-			throw ExceptionStatus.INVALID_NICKNAME.asServiceException();
+			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asServiceException();
 		}
 		Profile profile = getByMember();
 
@@ -119,7 +119,7 @@ public class ProfileService {
 
 	private boolean validateNickName(String nickName) {
 		if (nickName.length() > 20) {
-			throw ExceptionStatus.INVALID_NICKNAME.asServiceException();
+			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asServiceException();
 		}
 		String regex = "^[a-z0-9]+$";
 		Pattern pattern = Pattern.compile(regex);
@@ -142,14 +142,17 @@ public class ProfileService {
 	 */
 	@Transactional
 	public void updateDefaultProfile(ProfileDefaultRequestDto dto) {
-		String url = Pictures.getByNumber(dto.urlNumber());
 		Profile profile = getByMember();
+		if (dto.urlNumber() != null) {
+			String url = Pictures.getByNumber(dto.urlNumber());
+			profile.updateDefaultImage(url);
+		}
 
 		if (isNewNickName(profile.getNickName(), dto.nickName())
 			&& isExistingNickName(dto.nickName())) {
 			throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
 		}
-		profile.updateDefaultProfile(dto.nickName(), url);
+		profile.updateNickName(dto.nickName());
 	}
 
 	public Profile getByMember() {

@@ -4,8 +4,11 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
 
 public record ProfileDefaultRequestDto(
-	@NotEmpty String nickName,
+	@NotEmpty
+	String nickName,
+
 	@Nullable
-	Integer urlNumber) {
+	Integer urlNumber
+) {
 
 }
