@@ -30,7 +30,6 @@ public class JwtController {
 		// TODO : 재발급 로직 재고려 해야할듯..
 
 		String accessToken = jwtService.reissueAccessToken(reIssueDto);
-		log.info("재발급 accessToken = {}", accessToken);
 		return new TokenInfo(accessToken, "");
 	}
 }
