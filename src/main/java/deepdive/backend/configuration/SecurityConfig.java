@@ -35,7 +35,7 @@ public class SecurityConfig {
 			.sessionManagement(
 				session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/token").permitAll()
+				.requestMatchers("/v1/jwt/**").permitAll()
 				.requestMatchers("/login/**").permitAll() // OAuth2.0 EndPoint 요청은 인증을 하지 않는다
 				.requestMatchers("/auth/login").permitAll()
 				.requestMatchers("/v1/member/login").permitAll()
