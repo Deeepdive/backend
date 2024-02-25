@@ -56,22 +56,6 @@ public class Profile {
 		return new Profile(nickName);
 	}
 
-	private void validateNickName(String nickName) {
-		Pattern pattern = Pattern.compile(REGEX);
-		if (nickName.length() > MAX_LEN || nickName.length() < MIN_LEN
-			|| !pattern.matcher(nickName).matches()) {
-			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asDomainException();
-		}
-		if (isContainInvalidWords(nickName)) {
-			throw ExceptionStatus.INVALID_WORD_CONTAIN.asDomainException();
-		}
-	}
-
-	private boolean isContainInvalidWords(String nickName) {
-		String result = nickName.toLowerCase();
-		return INVALID_WORDS.contains(result);
-	}
-
 	public void updateDefaultProfile(String nickName, String picture) {
 		updateDefaultImage(picture);
 		updateNickName(nickName);
@@ -111,7 +95,23 @@ public class Profile {
 	}
 
 	public void updateNickName(String newNickName) {
-		validateNickName(nickName);
+		validateNickName(newNickName);
 		this.nickName = newNickName;
+	}
+
+	private void validateNickName(String nickName) {
+		Pattern pattern = Pattern.compile(REGEX);
+		if (nickName.length() > MAX_LEN || nickName.length() < MIN_LEN
+			|| !pattern.matcher(nickName).matches()) {
+			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asDomainException();
+		}
+		if (isContainInvalidWords(nickName)) {
+			throw ExceptionStatus.INVALID_WORD_CONTAIN.asDomainException();
+		}
+	}
+
+	private boolean isContainInvalidWords(String nickName) {
+		String result = nickName.toLowerCase();
+		return INVALID_WORDS.stream().anyMatch(result::contains);
 	}
 }

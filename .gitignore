@@ -9,7 +9,7 @@ build/
 /*/bin
 /*/out
 /*/*/out
-/src/main/generated/deepdive/backend/*
+/src/main/generated/**
 
 ### STS ###
 .apt_generated
