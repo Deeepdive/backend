@@ -59,8 +59,11 @@ public class Profile {
 	private void validateNickName(String nickName) {
 		Pattern pattern = Pattern.compile(REGEX);
 		if (nickName.length() > MAX_LEN || nickName.length() < MIN_LEN
-			|| !pattern.matcher(nickName).matches() || isContainInvalidWords(nickName)) {
-			throw ExceptionStatus.INVALID_NICKNAME.asDomainException();
+			|| !pattern.matcher(nickName).matches()) {
+			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asDomainException();
+		}
+		if (isContainInvalidWords(nickName)) {
+			throw ExceptionStatus.INVALID_WORD_CONTAIN.asDomainException();
 		}
 	}
 
