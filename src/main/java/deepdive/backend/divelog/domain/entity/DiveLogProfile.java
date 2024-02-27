@@ -1,6 +1,5 @@
-package deepdive.backend.divelog.domain;
+package deepdive.backend.divelog.domain.entity;
 
-import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

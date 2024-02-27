@@ -1,8 +1,8 @@
 package deepdive.backend.divelog.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
-import deepdive.backend.divelog.domain.DiveLogProfile;
 import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.divelog.domain.entity.DiveLogProfile;
 import deepdive.backend.divelog.repository.DiveLogProfileRepository;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;

@@ -1,6 +1,5 @@
 package deepdive.backend.divelog.domain.entity;
 
-import deepdive.backend.divelog.domain.DiveLogProfile;
 import deepdive.backend.divelog.domain.Purpose;
 import deepdive.backend.divelog.domain.ReviewType;
 import deepdive.backend.divelog.domain.SuitType;
@@ -10,6 +9,7 @@ import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.dto.divelog.DiveLogRequestDto;
 import deepdive.backend.member.domain.entity.Member;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,7 +40,7 @@ public class DiveLog {
 	private Member member;
 
 	@Setter
-	@OneToMany(mappedBy = "diveLog")
+	@OneToMany(mappedBy = "diveLog", cascade = CascadeType.ALL)
 	private List<DiveLogProfile> profiles;
 
 	// TODO : 나중에 객체화 하기..
