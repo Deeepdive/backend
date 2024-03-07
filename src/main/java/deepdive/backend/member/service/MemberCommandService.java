@@ -10,21 +10,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberCommandService {
 
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
-    @Transactional
-    public Member save(Member member) {
-        return memberRepository.save(member);
-    }
+	@Transactional
+	public Member save(Member member) {
+		return memberRepository.save(member);
+	}
 
-    public void delete(Member member) {
-        memberRepository.delete(member);
-    }
+	public void delete(Member member) {
+		memberRepository.delete(member);
+	}
 
-    @Transactional
-    public Member saveByOauthInfo(String email, String provider, String oauthId) {
-        Member member = Member.oauthInfo(email, provider, oauthId);
+	@Transactional
+	public Member saveByOauthInfo(String email, String provider, String oauthId) {
+		Member member = Member.oauthInfo(email, provider, oauthId);
 
-        return memberRepository.save(member);
-    }
+		return memberRepository.save(member);
+	}
 }
