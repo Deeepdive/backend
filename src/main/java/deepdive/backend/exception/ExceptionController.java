@@ -40,7 +40,7 @@ public class ExceptionController {
 	public ResponseEntity<?> httpMessageNotReadableHandler(HttpMessageNotReadableException e) {
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
-			.body("JSON 형식이 올바르지 않습니다.");
+			.body(e.getMessage());
 	}
 
 	@SlackNotification
@@ -49,6 +49,6 @@ public class ExceptionController {
 	public ResponseEntity<?> unexpectedExceptionHandler(HttpServletRequest request, Exception e) {
 		return ResponseEntity
 			.status(INTERNAL_SERVER_ERROR)
-			.body(e);
+			.body(e.getMessage());
 	}
 }
