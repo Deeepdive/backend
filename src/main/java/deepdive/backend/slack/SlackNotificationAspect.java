@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-//@Profile(value = {"local", "dev"})
+//@Profile(value = {"local", "db"})
 public class SlackNotificationAspect {
 
 	private final SlackApi errorSlackApi;
@@ -55,13 +55,15 @@ public class SlackNotificationAspect {
 	}
 
 	@Around(value = "@annotation(deepdive.backend.slack.SlackNotification) && args(dto)", argNames = "proceedingJoinPoint,dto")
-	public void slackNewUserNotification(ProceedingJoinPoint proceedingJoinPoint,
+	public Object slackNewUserNotification(ProceedingJoinPoint proceedingJoinPoint,
 		MemberRegisterRequestDto dto)
 		throws Throwable {
-		proceedingJoinPoint.proceed();
+		Object result = proceedingJoinPoint.proceed();
 
 		threadPoolTaskExecutor.execute(
 			() -> sendNewUserMessage(newUserSlackApi, dto.email(), dto.provider()));
+
+		return result;
 	}
 
 	private void sendNewUserMessage(SlackApi slackChannel, String email, String provider) {
