@@ -77,19 +77,6 @@ public class Profile {
 		this.etc = etc;
 	}
 
-	public void saveCertProfile(String nickName, String url,
-		CertOrganization organization, Boolean isTeacher, String etc) {
-		this.nickName = nickName;
-		this.picture = url;
-		updateEtcCertProfile(organization, isTeacher, etc);
-	}
-
-	public void saveCommonProfile(String nickName, String picture,
-		CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
-		updateDefaultProfile(nickName, picture);
-		updateCertProfile(certOrganization, certType, isTeacher);
-	}
-
 	public void updateDefaultImage(String url) {
 		this.picture = url;
 	}
