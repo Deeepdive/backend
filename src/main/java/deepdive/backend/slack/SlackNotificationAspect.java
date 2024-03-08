@@ -3,6 +3,7 @@ package deepdive.backend.slack;
 import static java.util.Collections.singletonList;
 
 import deepdive.backend.dto.member.MemberRegisterRequestDto;
+import deepdive.backend.member.domain.Provider;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -66,7 +67,7 @@ public class SlackNotificationAspect {
 		return result;
 	}
 
-	private void sendNewUserMessage(SlackApi slackChannel, String email, String provider) {
+	private void sendNewUserMessage(SlackApi slackChannel, String email, Provider provider) {
 		SlackAttachment slackAttachment = new SlackAttachment();
 		slackAttachment.setFallback("Alarm");
 		slackAttachment.setColor("good");
@@ -79,7 +80,7 @@ public class SlackNotificationAspect {
 				new SlackField().setTitle("이메일")
 					.setValue(email),
 				new SlackField().setTitle("경로")
-					.setValue(provider),
+					.setValue(provider.name()),
 				new SlackField().setTitle("로그가 발생한 위치는...")
 					.setValue(Arrays.toString(env.getActiveProfiles()))
 			)
