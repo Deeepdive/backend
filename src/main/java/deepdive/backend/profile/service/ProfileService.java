@@ -1,12 +1,10 @@
 package deepdive.backend.profile.service;
 
-import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultImageDto;
 import deepdive.backend.dto.profile.ProfileDefaultImageResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
-import deepdive.backend.dto.profile.ProfileRequestDto;
 import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.ProfileMapper;
@@ -36,7 +34,6 @@ public class ProfileService {
 	private final ProfileRepository profileRepository;
 	private final ProfilePolicyService profilePolicyService;
 	private final ProfileQueryService profileQueryService;
-	private final ProfileCommandService profileCommandService;
 	private final ProfileMapper profileMapper;
 
 	/**
@@ -59,62 +56,21 @@ public class ProfileService {
 
 	/**
 	 * 회원의 자격증 관련 프로필을 저장합니다.
-	 *
-	 * @param dto 기관명, 자격증명, 강사, 비고
 	 */
 	@Transactional
-	public void saveCertProfile(ProfileCertRequestDto dto) {
+	public void saveCertProfile(CertOrganization organization, CertType type, Boolean isTeacher) {
 		Profile profile = getByMember();
 
-		CertOrganization certOrganization = dto.certOrganization();
-		if (certOrganization.equals(CertOrganization.ETC)) {
-//			if (profilePolicyService.isBlankString(dto.etc())) {
-//				throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
-//			}
-			profile.updateEtcCertProfile(certOrganization, dto.isTeacher(), dto.etc());
-			return;
-		}
-
-		CertType certType = dto.certType();
-		if (!profilePolicyService.isValidMatchCertProfile(certOrganization, certType)) {
-			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
-		}
-		profile.updateCertProfile(certOrganization, certType, dto.isTeacher());
+		profilePolicyService.verifyMatchCertProfile(organization, type);
+		profile.updateCertProfile(organization, type, isTeacher);
 	}
 
-	/**
-	 * 5개 정보를 모두 저장하는 로직
-	 *
-	 * @param dto
-	 */
 	@Transactional
-	public void updateProfile(ProfileRequestDto dto) {
-		String url = Pictures.getByNumber(dto.pictureNumber());
-		CertOrganization organization = CertOrganization.of(dto.certOrganization());
-		if (!validateNickName(dto.nickName())) {
-			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asServiceException();
-		}
+	public void saveEtcCertProfile(CertOrganization organization, String etc,
+		Boolean isTeacher) {
+
 		Profile profile = getByMember();
-
-		if (organization.equals(CertOrganization.ETC)) {
-			if (profilePolicyService.isBlankString(dto.etc())) {
-				throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
-			}
-			profileCommandService.updateEtcProfile(profile, dto.nickName(), url,
-				organization, dto.isTeacher(), dto.etc());
-			return;
-		}
-		CertType certType = CertType.of(dto.certType());
-		if (!profilePolicyService.isValidMatchCertProfile(organization, certType)) {
-			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
-		}
-		if (isExistingNickName(dto.nickName())) {
-			throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
-		}
-
-		profileCommandService.updateCommonProfile(profile,
-			dto.nickName(), url,
-			organization, certType, dto.isTeacher());
+		profile.updateEtcCertProfile(organization, isTeacher, etc);
 	}
 
 	private boolean validateNickName(String nickName) {
@@ -156,7 +112,7 @@ public class ProfileService {
 	}
 
 	public Profile getByMember() {
-		return memberQueryService.getMember().getProfile();
+		return memberQueryService.getMemberWithProfile().getProfile();
 	}
 
 	private boolean isNewNickName(String oldNickName, String newNickName) {
