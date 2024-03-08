@@ -58,7 +58,6 @@ public class MemberController {
 	public ResponseEntity<TokenInfo> commonLogin(@RequestBody @Valid MemberLoginRequestDto dto) {
 		if (!memberService.isRegisteredMember(dto.oauthId())) {
 			String registerToken = jwtService.createRegisterToken(dto.oauthId());
-			log.info("신규 유저 로그인");
 			return ResponseEntity.status(403).body(new TokenInfo(registerToken, ""));
 		}
 		log.info("기존 유저의 refreshToken 발급");

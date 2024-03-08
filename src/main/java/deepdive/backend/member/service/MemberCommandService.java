@@ -1,5 +1,6 @@
 package deepdive.backend.member.service;
 
+import deepdive.backend.member.domain.Provider;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -22,7 +23,7 @@ public class MemberCommandService {
 	}
 
 	@Transactional
-	public Member saveByOauthInfo(String email, String provider, String oauthId) {
+	public Member saveByOauthInfo(String email, Provider provider, String oauthId) {
 		Member member = Member.oauthInfo(email, provider, oauthId);
 
 		return memberRepository.save(member);
