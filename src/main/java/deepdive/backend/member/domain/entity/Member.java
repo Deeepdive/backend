@@ -10,12 +10,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -26,9 +24,9 @@ public class Member {
 	@Column(name = "member_id")
 	private Long id;
 
-	@Setter
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "profile_id")
+	@OneToOne(mappedBy = "member",
+		fetch = FetchType.LAZY,
+		cascade = CascadeType.REMOVE)
 	private Profile profile;
 
 	@OneToMany(cascade = CascadeType.ALL,

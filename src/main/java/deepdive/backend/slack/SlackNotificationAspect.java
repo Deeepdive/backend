@@ -17,13 +17,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-//@Profile(value = {"local", "db"})
+@Profile(value = "db")
 public class SlackNotificationAspect {
 
 	private final SlackApi errorSlackApi;
@@ -48,7 +49,6 @@ public class SlackNotificationAspect {
 
 		proceedingJoinPoint.proceed();
 
-		//HttpServletRequest를 RequestInfo라는 DTO에 복사
 		RequestInfo requestInfo = new RequestInfo(request.getRequestURI(), request.getMethod(),
 			request.getRemoteAddr());
 
