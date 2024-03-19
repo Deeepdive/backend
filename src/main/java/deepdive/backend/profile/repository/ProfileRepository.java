@@ -11,8 +11,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
-    Optional<Profile> findByNickName(String nickName);
+	Optional<Profile> findByNickName(String nickName);
 
-    @Query("SELECT p.nickName FROM Profile p WHERE p IN :profiles")
-    List<String> findNickNames(@Param("profiles") List<Profile> profiles);
+	@Query("SELECT p.nickName "
+		+ "FROM Profile p "
+		+ "WHERE p IN :profiles")
+	List<String> findNickNames(@Param("profiles") List<Profile> profiles);
+
+	Optional<Profile> findByMemberId(Long memberId);
+
 }
