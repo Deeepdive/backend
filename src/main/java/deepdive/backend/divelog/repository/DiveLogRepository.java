@@ -18,18 +18,15 @@ public interface DiveLogRepository extends JpaRepository<DiveLog, Long> {
 		+ "FROM DiveLog dl "
 		+ "WHERE dl.id = :diveLogId "
 		+ "AND dl.member.id = :memberId")
+	@EntityGraph(attributePaths = "profiles")
 	Optional<DiveLog> findOneByMemberId(@Param("memberId") Long memberId,
 		@Param("diveLogId") Long diveLogId);
 
 
-	@Query(value = "SELECT dl "
+	@Query("SELECT dl "
 		+ "FROM DiveLog dl "
-		+ "WHERE dl.member.id = :memberId",
-		countQuery = "SELECT count(dl) "
-			+ "FROM DiveLog dl "
-			+ "WHERE dl.member.id = :memberId")
-	Page<DiveLog> findAllByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+		+ "WHERE dl.member.id = :memberId")
+	@EntityGraph(attributePaths = "profiles.profile")
+	Page<DiveLog> findPaginationByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
-	@EntityGraph(value = "DiveLog.withProfiles", type = EntityGraph.EntityGraphType.LOAD)
-	Optional<DiveLog> findById(Long diveLogId);
 }

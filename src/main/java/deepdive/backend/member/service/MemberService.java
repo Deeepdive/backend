@@ -1,11 +1,13 @@
 package deepdive.backend.member.service;
 
+import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.divelog.repository.DiveLogProfileRepository;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.member.domain.Provider;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.profile.domain.entity.Profile;
+import deepdive.backend.member.repository.MemberRepository;
+import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,22 +21,30 @@ public class MemberService {
 	private final MemberCommandService memberCommandService;
 	private final MemberQueryService memberQueryService;
 	private final MemberPolicyService memberPolicyService;
+	private final MemberRepository memberRepository;
+
+	private final ProfileService profileService;
 
 	private final DiveLogRepository diveLogRepository;
 	private final DiveLogProfileRepository diveLogProfileRepository;
 
-	// oauthId로 찾는다 -> 있으면 provider와 함께 exception 반환
+	/**
+	 * @param email
+	 * @param provider
+	 * @param oauthId
+	 * @param isMarketing
+	 * @return
+	 */
 	@Transactional
-	public Member registerMember(String email, String provider, String oauthId,
+	public Member registerMember(String email, Provider provider, String oauthId,
 		Boolean isMarketing) {
 		memberPolicyService.validateRegisterInfo(oauthId);
 
-		Provider.of(provider);
-		Profile profile = new Profile();
 		Member member = Member.of(email, provider, oauthId, isMarketing);
-		member.setProfile(profile);
+		Member saved = memberRepository.save(member);
+		profileService.register(member);
 
-		return memberCommandService.save(member);
+		return saved;
 	}
 
 	public boolean isRegisteredMember(String oauthId) {
@@ -55,10 +65,12 @@ public class MemberService {
 	 */
 	@Transactional
 	public void delete() {
-		Member member = memberQueryService.getMember();
+		Long memberId = AuthUserInfo.of().getMemberId();
 
-		Profile profile = member.getProfile();
-		diveLogProfileRepository.deleteAllByProfile(profile);
+		Member member = memberRepository.findByIdWithProfile(memberId)
+			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+
+		diveLogProfileRepository.deleteAllByProfile(member.getProfile());
 		diveLogRepository.deleteAll(member.getDiveLogs());
 		memberCommandService.delete(member);
 	}

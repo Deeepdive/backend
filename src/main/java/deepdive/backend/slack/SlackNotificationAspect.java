@@ -3,6 +3,7 @@ package deepdive.backend.slack;
 import static java.util.Collections.singletonList;
 
 import deepdive.backend.dto.member.MemberRegisterRequestDto;
+import deepdive.backend.member.domain.Provider;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,13 +17,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-//@Profile(value = {"local", "db"})
+@Profile(value = "db")
 public class SlackNotificationAspect {
 
 	private final SlackApi errorSlackApi;
@@ -47,7 +49,6 @@ public class SlackNotificationAspect {
 
 		proceedingJoinPoint.proceed();
 
-		//HttpServletRequest를 RequestInfo라는 DTO에 복사
 		RequestInfo requestInfo = new RequestInfo(request.getRequestURI(), request.getMethod(),
 			request.getRemoteAddr());
 
@@ -66,7 +67,7 @@ public class SlackNotificationAspect {
 		return result;
 	}
 
-	private void sendNewUserMessage(SlackApi slackChannel, String email, String provider) {
+	private void sendNewUserMessage(SlackApi slackChannel, String email, Provider provider) {
 		SlackAttachment slackAttachment = new SlackAttachment();
 		slackAttachment.setFallback("Alarm");
 		slackAttachment.setColor("good");
@@ -79,7 +80,7 @@ public class SlackNotificationAspect {
 				new SlackField().setTitle("이메일")
 					.setValue(email),
 				new SlackField().setTitle("경로")
-					.setValue(provider),
+					.setValue(provider.name()),
 				new SlackField().setTitle("로그가 발생한 위치는...")
 					.setValue(Arrays.toString(env.getActiveProfiles()))
 			)

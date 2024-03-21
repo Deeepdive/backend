@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ProfileMapper {
 
-	ProfileDefaultResponseDto toProfileDefaultResponseDto(Long id, String nickName, String picture);
+	ProfileDefaultResponseDto toProfileDefaultResponseDto(Profile profile);
 
 	@Mapping(source = "certOrganization", target = "certOrganization")
 	ProfileCertResponseDto toProfileCertResponseDto(CertOrganization certOrganization,

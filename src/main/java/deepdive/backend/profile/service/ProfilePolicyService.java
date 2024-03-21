@@ -1,40 +1,57 @@
 package deepdive.backend.profile.service;
 
+import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
-import java.util.List;
+import deepdive.backend.profile.domain.entity.Profile;
+import deepdive.backend.profile.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfilePolicyService {
 
-    public boolean isBlankString(String str) {
-        return str == null || str.isBlank();
-    }
+	private final ProfileRepository profileRepository;
 
-    public boolean isValidMatchCertProfile(CertOrganization organization, CertType type) {
-        return isValidCommonCertMatch(organization, type) || isValidNoneCert(organization, type);
-    }
+	public void verifyMatchCertProfile(CertOrganization organization, CertType type) {
+		if (organization.equals(CertOrganization.NONE)) {
+			if (!isValidNoneCert(organization, type)) {
+				throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
+			}
+		}
+		if (!isValidCommonCertMatch(organization, type)) {
+			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
+		}
+	}
 
-    public boolean isValidCommonCertMatch(CertOrganization organization, CertType type) {
-        return isCommonOrganization(organization) && isCommonCertType(type);
-    }
+	public boolean isValidCommonCertMatch(CertOrganization organization, CertType type) {
+		return CertOrganization.common(organization) && CertType.common(type);
+	}
 
-    public boolean isValidNoneCert(CertOrganization organization, CertType certType) {
-        return organization.equals(CertOrganization.NONE) && certType.equals(CertType.NONE);
-    }
+	public boolean isValidNoneCert(CertOrganization organization, CertType certType) {
+		return organization.equals(CertOrganization.NONE) && certType.equals(CertType.NONE);
+	}
 
-    public boolean isCommonOrganization(CertOrganization certOrganization) {
-        List<CertOrganization> commonCertOrganization = CertOrganization.common();
+	public void verifyNickName(String oldNickName, String newNickName) {
+		if (isNewNickName(oldNickName, newNickName) && isExistingNickName(newNickName)) {
+			throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
+		}
+	}
 
-        return commonCertOrganization.contains(certOrganization);
-    }
+	public boolean isExistingNickName(String nickName) {
+		return profileRepository.findByNickName(nickName).isPresent();
+	}
 
-    public boolean isCommonCertType(CertType certType) {
-        List<CertType> commonCertType = CertType.common();
+	private boolean isNewNickName(String oldNickName, String newNickName) {
+		return !newNickName.equals(oldNickName);
+	}
 
-        return commonCertType.contains(certType);
-    }
+	public void verifySelfProfile(Profile self, Profile other) {
+		if (self.equals(other)) {
+			throw ExceptionStatus.INVALID_BUDDY_PROFILE.asServiceException();
+		}
+	}
 }
