@@ -6,6 +6,7 @@ import deepdive.backend.dto.profile.ProfileDefaultImageResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import deepdive.backend.dto.profile.ProfileResponseDto;
+import deepdive.backend.profile.domain.CertType;
 import deepdive.backend.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,7 +48,12 @@ public class ProfileController {
 	})
 	@PostMapping("/cert")
 	public void saveCertProfile(@RequestBody @Valid ProfileCertRequestDto dto) {
-		profileService.saveCertProfile(dto);
+
+		if (dto.certType().equals(CertType.ETC)) {
+			profileService.saveEtcCertProfile(dto.certOrganization(), dto.etc(), dto.isTeacher());
+			return;
+		}
+		profileService.saveCertProfile(dto.certOrganization(), dto.certType(), dto.isTeacher());
 	}
 
 	@Operation(summary = "유저의 기본 프로필 수정 요청")

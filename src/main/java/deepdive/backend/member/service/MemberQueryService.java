@@ -12,39 +12,29 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberQueryService {
 
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
-    public Long getMemberId() {
-        return AuthUserInfo.of().getMemberId();
-    }
+	public Long getMemberId() {
+		return AuthUserInfo.of().getMemberId();
+	}
 
-    public Member getMember() {
-        return memberRepository.findById(getMemberId())
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
-    }
+	public Member getMember() {
+		return memberRepository.findById(getMemberId())
+			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+	}
 
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
+	public Optional<Member> findByEmail(String email) {
+		return memberRepository.findByEmail(email);
+	}
 
-    public Member getById(Long memberId) {
-        return memberRepository.findById(memberId)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
-    }
+	public Member getByOauthId(String oauthId) {
+		return memberRepository.findByOauthId(oauthId)
+			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+	}
 
-    public Member getByEmail(String email) {
-        return memberRepository.findByEmail(email)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
-    }
-
-    public Member getByOauthId(String oauthId) {
-        return memberRepository.findByOauthId(oauthId)
-            .orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
-    }
-
-    public Optional<Member> findByOauthId(String oauthId) {
-        return memberRepository.findByOauthId(oauthId);
-    }
+	public Optional<Member> findByOauthId(String oauthId) {
+		return memberRepository.findByOauthId(oauthId);
+	}
 
 
 }

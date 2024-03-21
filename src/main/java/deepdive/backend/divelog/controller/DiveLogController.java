@@ -63,7 +63,7 @@ public class DiveLogController {
 	}
 
 	@DeleteMapping("/{diveLogId}")
-	public void deleteDiveLog(@PathVariable Long diveLogId) {
+	public void deleteDiveLog(@PathVariable(value = "diveLogId") Long diveLogId) {
 		diveLogService.delete(diveLogId);
 	}
 

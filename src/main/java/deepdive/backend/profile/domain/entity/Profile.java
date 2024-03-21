@@ -1,19 +1,24 @@
 package deepdive.backend.profile.domain.entity;
 
 import deepdive.backend.exception.ExceptionStatus;
+import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -43,22 +48,17 @@ public class Profile {
 	@Enumerated(EnumType.STRING)
 	private CertType certType;
 
+	@Setter
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
+
 	protected Profile(String nickName) {
 		this.nickName = nickName;
 	}
 
-	public static Profile defaultProfile(String nickName, String picture) {
-
-		return new Profile(nickName);
-	}
-
 	public static Profile of(String nickName) {
 		return new Profile(nickName);
-	}
-
-	public void updateDefaultProfile(String nickName, String picture) {
-		updateDefaultImage(picture);
-		updateNickName(nickName);
 	}
 
 	public void updateCertProfile(CertOrganization certOrganization, CertType certType,
@@ -75,19 +75,6 @@ public class Profile {
 		this.certOrganization = etcOrganization;
 		this.isTeacher = isTeacher;
 		this.etc = etc;
-	}
-
-	public void saveCertProfile(String nickName, String url,
-		CertOrganization organization, Boolean isTeacher, String etc) {
-		this.nickName = nickName;
-		this.picture = url;
-		updateEtcCertProfile(organization, isTeacher, etc);
-	}
-
-	public void saveCommonProfile(String nickName, String picture,
-		CertOrganization certOrganization, CertType certType, Boolean isTeacher) {
-		updateDefaultProfile(nickName, picture);
-		updateCertProfile(certOrganization, certType, isTeacher);
 	}
 
 	public void updateDefaultImage(String url) {

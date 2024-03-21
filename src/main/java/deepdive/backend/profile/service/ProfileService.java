@@ -1,136 +1,63 @@
 package deepdive.backend.profile.service;
 
-import deepdive.backend.dto.profile.ProfileCertRequestDto;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultImageDto;
 import deepdive.backend.dto.profile.ProfileDefaultImageResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultRequestDto;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
-import deepdive.backend.dto.profile.ProfileRequestDto;
 import deepdive.backend.dto.profile.ProfileResponseDto;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.mapper.ProfileMapper;
 import deepdive.backend.member.domain.entity.Member;
-import deepdive.backend.member.service.MemberQueryService;
 import deepdive.backend.profile.domain.CertOrganization;
 import deepdive.backend.profile.domain.CertType;
 import deepdive.backend.profile.domain.Pictures;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.repository.ProfileRepository;
-import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
 
 
-	private final MemberQueryService memberQueryService;
-
-	private final ProfileRepository profileRepository;
 	private final ProfilePolicyService profilePolicyService;
 	private final ProfileQueryService profileQueryService;
-	private final ProfileCommandService profileCommandService;
 	private final ProfileMapper profileMapper;
 
-	/**
-	 * 회원의 기본 프로필(닉네임, 사진)을 등록합니다.
-	 *
-	 * @param dto 회원의 닉네임, 사진 url
-	 */
+	private final ProfileRepository profileRepository;
+
 	@Transactional
-	public void saveDefaultProfile(ProfileDefaultRequestDto dto) {
-		String url = Pictures.getByNumber(dto.urlNumber());
-		if (isExistingNickName(dto.nickName())) {
-			throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
-		}
-
-		Member member = memberQueryService.getMember();
-		Profile profile = Profile.defaultProfile(dto.nickName(), url);
-
-		member.setProfile(profile);
+	public void register(Member member) {
+		Profile profile = new Profile();
+		profile.setMember(member);
+		profileRepository.save(profile);
 	}
 
 	/**
 	 * 회원의 자격증 관련 프로필을 저장합니다.
-	 *
-	 * @param dto 기관명, 자격증명, 강사, 비고
 	 */
 	@Transactional
-	public void saveCertProfile(ProfileCertRequestDto dto) {
-		Profile profile = getByMember();
+	public void saveCertProfile(CertOrganization organization, CertType type, Boolean isTeacher) {
+		profilePolicyService.verifyMatchCertProfile(organization, type);
 
-		CertOrganization certOrganization = dto.certOrganization();
-		if (certOrganization.equals(CertOrganization.ETC)) {
-//			if (profilePolicyService.isBlankString(dto.etc())) {
-//				throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
-//			}
-			profile.updateEtcCertProfile(certOrganization, dto.isTeacher(), dto.etc());
-			return;
-		}
-
-		CertType certType = dto.certType();
-		if (!profilePolicyService.isValidMatchCertProfile(certOrganization, certType)) {
-			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
-		}
-		profile.updateCertProfile(certOrganization, certType, dto.isTeacher());
+		Profile profile = profileQueryService.getByMemberId();
+		profile.updateCertProfile(organization, type, isTeacher);
 	}
 
-	/**
-	 * 5개 정보를 모두 저장하는 로직
-	 *
-	 * @param dto
-	 */
 	@Transactional
-	public void updateProfile(ProfileRequestDto dto) {
-		String url = Pictures.getByNumber(dto.pictureNumber());
-		CertOrganization organization = CertOrganization.of(dto.certOrganization());
-		if (!validateNickName(dto.nickName())) {
-			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asServiceException();
-		}
-		Profile profile = getByMember();
+	public void saveEtcCertProfile(CertOrganization organization, String etc,
+		Boolean isTeacher) {
 
-		if (organization.equals(CertOrganization.ETC)) {
-			if (profilePolicyService.isBlankString(dto.etc())) {
-				throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
-			}
-			profileCommandService.updateEtcProfile(profile, dto.nickName(), url,
-				organization, dto.isTeacher(), dto.etc());
-			return;
-		}
-		CertType certType = CertType.of(dto.certType());
-		if (!profilePolicyService.isValidMatchCertProfile(organization, certType)) {
-			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
-		}
-		if (isExistingNickName(dto.nickName())) {
-			throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
-		}
-
-		profileCommandService.updateCommonProfile(profile,
-			dto.nickName(), url,
-			organization, certType, dto.isTeacher());
-	}
-
-	private boolean validateNickName(String nickName) {
-		if (nickName.length() > 20) {
-			throw ExceptionStatus.INVALID_NICKNAME_TYPE.asServiceException();
-		}
-		String regex = "^[a-z0-9]+$";
-		Pattern pattern = Pattern.compile(regex);
-
-		return pattern.matcher(nickName).matches();
-	}
-
-	public boolean isExistingNickName(String nickName) {
-
-		return profileRepository.findByNickName(nickName)
-			.isPresent();
+		Profile profile = profileQueryService.getByMemberId();
+		profile.updateEtcCertProfile(organization, isTeacher, etc);
 	}
 
 	/**
@@ -142,36 +69,26 @@ public class ProfileService {
 	 */
 	@Transactional
 	public void updateDefaultProfile(ProfileDefaultRequestDto dto) {
-		Profile profile = getByMember();
+		Profile profile = profileQueryService.getByMemberId();
+
+		// TODO: null로 받지 않도록, nickname, url 둘 다 받아서 한번에 UPDATE 하는 로직으로 수정하기
 		if (dto.urlNumber() != null) {
 			String url = Pictures.getByNumber(dto.urlNumber());
 			profile.updateDefaultImage(url);
 		}
 
-		if (isNewNickName(profile.getNickName(), dto.nickName())
-			&& isExistingNickName(dto.nickName())) {
-			throw ExceptionStatus.DUPLICATE_NICKNAME.asServiceException();
-		}
+		profilePolicyService.verifyNickName(profile.getNickName(), dto.nickName());
 		profile.updateNickName(dto.nickName());
 	}
 
-	public Profile getByMember() {
-		return memberQueryService.getMember().getProfile();
-	}
-
-	private boolean isNewNickName(String oldNickName, String newNickName) {
-		return !newNickName.equals(oldNickName);
-	}
-
 	public ProfileDefaultResponseDto showDefaultProfile() {
-		Profile profile = getByMember();
+		Profile profile = profileQueryService.getByMemberId();
 
-		return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
-			profile.getPicture());
+		return profileMapper.toProfileDefaultResponseDto(profile);
 	}
 
 	public ProfileCertResponseDto showCertProfile() {
-		Profile profile = getByMember();
+		Profile profile = profileQueryService.getByMemberId();
 
 		if (profile.getIsTeacher() == null) {
 			throw ExceptionStatus.NOT_FOUND_PROFILE.asServiceException();
@@ -184,29 +101,16 @@ public class ProfileService {
 			profile.getEtc());
 	}
 
-	public List<ProfileDefaultResponseDto> getBuddiesProfiles(List<Profile> profiles) {
-		return profiles.stream()
-			.map(profile ->
-				profileMapper.toProfileDefaultResponseDto(
-					profile.getId(),
-					profile.getNickName(),
-					profile.getPicture())
-			)
-			.toList();
-	}
-
 	public ProfileDefaultResponseDto getIdByNickName(String nickName) {
 		Profile profile = profileQueryService.getByNickName(nickName);
-		if (profile.equals(getByMember())) {
-			throw ExceptionStatus.INVALID_BUDDY_PROFILE.asServiceException();
-		}
 
-		return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
-			profile.getPicture());
+		profilePolicyService.verifySelfProfile(profile, profileQueryService.getByMemberId());
+
+		return profileMapper.toProfileDefaultResponseDto(profile);
 	}
 
 	public ProfileResponseDto showProfile() {
-		Profile profile = getByMember();
+		Profile profile = profileQueryService.getByMemberId();
 
 		return profileMapper.toProfileResponseDto(profile);
 	}
