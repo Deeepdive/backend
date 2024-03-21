@@ -85,13 +85,13 @@ public class DiveLog {
 
 	public static DiveLog of(DiveLogRequestDto dto, Member member) {
 		DiveLog diveLog = new DiveLog();
-		diveLog.purpose = Purpose.valueOf(dto.purpose());
-		diveLog.underWaterVisibility = UnderWaterVisibility.valueOf(dto.underWaterVisibility());
-		diveLog.weather = Weather.valueOf(dto.weather());
-		diveLog.suitType = SuitType.valueOf(dto.suitType());
-		diveLog.weightType = WeightType.valueOf(dto.weightType());
-		diveLog.reviewType = ReviewType.valueOf(dto.reviewType());
-		diveLog.waterType = WaterType.valueOf(dto.waterType());
+		diveLog.purpose = dto.purpose();
+		diveLog.underWaterVisibility = dto.underWaterVisibility();
+		diveLog.weather = dto.weather();
+		diveLog.suitType = dto.suitType();
+		diveLog.weightType = dto.weightType();
+		diveLog.reviewType = dto.reviewType();
+		diveLog.waterType = dto.waterType();
 
 		// 소분류별 객체 분리
 		diveLog.reviewComment = dto.reviewComment();
@@ -114,13 +114,13 @@ public class DiveLog {
 
 	public void update(DiveLogRequestDto dto) {
 		// enum 타입
-		this.waterType = WaterType.valueOf(dto.waterType());
-		this.reviewType = ReviewType.valueOf(dto.reviewType());
-		this.purpose = Purpose.valueOf(dto.purpose());
-		this.suitType = SuitType.valueOf(dto.suitType());
-		this.weather = Weather.valueOf(dto.weather());
-		this.weightType = WeightType.valueOf(dto.weightType());
-		this.underWaterVisibility = UnderWaterVisibility.valueOf(dto.underWaterVisibility());
+		this.purpose = dto.purpose();
+		this.underWaterVisibility = dto.underWaterVisibility();
+		this.weather = dto.weather();
+		this.suitType = dto.suitType();
+		this.weightType = dto.weightType();
+		this.reviewType = dto.reviewType();
+		this.waterType = dto.waterType();
 
 		this.reviewComment = dto.reviewComment();
 		this.diveDate = dto.diveDate();

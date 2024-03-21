@@ -7,7 +7,6 @@ import deepdive.backend.divelog.domain.UnderWaterVisibility;
 import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
-import deepdive.backend.utils.ValidEnum;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -39,42 +38,35 @@ import java.util.List;
  * @param profiles
  */
 public record DiveLogRequestDto(
-	@ValidEnum(enumClass = Purpose.class)
-	String purpose,
+	Purpose purpose,
 	@NotNull
 	LocalDate diveDate,
 	@NotEmpty
 	String center,
 	@NotNull
 	String point,
-	@ValidEnum(enumClass = WaterType.class)
-	String waterType,
+	WaterType waterType,
 	@NotNull
 	Long depth,
 	@NotNull
 	Long diveMin,
 	@NotNull
 	Long waterTemp,
-	@ValidEnum(enumClass = UnderWaterVisibility.class)
-	String underWaterVisibility,
+	UnderWaterVisibility underWaterVisibility,
 	@NotNull
 	Long airTemp,
-	@ValidEnum(enumClass = Weather.class)
-	String weather,
-	@ValidEnum(enumClass = SuitType.class)
-	String suitType,
+	Weather weather,
+	SuitType suitType,
 	@NotNull
 	Long weight,
-	@ValidEnum(enumClass = WeightType.class)
-	String weightType,
+	WeightType weightType,
 	@NotNull
 	Long startPressure,
 	@NotNull
 	Long endPressure,
 	@NotNull
 	Long airTankUsage,
-	@ValidEnum(enumClass = ReviewType.class)
-	String reviewType,
+	ReviewType reviewType,
 	String reviewComment,
 	@Nullable
 	List<Long> profiles

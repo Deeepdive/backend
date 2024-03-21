@@ -1,5 +1,12 @@
 package deepdive.backend.dto.divelog;
 
+import deepdive.backend.divelog.domain.Purpose;
+import deepdive.backend.divelog.domain.ReviewType;
+import deepdive.backend.divelog.domain.SuitType;
+import deepdive.backend.divelog.domain.UnderWaterVisibility;
+import deepdive.backend.divelog.domain.WaterType;
+import deepdive.backend.divelog.domain.Weather;
+import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.dto.profile.ProfileDefaultResponseDto;
 import java.time.LocalDate;
 import java.util.List;
@@ -9,24 +16,24 @@ import java.util.List;
  */
 public record DiveLogInfoDto(
 	Long id,
-	String purpose,
+	Purpose purpose,
 	LocalDate diveDate,
 	String center,
 	String point,
-	String waterType,
+	WaterType waterType,
 	Long depth,
 	Long diveMin,
 	Long waterTemp,
-	String underWaterVisibility,
+	UnderWaterVisibility underWaterVisibility,
 	Long airTemp,
-	String weather,
-	String suitType,
+	Weather weather,
+	SuitType suitType,
 	Long weight,
-	String weightType,
+	WeightType weightType,
 	Long startPressure,
 	Long endPressure,
 	Long airTankUsage,
-	String reviewType,
+	ReviewType reviewType,
 	String reviewComment,
 	List<ProfileDefaultResponseDto> buddiesProfile
 ) {
