@@ -13,11 +13,6 @@ public class MemberCommandService {
 
 	private final MemberRepository memberRepository;
 
-	@Transactional
-	public Member save(Member member) {
-		return memberRepository.save(member);
-	}
-
 	public void delete(Member member) {
 		memberRepository.delete(member);
 	}

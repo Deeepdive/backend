@@ -71,6 +71,7 @@ public class ProfileService {
 	public void updateDefaultProfile(ProfileDefaultRequestDto dto) {
 		Profile profile = profileQueryService.getByMemberId();
 
+		// TODO: null로 받지 않도록, nickname, url 둘 다 받아서 한번에 UPDATE 하는 로직으로 수정하기
 		if (dto.urlNumber() != null) {
 			String url = Pictures.getByNumber(dto.urlNumber());
 			profile.updateDefaultImage(url);
@@ -83,8 +84,7 @@ public class ProfileService {
 	public ProfileDefaultResponseDto showDefaultProfile() {
 		Profile profile = profileQueryService.getByMemberId();
 
-		return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
-			profile.getPicture());
+		return profileMapper.toProfileDefaultResponseDto(profile);
 	}
 
 	public ProfileCertResponseDto showCertProfile() {
@@ -101,24 +101,12 @@ public class ProfileService {
 			profile.getEtc());
 	}
 
-	public List<ProfileDefaultResponseDto> getBuddiesProfiles(List<Profile> profiles) {
-		return profiles.stream()
-			.map(profile ->
-				profileMapper.toProfileDefaultResponseDto(
-					profile.getId(),
-					profile.getNickName(),
-					profile.getPicture())
-			)
-			.toList();
-	}
-
 	public ProfileDefaultResponseDto getIdByNickName(String nickName) {
 		Profile profile = profileQueryService.getByNickName(nickName);
 
 		profilePolicyService.verifySelfProfile(profile, profileQueryService.getByMemberId());
 
-		return profileMapper.toProfileDefaultResponseDto(profile.getId(), profile.getNickName(),
-			profile.getPicture());
+		return profileMapper.toProfileDefaultResponseDto(profile);
 	}
 
 	public ProfileResponseDto showProfile() {

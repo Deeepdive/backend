@@ -23,13 +23,6 @@ public class MemberQueryService {
 			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
 	}
 
-	public Member getMemberWithProfile() {
-		Long memberId = getMemberId();
-
-		return memberRepository.findByIdWithProfile(memberId)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
-	}
-
 	public Optional<Member> findByEmail(String email) {
 		return memberRepository.findByEmail(email);
 	}

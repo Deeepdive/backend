@@ -50,17 +50,17 @@ public class MemberController {
 
 		Member member = memberService.registerMember(dto.email(), dto.provider(), dto.oauthId(),
 			dto.isMarketing());
-		log.info("신규 유저 회원가입 완료");
 		return jwtService.generateToken(member.getId(), member.getOauthId());
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<TokenInfo> commonLogin(@RequestBody @Valid MemberLoginRequestDto dto) {
+		log.info("로그인 요청 시작");
 		if (!memberService.isRegisteredMember(dto.oauthId())) {
 			String registerToken = jwtService.createRegisterToken(dto.oauthId());
 			return ResponseEntity.status(403).body(new TokenInfo(registerToken, ""));
 		}
-		log.info("기존 유저의 refreshToken 발급");
+		log.info(" 신규 유저가 아닙니다.");
 		Long memberId = memberService.getValidMemberByLoginInfo(dto.oauthId(), dto.email());
 		return ResponseEntity.status(200).body(jwtService.generateToken(memberId, dto.oauthId()));
 	}
