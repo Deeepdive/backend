@@ -4,6 +4,8 @@ import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.exception.ExceptionStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,5 +24,14 @@ public class DiveLogQueryService {
 
 		return diveLogRepository.findOneByMemberId(memberId, profileId)
 			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+	}
+
+	public DiveLog getDiveLog(Long diveLogId) {
+		return diveLogRepository.findById(diveLogId)
+			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+	}
+
+	public Page<DiveLog> getPaginationUserDiveLogs(Long memberId, Pageable pageable) {
+		return diveLogRepository.findPaginationByMemberId(memberId, pageable);
 	}
 }

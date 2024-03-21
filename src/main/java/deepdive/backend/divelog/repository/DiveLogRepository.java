@@ -23,12 +23,10 @@ public interface DiveLogRepository extends JpaRepository<DiveLog, Long> {
 		@Param("diveLogId") Long diveLogId);
 
 
-	@Query(value = "SELECT dl "
+	@Query("SELECT dl "
 		+ "FROM DiveLog dl "
-		+ "WHERE dl.member.id = :memberId",
-		countQuery = "SELECT count(dl) "
-			+ "FROM DiveLog dl "
-			+ "WHERE dl.member.id = :memberId")
-	Page<DiveLog> findAllByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+		+ "WHERE dl.member.id = :memberId")
+	@EntityGraph(attributePaths = "profiles.profile")
+	Page<DiveLog> findPaginationByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
 }
