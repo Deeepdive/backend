@@ -1,11 +1,8 @@
-package deepdive.backend.koreanaddress.service;
+package deepdive.backend.csv;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import deepdive.backend.koreanaddress.domain.City;
-import deepdive.backend.koreanaddress.domain.Province;
-import deepdive.backend.koreanaddress.repository.CityRepository;
-import deepdive.backend.koreanaddress.repository.ProvinceRepository;
+import deepdive.backend.diveshop.repository.DiveShopRepository;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileReader;
@@ -23,23 +20,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CSVService {
 
-	private final CityRepository cityRepository;
-	private final ProvinceRepository provinceRepository;
+	private final DiveShopRepository diveShopRepository;
+
 
 	@PostConstruct
-	public void AddressInit() {
-		log.info("count ? = {}", provinceRepository.count());
-		if (!dataAlreadyLoaded(provinceRepository)) {
-			loadDataFromCSV("korean-address.csv");
+	public void diveShopInit() {
+		if (dataAlreadyLoaded(diveShopRepository)) {
+			loadDiveShopFromCSV("dive-shop.csv");
 		}
 	}
 
 	private boolean dataAlreadyLoaded(JpaRepository repository) {
-		return repository.count() > 0;
+		return repository.count() <= 0;
 	}
 
 	@Transactional
-	public void loadDataFromCSV(String fileName) {
+	public void loadDiveShopFromCSV(String fileName) {
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			File file = new File(
@@ -50,20 +46,8 @@ public class CSVService {
 			csvReader.readNext(); // 도, 시 생략
 			String[] nextRecord;
 			while ((nextRecord = csvReader.readNext()) != null) {
-				String provinceName = nextRecord[0];
-				Province province = provinceRepository.findByName(provinceName)
-					.orElseGet(() -> {
-						Province newProvince = Province.of(provinceName);
-						return provinceRepository.save(newProvince);
-					});
 
-				for (int i = 1; i < nextRecord.length; i++) {
-					String cityName = nextRecord[i];
-					City city = City.of(cityName, province);
-					cityRepository.save(city);
-				}
 			}
-			csvReader.close();
 		} catch (IOException | CsvValidationException e) {
 			e.printStackTrace();
 		}
