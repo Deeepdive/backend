@@ -1,11 +1,14 @@
 package deepdive.backend.diveshop.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Getter;
 
 @Entity
@@ -28,8 +31,11 @@ public class DiveShop {
 	private String availableTime;
 	// 스포츠 종목들
 
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL)
+	private List<Sport> sportTypes;
+
 	public static DiveShop of(String name, Address address, ContactInformation contactInformation,
-		String comment, String availableTime) {
+		String comment, String availableTime, List<Sport> sportTypes) {
 		DiveShop diveShop = new DiveShop();
 		diveShop.name = name;
 		diveShop.address = address;
@@ -37,12 +43,9 @@ public class DiveShop {
 		diveShop.comment = comment;
 		diveShop.availableTime = availableTime;
 		diveShop.reserveCount = 0;
+		diveShop.sportTypes = sportTypes;
 
 		return diveShop;
-	}
-
-	public String getFullAddress() {
-		return address.getFullAddress();
 	}
 
 	public void addReserveCount() {

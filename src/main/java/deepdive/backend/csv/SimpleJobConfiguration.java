@@ -33,7 +33,7 @@ public class SimpleJobConfiguration {
 		JobRepository jobRepository,
 		PlatformTransactionManager platformTransactionManager) {
 		return new StepBuilder("diveShopDataLoadStep", jobRepository)
-			.<DiveShopCsvData, DiveShopCsvData>chunk(45, platformTransactionManager)
+			.<DiveShopCsvData, DiveShopCsvData>chunk(100, platformTransactionManager)
 			.reader(csvReader.csvScheduleReader())
 			.writer(csvScheduleWriter)
 //			.listener(csvFileDeleteListener)
