@@ -2,7 +2,9 @@ package deepdive.backend.diveshop.controller;
 
 import deepdive.backend.diveshop.service.DiveShopService;
 import deepdive.backend.dto.diveshop.DiveShopDataDto;
+import deepdive.backend.dto.diveshop.DiveShopResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,13 +18,32 @@ public class DiveShopController {
 
 	private final DiveShopService diveShopService;
 
-	@GetMapping("/list")
-	public DiveShopDataDto getAllShopInformation() {
-
-	}
+	// TODO : DiveShopDataDto -> DiveShopDataPagination 수정
+//	@GetMapping("/list")
+//	public DiveShopDataDto getAllShopInformation(Pageable pageable) {
+//		return diveShopService.getAllDiveShops(pageable);
+//	}
 
 	@PostMapping("/reserve/{diveShopId}")
 	public void reserve(@PathVariable(value = "diveShopId") Long diveShopId) {
 		diveShopService.reserveDiveShop(diveShopId);
+	}
+
+//	@GetMapping("/list/{diveShopName}")
+//	public DiveShopDataDto getDiveShopInformation(
+//		@PathVariable(value = "diveShopName") String name) {
+//		return diveShopService.diveShopInformation(name);
+//	}
+
+	@GetMapping("/{diveShopId}")
+	public DiveShopDataDto getDiveShopInformation(
+		@PathVariable(value = "diveShopId") Long diveShopId) {
+		return diveShopService.getDiveShopInformation(diveShopId);
+	}
+
+	@GetMapping("/{keyword}")
+	public DiveShopResponseDto getSearchShopResult(
+		@PathVariable(value = "keyword") String keyword, Pageable pageable) {
+		return diveShopService.getInformationByKeyword(keyword, pageable);
 	}
 }
