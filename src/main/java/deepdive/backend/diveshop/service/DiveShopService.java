@@ -45,6 +45,13 @@ public class DiveShopService {
 			diveShop.getContactInformation());
 	}
 
+	/**
+	 * 검색어로 들어온 해당 '도'에 위치한 다이빙샵 리스트 반환
+	 *
+	 * @param keyword
+	 * @param pageable
+	 * @return
+	 */
 	public DiveShopResponseDto getInformationByKeyword(String keyword, Pageable pageable) {
 		Page<DiveShop> diveShops = diveShopQueryService.getByProvinceName(keyword, pageable);
 		List<DiveShopDataDto> result = diveShops.stream()

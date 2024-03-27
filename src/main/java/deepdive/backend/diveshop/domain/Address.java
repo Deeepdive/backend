@@ -9,7 +9,6 @@ public class Address {
 
 	private String province;
 	private String city;
-	@Getter
 	private String fullAddress;
 	private String detail;
 
