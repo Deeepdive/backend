@@ -1,5 +1,6 @@
 package deepdive.backend.member.domain.entity;
 
+import deepdive.backend.configuration.Role;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.member.domain.Provider;
 import deepdive.backend.profile.domain.entity.Profile;
@@ -39,7 +40,8 @@ public class Member {
 
 	private String email;
 	private String oauthId;
-	
+	private Role role;
+
 	@Enumerated(value = EnumType.STRING)
 	private Provider provider;
 

@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtService {
 
+	private static final String ADMIN_OAUTH = "tEsCqjghWqhs";
+
 	private static final String OAUTH_ID = "oauthId";
 	private static final String MEMBER_ID = "memberId";
 
@@ -50,7 +52,7 @@ public class JwtService {
 	}
 
 	public String createRefreshToken(String oauthId) {
-		Claims claims = generateClaimFormat();
+		Claims claims = generateClaimFormat(oauthId);
 
 		claims.put(OAUTH_ID, oauthId);
 		Date now = new Date();
@@ -63,7 +65,7 @@ public class JwtService {
 	}
 
 	public String createAccessToken(Long memberId, String oauthId) {
-		Claims claims = generateClaimFormat();
+		Claims claims = generateClaimFormat(oauthId);
 		claims.put(MEMBER_ID, memberId);
 		claims.put(OAUTH_ID, oauthId);
 		Date now = new Date();
@@ -77,14 +79,19 @@ public class JwtService {
 			.compact();
 	}
 
-	private Claims generateClaimFormat() {
+	private Claims generateClaimFormat(String oauthId) {
+		if (oauthId.equals(ADMIN_OAUTH)) {
+			Claims claims = Jwts.claims().setSubject("AdminToken");
+			claims.put("roles", "ROLE_ADMIN");
+			return claims;
+		}
 		Claims claims = Jwts.claims().setSubject("UserToken");
-		claims.put("roles", "User");
+		claims.put("roles", "ROLE_USER");
 		return claims;
 	}
 
 	public String createRegisterToken(String oauthId) {
-		Claims claims = generateClaimFormat();
+		Claims claims = generateClaimFormat(oauthId);
 		claims.put(OAUTH_ID, oauthId);
 		Date now = new Date();
 

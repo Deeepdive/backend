@@ -18,11 +18,10 @@ public class DiveShopController {
 
 	private final DiveShopService diveShopService;
 
-	// TODO : DiveShopDataDto -> DiveShopDataPagination 수정
-//	@GetMapping("/list")
-//	public DiveShopDataDto getAllShopInformation(Pageable pageable) {
-//		return diveShopService.getAllDiveShops(pageable);
-//	}
+	@GetMapping("/list")
+	public DiveShopResponseDto getAllShopInformation(Pageable pageable) {
+		return diveShopService.getDiveShopList(pageable);
+	}
 
 	@PostMapping("/reserve/{diveShopId}")
 	public void reserve(@PathVariable(value = "diveShopId") Long diveShopId) {
@@ -41,7 +40,7 @@ public class DiveShopController {
 		return diveShopService.getDiveShopInformation(diveShopId);
 	}
 
-	@GetMapping("/{keyword}")
+	@GetMapping("search/{keyword}")
 	public DiveShopResponseDto getSearchShopResult(
 		@PathVariable(value = "keyword") String keyword, Pageable pageable) {
 		return diveShopService.getInformationByKeyword(keyword, pageable);

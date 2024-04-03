@@ -2,31 +2,26 @@ package deepdive.backend.diveshop.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.List;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 
 @Entity
 @Getter
-public class Sport {
+public class DiveShopPicture {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "sport_id")
+	@Column(name = "picture_id")
 	private Long id;
 
-	private String name;
+	private String url;
 
-	@OneToMany(mappedBy = "sport")
-	private List<DiveShopSport> diveShopInformations;
-
-	public static Sport of(String name) {
-		Sport sport = new Sport();
-		sport.name = name;
-
-		return sport;
-	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dive_shop_id")
+	private DiveShop diveShop;
 }

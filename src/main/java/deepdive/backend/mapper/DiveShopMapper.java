@@ -4,6 +4,7 @@ import deepdive.backend.diveshop.domain.Address;
 import deepdive.backend.diveshop.domain.ContactInformation;
 import deepdive.backend.diveshop.domain.DiveShop;
 import deepdive.backend.dto.diveshop.DiveShopDataDto;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -12,5 +13,5 @@ import org.springframework.stereotype.Component;
 public interface DiveShopMapper {
 
 	DiveShopDataDto toDiveShopDataDto(DiveShop diveShop, Address address,
-		ContactInformation contactInformation);
+		ContactInformation contactInformation, List<String> sportTypes, List<String> pictures);
 }

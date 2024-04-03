@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
@@ -17,25 +19,41 @@ public class DiveShop {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "dive_shop_id")
+	@Column(name = "DIVE_SHOP_ID")
 	private Long id;
+
+	@Column(name = "NAME")
 	private String name;
+
 	@Embedded
 	private Address address;
+
 	@Embedded
 	private ContactInformation contactInformation;
-	@Column(length = 500)
+
+	@Column(name = "COMMENT", length = 500)
 	private String comment;
+
+	@Column(name = "RESERVE_COUNT")
 	private Integer reserveCount;
 
+	@Column(name = "AVAILABLE_TIME")
 	private String availableTime;
-	// 스포츠 종목들
+
+	@Column(name = "CREATED_AT")
+	private LocalDateTime createdAt;
+
+	@Column(name = "DELETED_AT")
+	private LocalDateTime deletedAt;
 
 	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL)
-	private List<Sport> sportTypes;
+	private List<DiveShopSport> diveShopInformation;
+
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL)
+	private List<DiveShopPicture> diveShopPictures = new ArrayList<>();
 
 	public static DiveShop of(String name, Address address, ContactInformation contactInformation,
-		String comment, String availableTime, List<Sport> sportTypes) {
+		String comment, String availableTime) {
 		DiveShop diveShop = new DiveShop();
 		diveShop.name = name;
 		diveShop.address = address;
@@ -43,12 +61,20 @@ public class DiveShop {
 		diveShop.comment = comment;
 		diveShop.availableTime = availableTime;
 		diveShop.reserveCount = 0;
-		diveShop.sportTypes = sportTypes;
+		diveShop.createdAt = LocalDateTime.now();
 
 		return diveShop;
 	}
 
 	public void addReserveCount() {
 		this.reserveCount++;
+	}
+
+	public void delete() {
+		this.deletedAt = LocalDateTime.now();
+	}
+
+	public void addPicture(DiveShopPicture diveShopPicture) {
+		diveShopPictures.add(diveShopPicture);
 	}
 }
