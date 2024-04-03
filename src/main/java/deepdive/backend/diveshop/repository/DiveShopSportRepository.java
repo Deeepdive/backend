@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DiveShopSportRepository extends JpaRepository<DiveShopSport, Long> {
 
-	@EntityGraph(attributePaths = "sport")
-	List<DiveShopSport> findByDiveShop(DiveShop diveShop);
+	@EntityGraph(attributePaths = {"sport", "diveShop"})
+	List<DiveShopSport> findAllByDiveShopId(Long diveShopId);
 
 
-	@EntityGraph(attributePaths = "sport, diveShopPicture")
+	@EntityGraph(attributePaths = {"sport", "diveShopPicture"})
 	List<DiveShopSport> findAllByDiveShopIn(List<DiveShop> diveShop);
 }

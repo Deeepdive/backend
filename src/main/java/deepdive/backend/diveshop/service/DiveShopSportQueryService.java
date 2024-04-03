@@ -13,8 +13,8 @@ public class DiveShopSportQueryService {
 
 	private final DiveShopSportRepository diveShopSportRepository;
 
-	public List<DiveShopSport> getByDiveShopWithSport(DiveShop diveShop) {
-		return diveShopSportRepository.findByDiveShop(diveShop);
+	public List<DiveShopSport> getByDiveShopWithSport(Long diveShopId) {
+		return diveShopSportRepository.findAllByDiveShopId(diveShopId);
 	}
 
 	public List<DiveShopSport> getAllByDiveShopsRelationShip(List<DiveShop> allDiveShops) {
