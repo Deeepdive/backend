@@ -4,13 +4,13 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 
 @Entity
@@ -46,11 +46,11 @@ public class DiveShop {
 	@Column(name = "DELETED_AT")
 	private LocalDateTime deletedAt;
 
-	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL)
-	private List<DiveShopSport> diveShopInformation;
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<DiveShopSport> diveShopInformation;
 
-	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL)
-	private List<DiveShopPicture> diveShopPictures = new ArrayList<>();
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<DiveShopPicture> diveShopPictures;
 
 	public static DiveShop of(String name, Address address, ContactInformation contactInformation,
 		String comment, String availableTime) {
@@ -74,7 +74,4 @@ public class DiveShop {
 		this.deletedAt = LocalDateTime.now();
 	}
 
-	public void addPicture(DiveShopPicture diveShopPicture) {
-		diveShopPictures.add(diveShopPicture);
-	}
 }

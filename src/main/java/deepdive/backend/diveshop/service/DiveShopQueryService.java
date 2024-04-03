@@ -32,5 +32,9 @@ public class DiveShopQueryService {
 		return diveShopRepository.findAll(pageable);
 	}
 
+	public DiveShop getByDiveShopIdWithInformation(Long diveShopId) {
+		return diveShopRepository.findByIdWithInformations(diveShopId)
+			.orElseThrow(ExceptionStatus.NOT_FOUND_SHOP::asServiceException);
+	}
 
 }
