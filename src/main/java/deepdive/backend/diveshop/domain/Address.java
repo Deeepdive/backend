@@ -17,7 +17,7 @@ public class Address {
 	@Column(name = "FULL_ADDRESS")
 	private String fullAddress;
 
-	@Column(name = "DETAIL")
+	@Column(name = "DETAIL", length = 1024)
 	private String detail;
 
 	public static Address of(String province, String fullAddress, String zipCode, String detail) {
