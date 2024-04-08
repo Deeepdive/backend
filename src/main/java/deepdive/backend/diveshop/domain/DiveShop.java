@@ -31,7 +31,7 @@ public class DiveShop {
 	@Embedded
 	private ContactInformation contactInformation;
 
-	@Column(name = "COMMENT", length = 500)
+	@Column(name = "COMMENT", length = 1024)
 	private String comment;
 
 	@Column(name = "RESERVE_COUNT")
@@ -52,8 +52,11 @@ public class DiveShop {
 	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<DiveShopPicture> diveShopPictures;
 
+	@Embedded
+	private Location location;
+
 	public static DiveShop of(String name, Address address, ContactInformation contactInformation,
-		String comment, String availableTime) {
+		String comment, String availableTime, Location location) {
 		DiveShop diveShop = new DiveShop();
 		diveShop.name = name;
 		diveShop.address = address;
@@ -62,12 +65,17 @@ public class DiveShop {
 		diveShop.availableTime = availableTime;
 		diveShop.reserveCount = 0;
 		diveShop.createdAt = LocalDateTime.now();
+		diveShop.location = location;
 
 		return diveShop;
 	}
 
 	public void addReserveCount() {
 		this.reserveCount++;
+	}
+
+	public String getFullAddress() {
+		return address.getFullAddress();
 	}
 
 	public void delete() {

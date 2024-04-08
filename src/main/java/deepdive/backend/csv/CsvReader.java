@@ -34,6 +34,7 @@ public class CsvReader {
 		// 따로 설정하지 않으면 기본값은 ","
 		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
 		delimitedLineTokenizer.setNames(DiveShopCsvData.getFieldNames().toArray(String[]::new));
+		delimitedLineTokenizer.setStrict(false);
 		defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);
 
 		// 매칭할 class 타입 지정(필드 지정)

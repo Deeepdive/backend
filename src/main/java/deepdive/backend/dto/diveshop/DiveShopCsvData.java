@@ -19,6 +19,8 @@ public class DiveShopCsvData {
 	private String review;
 	private String comment;
 	private String sportType;
+	private String thumbnail;
+	private String images;
 
 
 	public static List<String> getFieldNames() {

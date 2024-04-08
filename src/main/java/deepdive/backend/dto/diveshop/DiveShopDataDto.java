@@ -14,7 +14,9 @@ public record DiveShopDataDto(
 	String comment,
 	String availableTime,
 	List<String> sportTypes,
-	List<String> pictures
+	List<String> pictures,
+	String latitude,
+	String longitude
 
 ) {
 

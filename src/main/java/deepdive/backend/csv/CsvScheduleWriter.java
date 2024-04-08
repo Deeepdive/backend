@@ -4,6 +4,7 @@ import deepdive.backend.diveshop.domain.Address;
 import deepdive.backend.diveshop.domain.ContactInformation;
 import deepdive.backend.diveshop.domain.DiveShop;
 import deepdive.backend.diveshop.domain.DiveShopSport;
+import deepdive.backend.diveshop.domain.Location;
 import deepdive.backend.diveshop.domain.Sport;
 import deepdive.backend.diveshop.repository.DiveShopRepository;
 import deepdive.backend.diveshop.repository.DiveShopSportRepository;
@@ -22,23 +23,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CsvScheduleWriter implements ItemWriter<DiveShopCsvData> {
 
+	private final NaverPlaceSearchService naverPlaceSearchService;
+
 	private final DiveShopRepository diveShopRepository;
 	private final SportRepository sportRepository;
 	private final DiveShopSportRepository diveShopSportRepository;
 
 	@Override
 	@Transactional
-	public void write(Chunk<? extends DiveShopCsvData> chunk) throws Exception {
+	public void write(Chunk<? extends DiveShopCsvData> chunk) {
 		Chunk<DiveShop> diveShops = new Chunk<>();
 		List<DiveShopSport> diveShopInformations = new ArrayList<>();
 
 		chunk.forEach(diveShopCsvData -> {
+			String diveShopName = diveShopCsvData.getName();
+			Location location = naverPlaceSearchService.getDiveShopImages(diveShopName);
 			Address address = Address.of(diveShopCsvData.getProvince(), diveShopCsvData.getCity(),
 				diveShopCsvData.getFullAddress(), diveShopCsvData.getDetail());
 			ContactInformation contactInformation = ContactInformation.of(
 				diveShopCsvData.getPhoneNumber(), diveShopCsvData.getFax());
 			DiveShop diveShop = DiveShop.of(diveShopCsvData.getName(), address, contactInformation,
-				diveShopCsvData.getComment(), diveShopCsvData.getAvailableTime());
+				diveShopCsvData.getComment(), diveShopCsvData.getAvailableTime(), location);
 			diveShops.add(diveShop);
 
 			String sportTypes = diveShopCsvData.getSportType();
