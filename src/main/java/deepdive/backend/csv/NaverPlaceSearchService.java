@@ -2,7 +2,6 @@ package deepdive.backend.csv;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import deepdive.backend.diveshop.domain.Location;
-import deepdive.backend.diveshop.repository.DiveShopRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,32 +19,31 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class NaverPlaceSearchService {
 
-	private static final String TARGET_URI = "https://openapi.naver.com/v1/search/local.json";
-	private final DiveShopRepository diveShopRepository;
+	private static final String TARGET_URI = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode";
 	@Value("${naver.client}")
 	private String client;
 	@Value("${naver.secret}")
 	private String secret;
 
 	@Transactional
-	public Location getDiveShopImages(String diveShopName) {
+	public Location getDiveShopImages(String fullAddress) {
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.set("X-Naver-Client-Id", client);
-		httpHeaders.set("X-Naver-Client-Secret", secret);
+		httpHeaders.set("X-NCP-APIGW-API-KEY-ID", client);
+		httpHeaders.set("X-NCP-APIGW-API-KEY", secret);
 
-		String url = TARGET_URI + "?query=" + diveShopName.replace(" ", "");
+		String url = TARGET_URI + "?query=" + fullAddress;
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity,
-			String.class);
+		ResponseEntity<String> response =
+			restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 		log.info("result = {}", response.getBody());
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
-			NaverApiResponse imageResponse = objectMapper.readValue(response.getBody(),
-				NaverApiResponse.class);
-			if (imageResponse.getItems().size() == 1) {
-				return imageResponse.getItems().get(0);
+			NaverApiResponse imageResponse =
+				objectMapper.readValue(response.getBody(), NaverApiResponse.class);
+			if (imageResponse.getAddresses().size() == 1) {
+				return imageResponse.getAddresses().get(0);
 			}
 		} catch (Exception e) {
 			log.error("Error processing JSON", e);

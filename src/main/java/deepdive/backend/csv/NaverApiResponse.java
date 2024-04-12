@@ -10,5 +10,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NaverApiResponse {
 
-	private List<Location> items;
+	private List<Location> addresses;
 }

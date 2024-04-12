@@ -17,6 +17,8 @@ public interface DiveShopMapper {
 	@Mapping(target = "detail", source = "diveShop.address.detail")
 	@Mapping(target = "phoneNumber", source = "diveShop.contactInformation.phoneNumber")
 	@Mapping(target = "fax", source = "diveShop.contactInformation.fax")
+	@Mapping(target = "latitude", source = "diveShop.location.x")
+	@Mapping(target = "longitude", source = "diveShop.location.y")
 	DiveShopDataDto toDiveShopDataDto(DiveShop diveShop, List<String> sportTypes,
 		List<String> pictures);
 }

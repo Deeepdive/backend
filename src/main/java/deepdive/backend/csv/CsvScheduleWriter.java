@@ -36,12 +36,12 @@ public class CsvScheduleWriter implements ItemWriter<DiveShopCsvData> {
 		List<DiveShopSport> diveShopInformations = new ArrayList<>();
 
 		chunk.forEach(diveShopCsvData -> {
-			String diveShopName = diveShopCsvData.getName();
-			Location location = naverPlaceSearchService.getDiveShopImages(diveShopName);
+			String fullAddress = diveShopCsvData.getFullAddress();
+			Location location = naverPlaceSearchService.getDiveShopImages(fullAddress);
 			Address address = Address.of(diveShopCsvData.getProvince(), diveShopCsvData.getCity(),
 				diveShopCsvData.getFullAddress(), diveShopCsvData.getDetail());
-			ContactInformation contactInformation = ContactInformation.of(
-				diveShopCsvData.getPhoneNumber(), diveShopCsvData.getFax());
+			ContactInformation contactInformation =
+				ContactInformation.of(diveShopCsvData.getPhoneNumber(), diveShopCsvData.getFax());
 			DiveShop diveShop = DiveShop.of(diveShopCsvData.getName(), address, contactInformation,
 				diveShopCsvData.getComment(), diveShopCsvData.getAvailableTime(), location);
 			diveShops.add(diveShop);
