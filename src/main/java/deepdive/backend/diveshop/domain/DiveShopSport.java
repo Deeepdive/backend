@@ -24,11 +24,11 @@ public class DiveShopSport {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "DIVESHOP_ID")
+	@JoinColumn(name = "DIVESHOP_ID", nullable = false, insertable = false)
 	private DiveShop diveShop;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SPORT_ID")
+	@JoinColumn(name = "SPORT_ID", nullable = false, insertable = false)
 	private Sport sport;
 
 	@Column(name = "DIVESHOP_ID", nullable = false)
