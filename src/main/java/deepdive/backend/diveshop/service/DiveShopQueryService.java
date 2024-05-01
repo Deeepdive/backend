@@ -3,6 +3,7 @@ package deepdive.backend.diveshop.service;
 import deepdive.backend.diveshop.domain.DiveShop;
 import deepdive.backend.diveshop.repository.DiveShopRepository;
 import deepdive.backend.exception.ExceptionStatus;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,7 @@ public class DiveShopQueryService {
 			.orElseThrow(ExceptionStatus.NOT_FOUND_SHOP::asServiceException);
 	}
 
+	public List<DiveShop> getAllDiveShops() {
+		return diveShopRepository.findAll();
+	}
 }

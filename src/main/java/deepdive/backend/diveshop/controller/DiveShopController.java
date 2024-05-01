@@ -20,7 +20,7 @@ public class DiveShopController {
 
 	@GetMapping("/list")
 	public DiveShopResponseDto getAllShopInformation(Pageable pageable) {
-		return diveShopService.getDiveShopList(pageable);
+		return diveShopService.getDiveShopPagination(pageable);
 	}
 
 	@PostMapping("/reserve/{diveShopId}")
@@ -28,21 +28,15 @@ public class DiveShopController {
 		diveShopService.reserveDiveShop(diveShopId);
 	}
 
-//	@GetMapping("/list/{diveShopName}")
-//	public DiveShopDataDto getDiveShopInformation(
-//		@PathVariable(value = "diveShopName") String name) {
-//		return diveShopService.diveShopInformation(name);
-//	}
-
 	@GetMapping("/{diveShopId}")
 	public DiveShopDataDto getDiveShopInformation(
 		@PathVariable(value = "diveShopId") Long diveShopId) {
 		return diveShopService.getDiveShopInformation(diveShopId);
 	}
 
-	@GetMapping("search/{keyword}")
-	public DiveShopResponseDto getSearchShopResult(
-		@PathVariable(value = "keyword") String keyword, Pageable pageable) {
-		return diveShopService.getInformationByKeyword(keyword, pageable);
-	}
+//	@GetMapping("search/{keyword}")
+//	public DiveShopResponseDto getSearchShopResult(
+//		@PathVariable(value = "keyword") String keyword, Pageable pageable) {
+//		return diveShopService.getInformationByKeyword(keyword, pageable);
+//	}
 }
