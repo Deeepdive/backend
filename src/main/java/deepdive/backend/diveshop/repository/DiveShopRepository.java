@@ -11,8 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface DiveShopRepository extends JpaRepository<DiveShop, Long> {
 
-//	Page<DiveShop> getPaginationDiveShops(Pageable pageable);
-
+	//	Page<DiveShop> getPaginationDiveShops(Pageable pageable);
 	Optional<DiveShop> findByName(String name);
 
 	@Query("SELECT d FROM DiveShop d "

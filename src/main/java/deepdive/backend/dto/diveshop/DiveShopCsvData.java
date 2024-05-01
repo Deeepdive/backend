@@ -16,8 +16,8 @@ public class DiveShopCsvData {
 	private String city;
 	private String detail;
 	private String availableTime;
-	private String review;
-	private String comment;
+	private String review_title;
+	private String review_comment;
 	private String sportType;
 	private String thumbnail;
 	private String images;

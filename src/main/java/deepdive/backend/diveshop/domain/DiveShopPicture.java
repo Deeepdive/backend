@@ -19,25 +19,22 @@ public class DiveShopPicture {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PICTURE_ID", nullable = false, insertable = false)
+	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "URL", nullable = false, updatable = false)
+	@Column(name = "URL", length = 1024)
 	private String url;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "DIVE_SHOP_ID", nullable = false, insertable = false)
+	@JoinColumn(name = "DIVE_SHOP_ID")
 	private DiveShop diveShop;
 
-	@Column(name = "DIVE_SHOP_ID", nullable = false)
-	private Long diveShopId;
-
-	protected DiveShopPicture(Long diveShopId, String url) {
-		this.diveShopId = diveShopId;
+	protected DiveShopPicture(DiveShop diveShop, String url) {
+		this.diveShop = diveShop;
 		this.url = url;
 	}
 
-	public static DiveShopPicture of(Long diveShopId, String url) {
-		return new DiveShopPicture(diveShopId, url);
+	public static DiveShopPicture of(DiveShop diveShop, String url) {
+		return new DiveShopPicture(diveShop, url);
 	}
 }

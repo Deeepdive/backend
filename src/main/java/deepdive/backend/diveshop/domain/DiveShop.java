@@ -19,7 +19,7 @@ public class DiveShop {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "DIVE_SHOP_ID")
+	@Column(name = "ID")
 	private Long id;
 
 	@Column(name = "NAME")
@@ -31,8 +31,10 @@ public class DiveShop {
 	@Embedded
 	private ContactInformation contactInformation;
 
-	@Column(name = "COMMENT", length = 1024)
-	private String comment;
+	@Column(name = "REVIEW_COMMENT", length = 1024)
+	private String review_comment;
+	@Column(name = "REVIEW_TITLE")
+	private String review_title;
 
 	@Column(name = "RESERVE_COUNT")
 	private Integer reserveCount;
@@ -46,22 +48,23 @@ public class DiveShop {
 	@Column(name = "DELETED_AT")
 	private LocalDateTime deletedAt;
 
-	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<DiveShopSport> diveShopInformation;
 
-	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<DiveShopPicture> diveShopPictures;
 
 	@Embedded
 	private Location location;
 
 	public static DiveShop of(String name, Address address, ContactInformation contactInformation,
-		String comment, String availableTime, Location location) {
+		String comment, String availableTime, Location location, String review_title) {
 		DiveShop diveShop = new DiveShop();
 		diveShop.name = name;
 		diveShop.address = address;
 		diveShop.contactInformation = contactInformation;
-		diveShop.comment = comment;
+		diveShop.review_title = review_title;
+		diveShop.review_comment = comment;
 		diveShop.availableTime = availableTime;
 		diveShop.reserveCount = 0;
 		diveShop.createdAt = LocalDateTime.now();
