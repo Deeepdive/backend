@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import lombok.Getter;
 
 @Entity
@@ -46,11 +46,11 @@ public class DiveShop {
 	@Column(name = "DELETED_AT")
 	private LocalDateTime deletedAt;
 
-	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<DiveShopSport> diveShopInformation;
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private List<DiveShopSport> diveShopInformation;
 
-	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<DiveShopPicture> diveShopPictures;
+	@OneToMany(mappedBy = "diveShop", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	private List<DiveShopPicture> diveShopPictures;
 
 	@Embedded
 	private Location location;
