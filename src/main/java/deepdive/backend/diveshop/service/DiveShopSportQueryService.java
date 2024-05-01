@@ -1,6 +1,5 @@
 package deepdive.backend.diveshop.service;
 
-import deepdive.backend.diveshop.domain.DiveShop;
 import deepdive.backend.diveshop.domain.DiveShopSport;
 import deepdive.backend.diveshop.repository.DiveShopSportRepository;
 import java.util.List;
@@ -17,7 +16,7 @@ public class DiveShopSportQueryService {
 		return diveShopSportRepository.findAllByDiveShopId(diveShopId);
 	}
 
-	public List<DiveShopSport> getAllByDiveShopsRelationShip(List<DiveShop> allDiveShops) {
-		return diveShopSportRepository.findAllByDiveShopIn(allDiveShops);
+	public List<DiveShopSport> getByDiveShopIdsWithSport(List<Long> diveShopIds) {
+		return diveShopSportRepository.findAllByDiveShopIdIn(diveShopIds);
 	}
 }
