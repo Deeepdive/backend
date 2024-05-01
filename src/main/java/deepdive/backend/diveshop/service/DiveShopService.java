@@ -41,11 +41,13 @@ public class DiveShopService {
 			.map(DiveShop::getId)
 			.toList();
 		Map<Long, List<DiveShopSport>> diveShopSportMap =
-			diveShopSportQueryService.getByDiveShopIdsWithSport(diveShopIds)
-				.stream().collect(Collectors.groupingBy(DiveShopSport::getDiveShopId));
+			diveShopSportQueryService.getByDiveShopIdsWithSport(diveShopIds).stream()
+				.collect(
+					Collectors.groupingBy(diveShopSport -> diveShopSport.getDiveShop().getId()));
 		Map<Long, List<DiveShopPicture>> diveShopPictureMap =
-			diveShopPictureQueryService.getByDiveShopIds(diveShopIds)
-				.stream().collect(Collectors.groupingBy(DiveShopPicture::getDiveShopId));
+			diveShopPictureQueryService.getByDiveShopIds(diveShopIds).stream()
+				.collect(Collectors.groupingBy(
+					diveShopPicture -> diveShopPicture.getDiveShop().getId()));
 
 		List<DiveShopDataDto> result = diveShops.getContent().stream()
 			.map(diveShop -> {

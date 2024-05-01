@@ -9,6 +9,8 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Location {
 
+	//	private String longitude;
+//	private String latitude;
 	private String x;
 	private String y;
 }

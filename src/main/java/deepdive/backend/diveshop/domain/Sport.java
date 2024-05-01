@@ -15,9 +15,10 @@ public class Sport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "sport_id")
+	@Column(name = "ID")
 	private Long id;
 
+	@Column(name = "NAME")
 	private String name;
 
 	@OneToMany(mappedBy = "sport")

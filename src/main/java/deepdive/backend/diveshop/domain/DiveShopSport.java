@@ -1,6 +1,5 @@
 package deepdive.backend.diveshop.domain;
 
-import deepdive.backend.exception.ExceptionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,33 +23,20 @@ public class DiveShopSport {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "DIVESHOP_ID", nullable = false, insertable = false)
+	@JoinColumn(name = "DIVE_SHOP_ID")
 	private DiveShop diveShop;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SPORT_ID", nullable = false, insertable = false)
+	@JoinColumn(name = "SPORT_ID")
 	private Sport sport;
 
-	@Column(name = "DIVESHOP_ID", nullable = false)
-	private Long diveShopId;
-	@Column(name = "SPORT_ID", nullable = false)
-	private Long sportId;
-
-	protected DiveShopSport(Long diveShopId, Long sportId) {
-		this.diveShopId = diveShopId;
-		this.sportId = sportId;
+	protected DiveShopSport(DiveShop diveShop, Sport sport) {
+		this.diveShop = diveShop;
+		this.sport = sport;
 	}
 
-
-	public static DiveShopSport of(Long diveShopId, Long sportId) {
-		DiveShopSport diveShopSport = new DiveShopSport(diveShopId, sportId);
-		if (diveShopSport.isValid()) {
-			throw ExceptionStatus.INVALID_ARGUMENT.asDomainException();
-		}
-		return diveShopSport;
+	public static DiveShopSport of(DiveShop diveShop, Sport sport) {
+		return new DiveShopSport(diveShop, sport);
 	}
 
-	private boolean isValid() {
-		return this.sportId != null && this.diveShopId != null;
-	}
 }

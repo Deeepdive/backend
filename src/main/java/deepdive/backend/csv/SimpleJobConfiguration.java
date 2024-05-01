@@ -33,18 +33,11 @@ public class SimpleJobConfiguration {
 		JobRepository jobRepository,
 		PlatformTransactionManager platformTransactionManager) {
 		return new StepBuilder("diveShopDataLoadStep", jobRepository)
-			.<DiveShopCsvData, DiveShopCsvData>chunk(100, platformTransactionManager)
+			.<DiveShopCsvData, DiveShopCsvData>chunk(50, platformTransactionManager)
 			.reader(csvReader.csvScheduleReader())
 			.writer(csvScheduleWriter)
 //			.listener(csvFileDeleteListener)
 			.build();
 	}
 
-//	@Bean
-//	public Tasklet testTasklet() {
-//		return (((contribution, chunkContext) -> {
-//			log.info(">>>>>>step1");
-//			return RepeatStatus.FINISHED;
-//		}));
-//	}
 }
