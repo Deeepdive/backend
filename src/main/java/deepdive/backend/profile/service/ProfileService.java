@@ -1,5 +1,6 @@
 package deepdive.backend.profile.service;
 
+import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.dto.profile.ProfileCertResponseDto;
 import deepdive.backend.dto.profile.ProfileDefaultImageDto;
 import deepdive.backend.dto.profile.ProfileDefaultImageResponseDto;
@@ -46,7 +47,9 @@ public class ProfileService {
 	 */
 	@Transactional
 	public void saveCertProfile(CertOrganization organization, CertType type, Boolean isTeacher) {
-		profilePolicyService.verifyMatchCertProfile(organization, type);
+		if (isTeacher) {
+			profilePolicyService.verifyMatchCertProfile(organization, type);
+		}
 
 		Profile profile = profileQueryService.getByMemberId();
 		profile.updateCertProfile(organization, type, isTeacher);
@@ -69,15 +72,17 @@ public class ProfileService {
 	 */
 	@Transactional
 	public void updateDefaultProfile(ProfileDefaultRequestDto dto) {
-		Profile profile = profileQueryService.getByMemberId();
+		log.info("기본 프로필 검증 시작");
+		Long memberId = AuthUserInfo.of().getMemberId();
+		Profile profile = profileQueryService.getByMemberId(memberId);
 
+		profilePolicyService.verifyNickName(profile.getNickName(), dto.nickName());
 		// TODO: null로 받지 않도록, nickname, url 둘 다 받아서 한번에 UPDATE 하는 로직으로 수정하기
 		if (dto.urlNumber() != null) {
 			String url = Pictures.getByNumber(dto.urlNumber());
-			profile.updateDefaultImage(url);
+			profile.updateDefaultProfile(url, dto.nickName());
+			return;
 		}
-
-		profilePolicyService.verifyNickName(profile.getNickName(), dto.nickName());
 		profile.updateNickName(dto.nickName());
 	}
 
@@ -101,7 +106,7 @@ public class ProfileService {
 			profile.getEtc());
 	}
 
-	public ProfileDefaultResponseDto getIdByNickName(String nickName) {
+	public ProfileDefaultResponseDto getDefaultProfileByNickName(String nickName) {
 		Profile profile = profileQueryService.getByNickName(nickName);
 
 		profilePolicyService.verifySelfProfile(profile, profileQueryService.getByMemberId());

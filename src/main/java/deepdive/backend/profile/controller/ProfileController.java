@@ -28,19 +28,6 @@ public class ProfileController {
 
 	private final ProfileService profileService;
 
-	/**
-	 * 유저의 프로필을 업데이트합니다.
-	 *
-	 * @param dto 닉네임, 사진, 알람 동의, 마케팅 동의, CertType 2개, 강사 여부
-	 */
-//	@Operation(summary = "유저 프로필 최초 등록")
-//	@ApiResponses({
-//		@ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다.")
-//	})
-//	@PostMapping("")
-//	public void saveDefaultProfile(@RequestBody ProfileRequestDto dto) {
-//		profileService.updateProfile(dto);
-//	}
 	@Operation(summary = "자격증 프로필 등록 및 수정")
 	@ApiResponses({
 		@ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다"),
@@ -102,7 +89,7 @@ public class ProfileController {
 	@GetMapping("/check-nickname")
 	public ProfileDefaultResponseDto isExistBuddyProfile(
 		@RequestParam(value = "nickName") String nickName) {
-		return profileService.getIdByNickName(nickName);
+		return profileService.getDefaultProfileByNickName(nickName);
 	}
 
 	@GetMapping("/default-img")
