@@ -38,6 +38,9 @@ public class DiveLogService {
 	private final DiveLogQueryService diveLogQueryService;
 	private final DiveLogCommandService diveLogCommandService;
 
+	private final DiveLogProfileQueryService diveLogProfileQueryService;
+	private final DiveLogProfileCommandService diveLogProfileCommandService;
+
 	private final MemberQueryService memberQueryService;
 	private final ProfileQueryService profileQueryService;
 	private final ProfileMapper profileMapper;
@@ -60,7 +63,7 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogRepository.save(DiveLog.of(dto, member));
 
 		List<Profile> buddies = profileQueryService.getProfiles(dto.profiles());
-		diveLogCommandService.saveBuddiesProfile(diveLog, buddies);
+		diveLogProfileCommandService.saveBuddiesProfile(diveLog, buddies);
 
 		List<ProfileDefaultResponseDto> result = buddies.stream()
 			.map(profileMapper::toProfileDefaultResponseDto)
@@ -87,13 +90,11 @@ public class DiveLogService {
 	public DiveLogInfoDto showDiveLog(Long diveLogId) {
 		DiveLog diveLog = diveLogQueryService.getDiveLog(diveLogId);
 
-		List<DiveLogProfile> buddiesProfile = diveLog.getProfiles();
+		List<DiveLogProfile> buddiesProfile =
+			diveLogProfileQueryService.getByDiveLogId(diveLog.getId());
 		List<ProfileDefaultResponseDto> result = buddiesProfile.stream()
-			.map(profile -> {
-					Profile buddyProfile = profile.getProfile();
-					return profileMapper.toProfileDefaultResponseDto(buddyProfile);
-				}
-			)
+			.map(DiveLogProfile::getProfile)
+			.map(profileMapper::toProfileDefaultResponseDto)
 			.toList();
 
 		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
@@ -107,12 +108,13 @@ public class DiveLogService {
 	 */
 	@Transactional
 	public void updateDiveLog(Long diveLogId, DiveLogRequestDto dto) {
-		Long memberId = AuthUserInfo.of().getMemberId();
-		DiveLog diveLog = diveLogQueryService.getUserDiveLog(memberId, diveLogId);
+		DiveLog diveLog = diveLogQueryService.getById(diveLogId);
 		List<Profile> newProfiles = profileQueryService.getProfiles(dto.profiles());
-		diveLogCommandService.updateBuddiesProfiles(diveLog, newProfiles);
+		List<DiveLogProfile> buddiesProfiles = diveLogCommandService.createBuddiesProfiles(diveLog,
+			newProfiles);
+		log.warn("새로운 관계 준비 완료");
 
-		diveLog.update(dto);
+		diveLog.update(dto, buddiesProfiles);
 	}
 
 	/**
