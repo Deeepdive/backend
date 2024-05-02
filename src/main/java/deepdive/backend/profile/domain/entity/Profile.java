@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "PROFILE")
 public class Profile {
 
 	private static final Integer MAX_LEN = 20;
@@ -33,24 +35,30 @@ public class Profile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "profile_id")
+	@Column(name = "ID")
 	private Long id;
 
+	@Column(name = "NICK_NAME")
 	private String nickName;
 
 	// picture 부분 멀티파트로 수정하기.
+	@Column(name = "PICTURE")
 	private String picture;
+	@Column(name = "IS_TEACHER")
 	private Boolean isTeacher;
+	@Column(name = "ETC")
 	private String etc;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "CERT_ORGANIZATION")
 	private CertOrganization certOrganization;
 	@Enumerated(EnumType.STRING)
+	@Column(name = "CERT_TYPE")
 	private CertType certType;
 
 	@Setter
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
+	@JoinColumn(name = "MEMBER_ID")
 	private Member member;
 
 	protected Profile(String nickName) {
@@ -100,5 +108,11 @@ public class Profile {
 	private boolean isContainInvalidWords(String nickName) {
 		String result = nickName.toLowerCase();
 		return INVALID_WORDS.stream().anyMatch(result::contains);
+	}
+
+	public void updateDefaultProfile(String url, String nickName) {
+		this.picture = url;
+		this.validateNickName(nickName);
+		this.nickName = nickName;
 	}
 }

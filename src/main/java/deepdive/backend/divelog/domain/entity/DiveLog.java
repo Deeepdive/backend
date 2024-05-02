@@ -21,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
@@ -28,15 +29,16 @@ import lombok.Setter;
 
 @Entity
 @Getter
+@Table(name = "DIVE_LOG")
 public class DiveLog {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "divelog_id")
+	@Column(name = "ID")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
+	@JoinColumn(name = "MEMBER_ID")
 	private Member member;
 
 	@Setter
@@ -45,38 +47,57 @@ public class DiveLog {
 
 	// TODO : 나중에 객체화 하기..
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "REVIEW_TYPE")
 	private ReviewType reviewType;
+	@Column(name = "REVIEW_COMMENT")
 	private String reviewComment;
 
+	@Column(name = "DIVE_DATE")
 	private LocalDate diveDate;
+	@Column(name = "CENTER")
 	private String center;
+	@Column(name = "POINT")
 	private String point;
 
 
+	@Column(name = "START_PRESSURE")
 	private Long startPressure;
+	@Column(name = "END_PRESSURE")
 	private Long endPressure;
+	@Column(name = "AIRE_TANK_USAGE")
 	private Long airTankUsage;
 
+	@Column(name = "DEPTH")
 	private Long depth;
+	@Column(name = "DIVE_MIN")
 	private Long diveMin;
+	@Column(name = "WATER_TEMP")
 	private Long waterTemp;
 
 
+	@Column(name = "AIR_TEMP")
 	private Long airTemp;
+	@Column(name = "WEIGHT")
 	private Long weight;
 
 
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "PURPOSE")
 	private Purpose purpose;
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "WATER_TYPE")
 	private WaterType waterType;
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "UNDER_WATER_VISIBILITY")
 	private UnderWaterVisibility underWaterVisibility;
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "WEATHER")
 	private Weather weather;
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "SUIT_TYPE")
 	private SuitType suitType;
 	@Enumerated(value = EnumType.STRING)
+	@Column(name = "WEIGHT_TYPE")
 	private WeightType weightType;
 
 	protected DiveLog() {
