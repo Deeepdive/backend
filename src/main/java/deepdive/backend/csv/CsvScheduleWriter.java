@@ -48,11 +48,8 @@ public class CsvScheduleWriter implements ItemWriter<DiveShopCsvData> {
 				diveShopCsvData.getSportType());
 			diveShopInformations.addAll(diveShopSports);
 
-			DiveShopPicture diveShopPicture = DiveShopPicture.of(diveShop,
-				diveShopCsvData.getThumbnail());
-			diveShopPictures.add(diveShopPicture);
-
 			List<DiveShopPicture> pictures = createDiveShopPictures(diveShop,
+				diveShopCsvData.getThumbnail(),
 				diveShopCsvData.getImages());
 			diveShopPictures.addAll(pictures);
 		});
@@ -83,9 +80,10 @@ public class CsvScheduleWriter implements ItemWriter<DiveShopCsvData> {
 			diveShopCsvData.getReview_title());
 	}
 
-	private List<DiveShopPicture> createDiveShopPictures(DiveShop diveShop, String images) {
+	private List<DiveShopPicture> createDiveShopPictures(DiveShop diveShop, String thumbNail,
+		String images) {
 		return Arrays.stream(images.split(","))
-			.map(picture -> DiveShopPicture.of(diveShop, picture))
+			.map(picture -> DiveShopPicture.of(diveShop, thumbNail, picture))
 			.toList();
 	}
 }

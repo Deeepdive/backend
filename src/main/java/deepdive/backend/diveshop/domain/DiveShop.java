@@ -34,9 +34,9 @@ public class DiveShop {
 	private ContactInformation contactInformation;
 
 	@Column(name = "REVIEW_COMMENT", length = 1024)
-	private String review_comment;
-	@Column(name = "REVIEW_TITLE")
-	private String review_title;
+	private String reviewComment;
+	@Column(name = "REVIEW_TITLE", length = 1024)
+	private String reviewTitle;
 
 	@Column(name = "RESERVE_COUNT")
 	private Integer reserveCount;
@@ -65,8 +65,8 @@ public class DiveShop {
 		diveShop.name = name;
 		diveShop.address = address;
 		diveShop.contactInformation = contactInformation;
-		diveShop.review_title = review_title;
-		diveShop.review_comment = comment;
+		diveShop.reviewTitle = review_title;
+		diveShop.reviewComment = comment;
 		diveShop.availableTime = availableTime;
 		diveShop.reserveCount = 0;
 		diveShop.createdAt = LocalDateTime.now();

@@ -132,18 +132,15 @@ public class DiveLogService {
 	public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
 		Long memberId = AuthUserInfo.of().getMemberId();
 
-		log.warn("diveLogPagination 조회");
 		Page<DiveLog> diveLogs = diveLogQueryService.getPaginationUserDiveLogs(memberId, pageable);
 		List<Long> diveLogIds = diveLogs.stream()
 			.map(DiveLog::getId)
 			.toList();
-		log.warn("diveLogProfile 조회 후 map 생성");
 		Map<Long, List<DiveLogProfile>> diveLogProfileMap =
 			diveLogProfileQueryService.getByDiveLogIds(diveLogIds).stream()
 				.collect(
 					Collectors.groupingBy(diveLogProfile -> diveLogProfile.getDiveLog().getId()));
 
-		log.warn("DiveLogProfile 내의 profile 갖고 dto 만들기");
 		List<DiveLogResponseDto> result = diveLogs.stream()
 			.map(diveLog -> {
 				Long diveLogId = diveLog.getId();
