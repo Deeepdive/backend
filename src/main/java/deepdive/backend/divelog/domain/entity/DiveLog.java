@@ -25,7 +25,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -41,8 +40,7 @@ public class DiveLog {
 	@JoinColumn(name = "MEMBER_ID")
 	private Member member;
 
-	@Setter
-	@OneToMany(mappedBy = "diveLog", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "diveLog", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DiveLogProfile> profiles;
 
 	// TODO : 나중에 객체화 하기..
@@ -64,7 +62,7 @@ public class DiveLog {
 	private Long startPressure;
 	@Column(name = "END_PRESSURE")
 	private Long endPressure;
-	@Column(name = "AIRE_TANK_USAGE")
+	@Column(name = "AIR_TANK_USAGE")
 	private Long airTankUsage;
 
 	@Column(name = "DEPTH")
@@ -133,7 +131,7 @@ public class DiveLog {
 		return diveLog;
 	}
 
-	public void update(DiveLogRequestDto dto) {
+	public void update(DiveLogRequestDto dto, List<DiveLogProfile> diveLogProfiles) {
 		// enum 타입
 		this.purpose = dto.purpose();
 		this.underWaterVisibility = dto.underWaterVisibility();
@@ -156,6 +154,11 @@ public class DiveLog {
 
 		this.airTemp = dto.airTemp();
 		this.weight = dto.weight();
+		this.profiles.clear();
+		this.profiles.addAll(diveLogProfiles);
 	}
 
+	public void updateProfiles(List<DiveLogProfile> diveLogProfiles) {
+		this.profiles = diveLogProfiles;
+	}
 }

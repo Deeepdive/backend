@@ -17,7 +17,10 @@ import deepdive.backend.member.service.MemberQueryService;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.service.ProfileQueryService;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -129,22 +132,31 @@ public class DiveLogService {
 	public DiveLogResponsePaginationDto findAllByPagination(Pageable pageable) {
 		Long memberId = AuthUserInfo.of().getMemberId();
 
-		Page<DiveLog> divLogs = diveLogQueryService.getPaginationUserDiveLogs(memberId, pageable);
+		log.warn("diveLogPagination 조회");
+		Page<DiveLog> diveLogs = diveLogQueryService.getPaginationUserDiveLogs(memberId, pageable);
+		List<Long> diveLogIds = diveLogs.stream()
+			.map(DiveLog::getId)
+			.toList();
+		log.warn("diveLogProfile 조회 후 map 생성");
+		Map<Long, List<DiveLogProfile>> diveLogProfileMap =
+			diveLogProfileQueryService.getByDiveLogIds(diveLogIds).stream()
+				.collect(
+					Collectors.groupingBy(diveLogProfile -> diveLogProfile.getDiveLog().getId()));
 
-		List<DiveLogResponseDto> result = divLogs.stream()
+		log.warn("DiveLogProfile 내의 profile 갖고 dto 만들기");
+		List<DiveLogResponseDto> result = diveLogs.stream()
 			.map(diveLog -> {
-				List<DiveLogProfile> profiles = diveLog.getProfiles();
-				List<ProfileDefaultResponseDto> buddiesProfiles = profiles.stream()
-					.map(profile -> {
-						Profile buddyProfile = profile.getProfile();
-						return profileMapper.toProfileDefaultResponseDto(buddyProfile);
-					})
-					.toList();
-				return diveLogMapper.toDiveLogResponseDto(diveLog, buddiesProfiles);
-
+				Long diveLogId = diveLog.getId();
+				List<ProfileDefaultResponseDto> profileDtos =
+					diveLogProfileMap.getOrDefault(diveLogId, Collections.emptyList())
+						.stream()
+						.map(DiveLogProfile::getProfile)
+						.map(profileMapper::toProfileDefaultResponseDto)
+						.toList();
+				return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos);
 			}).toList();
 
-		return diveLogMapper.toDiveLogResponsePaginationDto(result, divLogs.getTotalElements());
+		return diveLogMapper.toDiveLogResponsePaginationDto(result, diveLogs.getTotalElements());
 	}
 
 	@Transactional

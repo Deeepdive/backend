@@ -20,23 +20,14 @@ public class DiveLogCommandService {
 	private final DiveLogProfileRepository diveLogProfileRepository;
 
 	@Transactional
-	public void updateBuddiesProfiles(DiveLog diveLog, List<Profile> newBuddyProfiles) {
-		List<DiveLogProfile> oldBuddyProfiles = diveLog.getProfiles();
-		diveLogProfileRepository.deleteAll(oldBuddyProfiles);
+	public List<DiveLogProfile> createBuddiesProfiles(DiveLog diveLog,
+		List<Profile> newBuddyProfiles) {
 
-		List<DiveLogProfile> diveLogProfiles = newBuddyProfiles.stream()
+		return newBuddyProfiles.stream()
 			.map(profile -> DiveLogProfile.of(diveLog, profile))
 			.toList();
-		diveLog.setProfiles(diveLogProfiles);
 	}
 
-	@Transactional
-	public void saveBuddiesProfile(DiveLog diveLog, List<Profile> buddies) {
-		List<DiveLogProfile> buddiesProfile = buddies.stream()
-			.map(profile -> DiveLogProfile.of(diveLog, profile))
-			.toList();
-		diveLog.setProfiles(buddiesProfile);
-	}
 
 	@Transactional
 	public void deleteByUser(Long memberId, Long diveLogId) {

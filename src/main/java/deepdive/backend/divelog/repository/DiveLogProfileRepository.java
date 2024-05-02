@@ -19,4 +19,9 @@ public interface DiveLogProfileRepository extends JpaRepository<DiveLogProfile, 
 
 	void deleteAllByProfile(Profile profile);
 
+	@Query("SELECT dlp "
+		+ "FROM DiveLogProfile dlp "
+		+ "JOIN FETCH dlp.profile "
+		+ "WHERE dlp.diveLog.id IN :ids")
+	List<DiveLogProfile> findByDivLogIds(@Param("ids") List<Long> diveLogIds);
 }

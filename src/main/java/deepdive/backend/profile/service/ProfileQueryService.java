@@ -8,10 +8,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProfileQueryService {
 
 	private final ProfileRepository profileRepository;
@@ -33,6 +35,11 @@ public class ProfileQueryService {
 		Long memberId = AuthUserInfo.of().getMemberId();
 		log.info("member id = {}", memberId);
 
+		return profileRepository.findByMemberId(memberId)
+			.orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
+	}
+
+	public Profile getByMemberId(Long memberId) {
 		return profileRepository.findByMemberId(memberId)
 			.orElseThrow(ExceptionStatus.NOT_FOUND_PROFILE::asServiceException);
 	}
