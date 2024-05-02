@@ -17,22 +17,23 @@ public class ProfilePolicyService {
 	private final ProfileRepository profileRepository;
 
 	public void verifyMatchCertProfile(CertOrganization organization, CertType type) {
+		verifyNoneCertificationType(organization, type);
+		verifyCommonCertType(organization, type);
+	}
+
+	private void verifyNoneCertificationType(CertOrganization organization, CertType type) {
 		if (organization.equals(CertOrganization.NONE)) {
-			if (!isValidNoneCert(organization, type)) {
+			if (!type.equals(CertType.NONE)) {
 				throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
 			}
 		}
-		if (!isValidCommonCertMatch(organization, type)) {
-			throw ExceptionStatus.INVALID_MATCH_PROFILE.asServiceException();
+	}
+
+
+	public void verifyCommonCertType(CertOrganization organization, CertType type) {
+		if (!(CertOrganization.common(organization) && CertType.common(type))) {
+			throw ExceptionStatus.INVALID_CERT_TYPE.asServiceException();
 		}
-	}
-
-	public boolean isValidCommonCertMatch(CertOrganization organization, CertType type) {
-		return CertOrganization.common(organization) && CertType.common(type);
-	}
-
-	public boolean isValidNoneCert(CertOrganization organization, CertType certType) {
-		return organization.equals(CertOrganization.NONE) && certType.equals(CertType.NONE);
 	}
 
 	public void verifyNickName(String oldNickName, String newNickName) {
@@ -41,7 +42,8 @@ public class ProfilePolicyService {
 		}
 	}
 
-	public boolean isExistingNickName(String nickName) {
+	private boolean isExistingNickName(String nickName) {
+		log.warn("이미 존재하는 닉네임인지 검증 수행");
 		return profileRepository.findByNickName(nickName).isPresent();
 	}
 
