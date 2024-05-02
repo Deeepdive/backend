@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "DIVE_SHOP_PICTURE")
 public class DiveShopPicture {
 
 	@Id
@@ -22,19 +24,23 @@ public class DiveShopPicture {
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "URL", length = 1024)
-	private String url;
+	@Column(name = "DETAIL_IMAGE", length = 1024)
+	private String detailImage;
+
+	@Column(name = "THUMB_NAIL", length = 1024)
+	private String thumbNail;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DIVE_SHOP_ID")
 	private DiveShop diveShop;
 
-	protected DiveShopPicture(DiveShop diveShop, String url) {
+	protected DiveShopPicture(DiveShop diveShop, String thumbNail, String detailImage) {
 		this.diveShop = diveShop;
-		this.url = url;
+		this.thumbNail = thumbNail;
+		this.detailImage = detailImage;
 	}
 
-	public static DiveShopPicture of(DiveShop diveShop, String url) {
-		return new DiveShopPicture(diveShop, url);
+	public static DiveShopPicture of(DiveShop diveShop, String thumbNail, String url) {
+		return new DiveShopPicture(diveShop, thumbNail, url);
 	}
 }

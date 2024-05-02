@@ -7,6 +7,8 @@ import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.member.domain.Provider;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
+import deepdive.backend.profile.domain.entity.Profile;
+import deepdive.backend.profile.service.ProfileQueryService;
 import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class MemberService {
 
 	private final DiveLogRepository diveLogRepository;
 	private final DiveLogProfileRepository diveLogProfileRepository;
+	private final ProfileQueryService profileQueryService;
 
 	/**
 	 * @param email
@@ -69,8 +72,9 @@ public class MemberService {
 
 		Member member = memberRepository.findByIdWithProfile(memberId)
 			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+		Profile profile = profileQueryService.getByMemberId(member.getId());
 
-		diveLogProfileRepository.deleteAllByProfile(member.getProfile());
+		diveLogProfileRepository.deleteAllByProfile(profile);
 		diveLogRepository.deleteAll(member.getDiveLogs());
 		memberCommandService.delete(member);
 	}

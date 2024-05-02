@@ -1,7 +1,7 @@
 package deepdive.backend.diveshop.controller;
 
 import deepdive.backend.diveshop.service.DiveShopService;
-import deepdive.backend.dto.diveshop.DiveShopDataDto;
+import deepdive.backend.dto.diveshop.DiveShopDetailDto;
 import deepdive.backend.dto.diveshop.DiveShopResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +29,7 @@ public class DiveShopController {
 	}
 
 	@GetMapping("/{diveShopId}")
-	public DiveShopDataDto getDiveShopInformation(
+	public DiveShopDetailDto getDiveShopInformation(
 		@PathVariable(value = "diveShopId") Long diveShopId) {
 		return diveShopService.getDiveShopInformation(diveShopId);
 	}

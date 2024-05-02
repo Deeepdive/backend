@@ -4,6 +4,7 @@ import deepdive.backend.diveshop.domain.DiveShop;
 import deepdive.backend.diveshop.domain.DiveShopPicture;
 import deepdive.backend.diveshop.domain.DiveShopSport;
 import deepdive.backend.dto.diveshop.DiveShopDataDto;
+import deepdive.backend.dto.diveshop.DiveShopDetailDto;
 import deepdive.backend.dto.diveshop.DiveShopResponseDto;
 import deepdive.backend.mapper.DiveShopMapper;
 import java.util.Collections;
@@ -58,7 +59,7 @@ public class DiveShopService {
 						.toList();
 				List<String> diveShopPictureUrls =
 					diveShopPictureMap.getOrDefault(diveShopId, Collections.emptyList()).stream()
-						.map(DiveShopPicture::getUrl)
+						.map(DiveShopPicture::getDetailImage)
 						.toList();
 
 				return diveShopMapper.toDiveShopDataDto(diveShop, diveShopSportNames,
@@ -70,17 +71,21 @@ public class DiveShopService {
 	}
 
 
-	public DiveShopDataDto getDiveShopInformation(Long diveShopId) {
-		DiveShop diveShop = diveShopQueryService.getByDiveShopIdWithInformation(diveShopId);
+	public DiveShopDetailDto getDiveShopInformation(Long diveShopId) {
+		DiveShop diveShop = diveShopQueryService.getById(diveShopId);
+
 		List<DiveShopSport> diveShopSports =
 			diveShopSportQueryService.getByDiveShopWithSport(diveShopId);
 		List<String> types = diveShopSports.stream()
 			.map(diveShopSport -> diveShopSport.getSport().getName())
 			.toList();
-		List<String> diveShopPictureUrls = diveShop.getDiveShopPictures().stream()
-			.map(DiveShopPicture::getUrl).toList();
+		List<DiveShopPicture> diveShopPictures =
+			diveShopPictureQueryService.getByDiveShopId(diveShopId);
+		List<String> diveShopPictureUrls = diveShopPictures.stream()
+			.map(DiveShopPicture::getDetailImage)
+			.toList();
 
-		return diveShopMapper.toDiveShopDataDto(diveShop, types, diveShopPictureUrls);
+		return diveShopMapper.toDiveShopDetailDto(diveShop, types, diveShopPictureUrls);
 	}
 
 	/**

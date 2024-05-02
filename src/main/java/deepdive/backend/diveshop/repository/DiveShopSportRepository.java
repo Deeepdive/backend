@@ -4,11 +4,16 @@ import deepdive.backend.diveshop.domain.DiveShopSport;
 import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface DiveShopSportRepository extends JpaRepository<DiveShopSport, Long> {
 
-	@EntityGraph(attributePaths = "sport")
-	List<DiveShopSport> findAllByDiveShopId(Long diveShopId);
+	@Query("SELECT dss "
+		+ "FROM DiveShopSport dss "
+		+ "JOIN FETCH dss.sport "
+		+ "WHERE dss.diveShop.id = :diveShopId")
+	List<DiveShopSport> findAllByDiveShopId(@Param("diveShopId") Long diveShopId);
 
 
 	@EntityGraph(attributePaths = {"sport"})

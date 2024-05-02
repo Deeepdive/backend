@@ -15,9 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	Optional<Member> findByOauthId(String oauthId);
 
-	@EntityGraph(attributePaths = "profile")
-	Optional<Member> findById(Long memberId);
-
 	@Query("SELECT m "
 		+ "FROM Member m "
 		+ "WHERE m.id = :id ")
