@@ -25,11 +25,6 @@ public class Member {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private Long id;
-//
-//	@OneToOne(mappedBy = "member",
-//		fetch = FetchType.LAZY,
-//		cascade = CascadeType.REMOVE)
-//	private Profile profile;
 
 	@OneToMany(cascade = CascadeType.ALL,
 		targetEntity = DiveLog.class,
