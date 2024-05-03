@@ -23,7 +23,13 @@ public class DiveShopController {
 		return diveShopService.getDiveShopPagination(pageable);
 	}
 
-	@PostMapping("/reserve/{diveShopId}")
+	@GetMapping("/{province}/list")
+	public DiveShopResponseDto getAllShopInformationByProvince(Pageable pageable,
+		@PathVariable("province") String province) {
+		return diveShopService.getDiveShopPaginationByProvince(pageable, province);
+	}
+
+	@PostMapping("/{diveShopId}/reserve")
 	public void reserve(@PathVariable(value = "diveShopId") Long diveShopId) {
 		diveShopService.reserveDiveShop(diveShopId);
 	}
