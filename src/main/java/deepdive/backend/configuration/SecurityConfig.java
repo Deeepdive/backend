@@ -43,7 +43,7 @@ public class SecurityConfig {
 				.requestMatchers("/v1/profile/default-img").permitAll()
 				.requestMatchers("/oauth2/**").permitAll()
 				.requestMatchers(AuthenticateMatchers.swaggerArray).permitAll()
-				.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+				.requestMatchers("/v1/admin/**").hasAuthority("ROLE_ADMIN")
 				.anyRequest().authenticated()
 			)
 //            .oauth2Login(oauth -> oauth

@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DiveLogQueryService {
 
 	private final DiveLogRepository diveLogRepository;
@@ -33,5 +35,10 @@ public class DiveLogQueryService {
 
 	public Page<DiveLog> getPaginationUserDiveLogs(Long memberId, Pageable pageable) {
 		return diveLogRepository.findPaginationByMemberId(memberId, pageable);
+	}
+
+	public DiveLog getById(Long diveLogId) {
+		return diveLogRepository.findById(diveLogId)
+			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 	}
 }

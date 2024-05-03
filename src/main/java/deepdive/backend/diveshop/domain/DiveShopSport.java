@@ -1,6 +1,5 @@
-package deepdive.backend.divelog.domain.entity;
+package deepdive.backend.diveshop.domain;
 
-import deepdive.backend.profile.domain.entity.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,8 +16,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "DIVE_LOG_PROFILE")
-public class DiveLogProfile {
+@Table(name = "DIVE_SHOP_SPORT")
+public class DiveShopSport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,20 +25,20 @@ public class DiveLogProfile {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "DIVE_LOG_ID")
-	private DiveLog diveLog;
+	@JoinColumn(name = "DIVE_SHOP_ID")
+	private DiveShop diveShop;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PROFILE_ID")
-	private Profile profile;
+	@JoinColumn(name = "SPORT_ID")
+	private Sport sport;
 
-	protected DiveLogProfile(DiveLog diveLog, Profile profile) {
-		this.diveLog = diveLog;
-		this.profile = profile;
+	protected DiveShopSport(DiveShop diveShop, Sport sport) {
+		this.diveShop = diveShop;
+		this.sport = sport;
 	}
 
-	public static DiveLogProfile of(DiveLog diveLog, Profile profile) {
-
-		return new DiveLogProfile(diveLog, profile);
+	public static DiveShopSport of(DiveShop diveShop, Sport sport) {
+		return new DiveShopSport(diveShop, sport);
 	}
+
 }

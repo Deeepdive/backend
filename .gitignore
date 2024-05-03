@@ -9,8 +9,7 @@ build/
 /*/bin
 /*/out
 /*/*/out
-/src/main/generated/**
-
+/build/generated/
 ### STS ###
 .apt_generated
 .classpath

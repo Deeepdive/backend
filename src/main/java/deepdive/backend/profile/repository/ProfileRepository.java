@@ -18,6 +18,10 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 		+ "WHERE p IN :profiles")
 	List<String> findNickNames(@Param("profiles") List<Profile> profiles);
 
-	Optional<Profile> findByMemberId(Long memberId);
+	@Query("SELECT p "
+		+ "FROM Profile p "
+		+ "JOIN FETCH p.member "
+		+ "WHERE p.member.id = :memberId")
+	Optional<Profile> findByMemberId(@Param("memberId") Long memberId);
 
 }
