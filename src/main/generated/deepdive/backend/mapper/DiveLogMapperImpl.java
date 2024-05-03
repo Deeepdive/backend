@@ -1,6 +1,12 @@
 package deepdive.backend.mapper;
 
 import deepdive.backend.divelog.domain.Purpose;
+import deepdive.backend.divelog.domain.ReviewType;
+import deepdive.backend.divelog.domain.SuitType;
+import deepdive.backend.divelog.domain.UnderWaterVisibility;
+import deepdive.backend.divelog.domain.WaterType;
+import deepdive.backend.divelog.domain.Weather;
+import deepdive.backend.divelog.domain.WeightType;
 import deepdive.backend.divelog.domain.entity.DiveLog;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
 import deepdive.backend.dto.divelog.DiveLogResponseDto;
@@ -15,84 +21,70 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-02-17T11:25:54+0900",
+    date = "2024-05-03T15:33:05+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
 )
 @Component
 public class DiveLogMapperImpl implements DiveLogMapper {
 
     @Override
-    public DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog, List<String> buddyNames) {
+    public DiveLogInfoDto toDiveLogInfoDto(DiveLog diveLog, List<ProfileDefaultResponseDto> buddiesProfile) {
 
         Long id = null;
-        String purpose = null;
+        Purpose purpose = null;
         LocalDate diveDate = null;
         String center = null;
         String point = null;
-        String waterType = null;
+        WaterType waterType = null;
         Long depth = null;
         Long diveMin = null;
         Long waterTemp = null;
-        String underWaterVisibility = null;
+        UnderWaterVisibility underWaterVisibility = null;
         Long airTemp = null;
-        String weather = null;
-        String suitType = null;
+        Weather weather = null;
+        SuitType suitType = null;
         Long weight = null;
-        String weightType = null;
+        WeightType weightType = null;
         Long startPressure = null;
         Long endPressure = null;
         Long airTankUsage = null;
-        String reviewType = null;
+        ReviewType reviewType = null;
         String reviewComment = null;
         if ( diveLog != null ) {
             id = diveLog.getId();
-            if ( diveLog.getPurpose() != null ) {
-                purpose = diveLog.getPurpose().name();
-            }
+            purpose = diveLog.getPurpose();
             diveDate = diveLog.getDiveDate();
             center = diveLog.getCenter();
             point = diveLog.getPoint();
-            if ( diveLog.getWaterType() != null ) {
-                waterType = diveLog.getWaterType().name();
-            }
+            waterType = diveLog.getWaterType();
             depth = diveLog.getDepth();
             diveMin = diveLog.getDiveMin();
             waterTemp = diveLog.getWaterTemp();
-            if ( diveLog.getUnderWaterVisibility() != null ) {
-                underWaterVisibility = diveLog.getUnderWaterVisibility().name();
-            }
+            underWaterVisibility = diveLog.getUnderWaterVisibility();
             airTemp = diveLog.getAirTemp();
-            if ( diveLog.getWeather() != null ) {
-                weather = diveLog.getWeather().name();
-            }
-            if ( diveLog.getSuitType() != null ) {
-                suitType = diveLog.getSuitType().name();
-            }
+            weather = diveLog.getWeather();
+            suitType = diveLog.getSuitType();
             weight = diveLog.getWeight();
-            if ( diveLog.getWeightType() != null ) {
-                weightType = diveLog.getWeightType().name();
-            }
+            weightType = diveLog.getWeightType();
             startPressure = diveLog.getStartPressure();
             endPressure = diveLog.getEndPressure();
             airTankUsage = diveLog.getAirTankUsage();
-            if ( diveLog.getReviewType() != null ) {
-                reviewType = diveLog.getReviewType().name();
-            }
+            reviewType = diveLog.getReviewType();
             reviewComment = diveLog.getReviewComment();
         }
-        List<String> buddyNames1 = null;
-        List<String> list = buddyNames;
+        List<ProfileDefaultResponseDto> buddiesProfile1 = null;
+        List<ProfileDefaultResponseDto> list = buddiesProfile;
         if ( list != null ) {
-            buddyNames1 = new ArrayList<String>( list );
+            buddiesProfile1 = new ArrayList<ProfileDefaultResponseDto>( list );
         }
 
-        DiveLogInfoDto diveLogInfoDto = new DiveLogInfoDto( id, purpose, diveDate, center, point, waterType, depth, diveMin, waterTemp, underWaterVisibility, airTemp, weather, suitType, weight, weightType, startPressure, endPressure, airTankUsage, reviewType, reviewComment, buddyNames1 );
+        DiveLogInfoDto diveLogInfoDto = new DiveLogInfoDto( id, purpose, diveDate, center, point, waterType, depth, diveMin, waterTemp, underWaterVisibility, airTemp, weather, suitType, weight, weightType, startPressure, endPressure, airTankUsage, reviewType, reviewComment, buddiesProfile1 );
 
         return diveLogInfoDto;
     }
 
     @Override
-    public DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog, List<ProfileDefaultResponseDto> buddyProfiles) {
+    public DiveLogResponseDto toDiveLogResponseDto(DiveLog diveLog, List<ProfileDefaultResponseDto> buddiesProfile) {
 
         Long id = null;
         LocalDate diveDate = null;
@@ -106,10 +98,10 @@ public class DiveLogMapperImpl implements DiveLogMapper {
             point = diveLog.getPoint();
             purpose = diveLog.getPurpose();
         }
-        List<ProfileDefaultDto> buddyProfiles1 = null;
-        buddyProfiles1 = profileDefaultResponseDtoListToProfileDefaultDtoList( buddyProfiles );
+        List<ProfileDefaultDto> buddiesProfile1 = null;
+        buddiesProfile1 = profileDefaultResponseDtoListToProfileDefaultDtoList( buddiesProfile );
 
-        DiveLogResponseDto diveLogResponseDto = new DiveLogResponseDto( id, diveDate, center, point, purpose, buddyProfiles1 );
+        DiveLogResponseDto diveLogResponseDto = new DiveLogResponseDto( id, diveDate, center, point, purpose, buddiesProfile1 );
 
         return diveLogResponseDto;
     }
