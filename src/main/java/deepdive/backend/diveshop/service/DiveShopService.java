@@ -76,7 +76,7 @@ public class DiveShopService {
 				List<String> sports = diveShopSportMap.getOrDefault(diveShopId,
 						Collections.emptyList())
 					.stream()
-					.map(diveShopSport -> diveShopSport.getDiveShop().getName())
+					.map(diveShopSport -> diveShopSport.getSport().getName())
 					.toList();
 				String thumbNail = diveShopPictureMap.getOrDefault(diveShopId, "");
 				return diveShopMapper.toDiveShopListDto(diveShop, sports, thumbNail, location);
