@@ -25,7 +25,7 @@ public interface DiveLogRepository extends JpaRepository<DiveLog, Long> {
 
 	@Query("SELECT dl "
 		+ "FROM DiveLog dl "
-		+ "JOIN FETCH dl.profiles "
+		+ "LEFT JOIN dl.profiles "
 		+ "WHERE dl.member.id = :memberId")
 	Page<DiveLog> findPaginationByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
