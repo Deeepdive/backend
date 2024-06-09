@@ -20,7 +20,7 @@ public class MemberQueryService {
 
 	public Member getMember() {
 		return memberRepository.findById(getMemberId())
-			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+				.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
 	}
 
 	public Optional<Member> findByEmail(String email) {
@@ -29,12 +29,16 @@ public class MemberQueryService {
 
 	public Member getByOauthId(String oauthId) {
 		return memberRepository.findByOauthId(oauthId)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+				.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
 	}
 
 	public Optional<Member> findByOauthId(String oauthId) {
 		return memberRepository.findByOauthId(oauthId);
 	}
 
+	public Member getById(Long memberId) {
+		return memberRepository.findById(memberId)
+				.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+	}
 
 }

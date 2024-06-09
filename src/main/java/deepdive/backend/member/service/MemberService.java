@@ -8,6 +8,7 @@ import deepdive.backend.member.domain.Provider;
 import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.repository.MemberRepository;
 import deepdive.backend.profile.domain.entity.Profile;
+import deepdive.backend.profile.service.ProfileCommandService;
 import deepdive.backend.profile.service.ProfileQueryService;
 import deepdive.backend.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ public class MemberService {
 	private final DiveLogRepository diveLogRepository;
 	private final DiveLogProfileRepository diveLogProfileRepository;
 	private final ProfileQueryService profileQueryService;
+	private final ProfileCommandService profileCommandService;
 
 	/**
 	 * @param email
@@ -40,7 +42,7 @@ public class MemberService {
 	 */
 	@Transactional
 	public Member registerMember(String email, Provider provider, String oauthId,
-		Boolean isMarketing) {
+			Boolean isMarketing) {
 		memberPolicyService.validateRegisterInfo(oauthId);
 
 		Member member = Member.of(email, provider, oauthId, isMarketing);
@@ -70,13 +72,14 @@ public class MemberService {
 	public void delete() {
 		Long memberId = AuthUserInfo.of().getMemberId();
 
-		Member member = memberRepository.findByIdWithProfile(memberId)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_USER::asServiceException);
+		Member member = memberQueryService.getById(memberId);
 		Profile profile = profileQueryService.getByMemberId(member.getId());
 
 		diveLogProfileRepository.deleteAllByProfile(profile);
 		diveLogRepository.deleteAll(member.getDiveLogs());
+		profileCommandService.deleteProfile(profile);
 		memberCommandService.delete(member);
+
 	}
 
 }
