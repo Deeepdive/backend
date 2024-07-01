@@ -27,12 +27,12 @@ public class Member {
 	private Long id;
 
 	@OneToMany(cascade = CascadeType.ALL,
-		targetEntity = DiveLog.class,
-		fetch = FetchType.LAZY,
-		mappedBy = "member")
+			targetEntity = DiveLog.class,
+			fetch = FetchType.LAZY,
+			mappedBy = "member")
 	private List<DiveLog> diveLogs;
 
-	@Column(name = "EMAIL")
+	@Column(name = "EMAIL", unique = true)
 	private String email;
 	@Column(name = "OAUTH_ID")
 	private String oauthId;
@@ -46,7 +46,7 @@ public class Member {
 
 
 	public static Member of(String email, Provider provider, String oauthId,
-		Boolean isMarketingAgree) {
+			Boolean isMarketingAgree) {
 		Member member = new Member();
 		member.email = email;
 		member.provider = provider;

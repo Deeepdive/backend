@@ -8,7 +8,6 @@ import deepdive.backend.divelog.domain.WaterType;
 import deepdive.backend.divelog.domain.Weather;
 import deepdive.backend.divelog.domain.WeightType;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -38,38 +37,30 @@ import java.util.List;
  * @param profiles
  */
 public record DiveLogRequestDto(
-	Purpose purpose,
-	@NotNull
-	LocalDate diveDate,
-	@NotEmpty
-	String center,
-	@NotNull
-	String point,
-	WaterType waterType,
-	@NotNull
-	Long depth,
-	@NotNull
-	Long diveMin,
-	@NotNull
-	Long waterTemp,
-	UnderWaterVisibility underWaterVisibility,
-	@NotNull
-	Long airTemp,
-	Weather weather,
-	SuitType suitType,
-	@NotNull
-	Long weight,
-	WeightType weightType,
-	@NotNull
-	Long startPressure,
-	@NotNull
-	Long endPressure,
-	@NotNull
-	Long airTankUsage,
-	ReviewType reviewType,
-	String reviewComment,
-	@Nullable
-	List<Long> profiles
+		@NotNull
+		Purpose purpose,
+		@NotNull
+		LocalDate diveDate,
+		String center,
+		@NotNull
+		String point,
+		WaterType waterType,
+		Long depth,
+		Long diveMin,
+		Long waterTemp,
+		UnderWaterVisibility underWaterVisibility,
+		Long airTemp,
+		Weather weather,
+		SuitType suitType,
+		Long weight,
+		WeightType weightType,
+		Long startPressure,
+		Long endPressure,
+		Long airTankUsage,
+		ReviewType reviewType,
+		String reviewComment,
+		@Nullable
+		List<Long> profiles
 ) {
 
 }
