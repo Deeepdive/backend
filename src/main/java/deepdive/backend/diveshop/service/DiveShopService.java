@@ -45,7 +45,7 @@ public class DiveShopService {
 
 	public DiveShopResponseDto getDiveShopPaginationByProvince(Pageable pageable, String province) {
 		Page<DiveShop> diveShops =
-			diveShopQueryService.getPaginationByProvince(pageable, province);
+				diveShopQueryService.getPaginationByProvince(pageable, province);
 		List<DiveShopListDto> result = generateDiveShopDtoList(diveShops);
 
 		return new DiveShopResponseDto(result, diveShops.getTotalElements());
@@ -53,50 +53,65 @@ public class DiveShopService {
 
 	private List<DiveShopListDto> generateDiveShopDtoList(Page<DiveShop> diveShops) {
 		List<Long> diveShopIds = diveShops.stream()
-			.map(DiveShop::getId)
-			.toList();
+				.map(DiveShop::getId)
+				.toList();
 		Map<Long, List<DiveShopSport>> diveShopSportMap =
-			diveShopSportQueryService.getByDiveShopIdsWithSport(diveShopIds).stream()
-				.collect(
-					Collectors.groupingBy(diveShopSport -> diveShopSport.getDiveShop().getId()));
+				diveShopSportQueryService.getByDiveShopIdsWithSport(diveShopIds).stream()
+						.collect(
+								Collectors.groupingBy(
+										diveShopSport -> diveShopSport.getDiveShop().getId()));
 		Map<Long, String> diveShopPictureMap =
-			diveShopPictureQueryService.getByDiveShopIds(diveShopIds).stream()
-				.collect(
-					Collectors.toMap(
-						diveShopPicture -> diveShopPicture.getDiveShop().getId(),
-						DiveShopPicture::getThumbNail,
-						(existingValue, newValue) -> existingValue
-					)
-				);
+				diveShopPictureQueryService.getByDiveShopIds(diveShopIds).stream()
+						.collect(
+								Collectors.toMap(
+										diveShopPicture -> diveShopPicture.getDiveShop().getId(),
+										DiveShopPicture::getThumbNail,
+										(existingValue, newValue) -> existingValue
+								)
+						);
 		return diveShops.stream()
-			.map(diveShop -> {
-				Long diveShopId = diveShop.getId();
-				String location =
-					diveShop.getAddress().getProvince() + " " + diveShop.getAddress().getCity();
-				List<String> sports = diveShopSportMap.getOrDefault(diveShopId,
-						Collections.emptyList())
-					.stream()
-					.map(diveShopSport -> diveShopSport.getSport().getName())
-					.toList();
-				String thumbNail = diveShopPictureMap.getOrDefault(diveShopId, "");
-				return diveShopMapper.toDiveShopListDto(diveShop, sports, thumbNail, location);
-			}).toList();
+				.map(diveShop -> {
+					Long diveShopId = diveShop.getId();
+					String location =
+							diveShop.getAddress().getProvince() + " " + diveShop.getAddress()
+									.getCity();
+					List<String> sports = diveShopSportMap.getOrDefault(diveShopId,
+									Collections.emptyList())
+							.stream()
+							.map(diveShopSport -> diveShopSport.getSport().getName())
+							.toList();
+					String thumbNail = diveShopPictureMap.getOrDefault(diveShopId, "");
+					return diveShopMapper.toDiveShopListDto(diveShop, sports, thumbNail, location);
+				}).toList();
 	}
 
 	public DiveShopDetailDto getDiveShopInformation(Long diveShopId) {
 		DiveShop diveShop = diveShopQueryService.getById(diveShopId);
 
 		List<DiveShopSport> diveShopSports =
-			diveShopSportQueryService.getByDiveShopWithSport(diveShopId);
+				diveShopSportQueryService.getByDiveShopWithSport(diveShopId);
 		List<String> types = diveShopSports.stream()
-			.map(diveShopSport -> diveShopSport.getSport().getName())
-			.toList();
+				.map(diveShopSport -> diveShopSport.getSport().getName())
+				.toList();
 		List<DiveShopPicture> diveShopPictures =
-			diveShopPictureQueryService.getByDiveShopId(diveShopId);
+				diveShopPictureQueryService.getByDiveShopId(diveShopId);
 		List<String> diveShopPictureUrls = diveShopPictures.stream()
-			.map(DiveShopPicture::getDetailImage)
-			.toList();
+				.map(DiveShopPicture::getDetailImage)
+				.toList();
 
 		return diveShopMapper.toDiveShopDetailDto(diveShop, types, diveShopPictureUrls);
+	}
+
+	/**
+	 * 다이브 로그 내에서 지역명, 이름을 갖고 검색 결과 반환
+	 *
+	 * @param keyword
+	 * @param pageable
+	 * @return
+	 */
+	public DiveShopResponseDto getDiveShopsByKeyWord(String keyword, Pageable pageable) {
+		Page<DiveShop> result = diveShopQueryService.getByNameOrLocation(keyword, pageable);
+
+		return new DiveShopResponseDto(generateDiveShopDtoList(result), result.getTotalElements());
 	}
 }
