@@ -42,6 +42,8 @@ public class DiveLog {
 
 	@OneToMany(mappedBy = "diveLog", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DiveLogProfile> profiles;
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<DiveLogPicture> pictures;
 
 	// TODO : 나중에 객체화 하기..
 	@Enumerated(value = EnumType.STRING)
