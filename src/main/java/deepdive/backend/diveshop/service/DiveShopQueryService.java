@@ -18,7 +18,7 @@ public class DiveShopQueryService {
 
 	public DiveShop getById(Long id) {
 		return diveShopRepository.findById(id)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_SHOP::asServiceException);
+				.orElseThrow(ExceptionStatus.NOT_FOUND_SHOP::asServiceException);
 	}
 
 	public Page<DiveShop> getPaginationDiveShops(Pageable pageable) {
@@ -27,5 +27,9 @@ public class DiveShopQueryService {
 
 	public Page<DiveShop> getPaginationByProvince(Pageable pageable, String province) {
 		return diveShopRepository.findAllByProvince(province, pageable);
+	}
+
+	public Page<DiveShop> getByNameOrLocation(String keyword, Pageable pageable) {
+		return diveShopRepository.findByKeyWord(keyword, pageable);
 	}
 }

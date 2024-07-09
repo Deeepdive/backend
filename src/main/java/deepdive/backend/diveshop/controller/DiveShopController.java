@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/diveShop")
+@RequestMapping("/v2/diveShop")
 public class DiveShopController {
 
 	private final DiveShopService diveShopService;
@@ -25,7 +26,7 @@ public class DiveShopController {
 
 	@GetMapping("/{province}/list")
 	public DiveShopResponseDto getAllShopInformationByProvince(Pageable pageable,
-		@PathVariable("province") String province) {
+			@PathVariable("province") String province) {
 		return diveShopService.getDiveShopPaginationByProvince(pageable, province);
 	}
 
@@ -36,8 +37,15 @@ public class DiveShopController {
 
 	@GetMapping("/{diveShopId}")
 	public DiveShopDetailDto getDiveShopInformation(
-		@PathVariable(value = "diveShopId") Long diveShopId) {
+			@PathVariable(value = "diveShopId") Long diveShopId) {
 		return diveShopService.getDiveShopInformation(diveShopId);
+	}
+
+	@GetMapping("/search")
+	public DiveShopResponseDto getDiveShopsBySearchKeyWord(
+			@RequestParam(value = "keyword") String keyword,
+			Pageable pageable) {
+		return diveShopService.getDiveShopsByKeyWord(keyword, pageable);
 	}
 
 //	@GetMapping("search/{keyword}")
