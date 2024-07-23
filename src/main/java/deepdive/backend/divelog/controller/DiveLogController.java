@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/v1/divelog")
@@ -32,7 +34,7 @@ public class DiveLogController {
 	 */
 	@PostMapping("")
 	public DiveLogInfoDto save(
-		@RequestBody @Valid DiveLogRequestDto diveLogRequestDto) {
+			@RequestBody @Valid DiveLogRequestDto diveLogRequestDto) {
 		return diveLogService.save(diveLogRequestDto);
 	}
 
@@ -45,7 +47,7 @@ public class DiveLogController {
 	 */
 	@PatchMapping("/{diveLogId}")
 	public ResponseEntity update(@PathVariable(value = "diveLogId") Long diveLogId,
-		@RequestBody @Valid DiveLogRequestDto diveLogRequestDto) {
+			@RequestBody @Valid DiveLogRequestDto diveLogRequestDto) {
 		diveLogService.updateDiveLog(diveLogId, diveLogRequestDto);
 
 		return ResponseEntity.ok().build();
@@ -78,6 +80,18 @@ public class DiveLogController {
 	public DiveLogResponsePaginationDto getAllDiveLogsByAsc(Pageable pageable) {
 
 		return diveLogService.findAllByPagination(pageable);
+	}
+
+	/**
+	 * 특정 diveLog에 이미지 업로드 요청 기능
+	 *
+	 * @param multipartFile
+	 * @param diveLogId
+	 */
+	@PostMapping("/{diveLogId}/image")
+	public void addDiveLogPictures(@RequestPart MultipartFile multipartFile,
+			@PathVariable Long diveLogId) {
+		diveLogService.addImage(multipartFile, diveLogId);
 	}
 
 }

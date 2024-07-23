@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -69,8 +70,8 @@ public class DiveLogService {
 		diveLogProfileCommandService.saveBuddiesProfile(diveLog, buddies);
 
 		List<ProfileDefaultResponseDto> result = buddies.stream()
-			.map(profileMapper::toProfileDefaultResponseDto)
-			.toList();
+				.map(profileMapper::toProfileDefaultResponseDto)
+				.toList();
 		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
 	}
 
@@ -94,11 +95,11 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogQueryService.getDiveLog(diveLogId);
 
 		List<DiveLogProfile> buddiesProfile =
-			diveLogProfileQueryService.getByDiveLogId(diveLog.getId());
+				diveLogProfileQueryService.getByDiveLogId(diveLog.getId());
 		List<ProfileDefaultResponseDto> result = buddiesProfile.stream()
-			.map(DiveLogProfile::getProfile)
-			.map(profileMapper::toProfileDefaultResponseDto)
-			.toList();
+				.map(DiveLogProfile::getProfile)
+				.map(profileMapper::toProfileDefaultResponseDto)
+				.toList();
 
 		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
 	}
@@ -114,7 +115,7 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogQueryService.getById(diveLogId);
 		List<Profile> newProfiles = profileQueryService.getProfiles(dto.profiles());
 		List<DiveLogProfile> buddiesProfiles = diveLogCommandService.createBuddiesProfiles(diveLog,
-			newProfiles);
+				newProfiles);
 		log.warn("새로운 관계 준비 완료");
 
 		diveLog.update(dto, buddiesProfiles);
@@ -134,24 +135,25 @@ public class DiveLogService {
 
 		Page<DiveLog> diveLogs = diveLogQueryService.getPaginationUserDiveLogs(memberId, pageable);
 		List<Long> diveLogIds = diveLogs.stream()
-			.map(DiveLog::getId)
-			.toList();
+				.map(DiveLog::getId)
+				.toList();
 		Map<Long, List<DiveLogProfile>> diveLogProfileMap =
-			diveLogProfileQueryService.getByDiveLogIds(diveLogIds).stream()
-				.collect(
-					Collectors.groupingBy(diveLogProfile -> diveLogProfile.getDiveLog().getId()));
+				diveLogProfileQueryService.getByDiveLogIds(diveLogIds).stream()
+						.collect(
+								Collectors.groupingBy(
+										diveLogProfile -> diveLogProfile.getDiveLog().getId()));
 
 		List<DiveLogResponseDto> result = diveLogs.stream()
-			.map(diveLog -> {
-				Long diveLogId = diveLog.getId();
-				List<ProfileDefaultResponseDto> profileDtos =
-					diveLogProfileMap.getOrDefault(diveLogId, Collections.emptyList())
-						.stream()
-						.map(DiveLogProfile::getProfile)
-						.map(profileMapper::toProfileDefaultResponseDto)
-						.toList();
-				return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos);
-			}).toList();
+				.map(diveLog -> {
+					Long diveLogId = diveLog.getId();
+					List<ProfileDefaultResponseDto> profileDtos =
+							diveLogProfileMap.getOrDefault(diveLogId, Collections.emptyList())
+									.stream()
+									.map(DiveLogProfile::getProfile)
+									.map(profileMapper::toProfileDefaultResponseDto)
+									.toList();
+					return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos);
+				}).toList();
 
 		return diveLogMapper.toDiveLogResponsePaginationDto(result, diveLogs.getTotalElements());
 	}
@@ -160,5 +162,10 @@ public class DiveLogService {
 	public void delete(Long diveLogId) {
 		Long memberId = AuthUserInfo.of().getMemberId();
 		diveLogCommandService.deleteByUser(memberId, diveLogId);
+	}
+
+	@Transactional
+	public void addImage(MultipartFile multipartFile, Long diveLogId) {
+
 	}
 }
