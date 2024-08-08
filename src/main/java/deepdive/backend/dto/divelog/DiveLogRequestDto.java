@@ -60,7 +60,9 @@ public record DiveLogRequestDto(
 		ReviewType reviewType,
 		String reviewComment,
 		@Nullable
-		List<Long> profiles
+		List<Long> profiles,
+		@Nullable
+		List<String> imageUrls
 ) {
 
 }
