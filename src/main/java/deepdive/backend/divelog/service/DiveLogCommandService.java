@@ -1,8 +1,9 @@
 package deepdive.backend.divelog.service;
 
 import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.divelog.domain.entity.DiveLogImage;
 import deepdive.backend.divelog.domain.entity.DiveLogProfile;
-import deepdive.backend.divelog.repository.DiveLogProfileRepository;
+import deepdive.backend.divelog.repository.DiveLogImageRepository;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.profile.domain.entity.Profile;
@@ -17,22 +18,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class DiveLogCommandService {
 
 	private final DiveLogRepository diveLogRepository;
-	private final DiveLogProfileRepository diveLogProfileRepository;
+	private final DiveLogImageRepository diveLogImageRepository;
 
 	@Transactional
 	public List<DiveLogProfile> createBuddiesProfiles(DiveLog diveLog,
-		List<Profile> newBuddyProfiles) {
+			List<Profile> newBuddyProfiles) {
 
 		return newBuddyProfiles.stream()
-			.map(profile -> DiveLogProfile.of(diveLog, profile))
-			.toList();
+				.map(profile -> DiveLogProfile.of(diveLog, profile))
+				.toList();
+	}
+
+	@Transactional
+	public void saveImage(List<String> imageUrls, Long diveLogId) {
+		imageUrls.stream()
+				.map(imageUrl -> DiveLogImage.of(imageUrl, diveLogId))
+				.forEach(diveLogImageRepository::save);
 	}
 
 
 	@Transactional
 	public void deleteByUser(Long memberId, Long diveLogId) {
 		DiveLog diveLog = diveLogRepository.findOneByMemberId(memberId, diveLogId).orElseThrow(
-			ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+				ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 		diveLogRepository.delete(diveLog);
 	}
 }

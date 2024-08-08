@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "DIVE_LOG_PICTURE")
-public class DiveLogPicture {
+public class DiveLogImage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,14 +32,17 @@ public class DiveLogPicture {
 	private LocalDateTime deleted_at;
 	@Column(name = "URL")
 	private String url;
+	@Column(name = "DIVE_LOG_ID")
+	private Long diveLogId;
 
-	protected DiveLogPicture(String url) {
+	protected DiveLogImage(String url, Long diveLogId) {
 		this.url = url;
 		this.created_at = LocalDateTime.now();
 		this.deleted_at = null;
+		this.diveLogId = diveLogId;
 	}
 
-	public static DiveLogPicture of(String url) {
-		return new DiveLogPicture(url);
+	public static DiveLogImage of(String url, Long diveLogId) {
+		return new DiveLogImage(url, diveLogId);
 	}
 }
