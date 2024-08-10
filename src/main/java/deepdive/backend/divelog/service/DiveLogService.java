@@ -2,6 +2,7 @@ package deepdive.backend.divelog.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.divelog.domain.entity.DiveLogImage;
 import deepdive.backend.divelog.domain.entity.DiveLogProfile;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
@@ -72,7 +73,7 @@ public class DiveLogService {
 				.map(profileMapper::toProfileDefaultResponseDto)
 				.toList();
 		diveLogCommandService.saveImage(dto.imageUrls(), diveLog.getId());
-		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result, dto.imageUrls());
 	}
 
 	private void validateDiveDate(LocalDate localDate) {
@@ -100,8 +101,13 @@ public class DiveLogService {
 				.map(DiveLogProfile::getProfile)
 				.map(profileMapper::toProfileDefaultResponseDto)
 				.toList();
+		List<String> diveLogImages =
+				diveLogQueryService.findImageByDiveLogId(diveLogId)
+						.stream()
+						.map(DiveLogImage::getUrl)
+						.toList();
 
-		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result, diveLogImages);
 	}
 
 	/**
