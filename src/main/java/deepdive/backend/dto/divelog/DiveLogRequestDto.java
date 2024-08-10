@@ -10,6 +10,7 @@ import deepdive.backend.divelog.domain.WeightType;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,4 +66,11 @@ public record DiveLogRequestDto(
 		List<String> imageUrls
 ) {
 
+	public List<Long> profiles() {
+		return profiles != null ? profiles : new ArrayList<>();
+	}
+
+	public List<String> imageUrls() {
+		return imageUrls != null ? imageUrls : new ArrayList<>();
+	}
 }
