@@ -17,19 +17,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "DIVE_LOG_PICTURE")
 public class DiveLogImage {
 
+	private static final char URL_SEPARATOR = '/';
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "THUMB_NAIL")
-	private String thumb_nail;
 	@Column(name = "FILE_NAME")
-	private String file_name;
+	private String fileName;
 	@Column(name = "CREATED_AT")
-	private LocalDateTime created_at;
+	private LocalDateTime createdAt;
 	@Column(name = "DELETED_AT")
-	private LocalDateTime deleted_at;
+	private LocalDateTime deletedAt;
 	@Column(name = "URL")
 	private String url;
 	@Column(name = "DIVE_LOG_ID")
@@ -37,12 +37,17 @@ public class DiveLogImage {
 
 	protected DiveLogImage(String url, Long diveLogId) {
 		this.url = url;
-		this.created_at = LocalDateTime.now();
-		this.deleted_at = null;
+		this.createdAt = LocalDateTime.now();
+		this.deletedAt = null;
 		this.diveLogId = diveLogId;
+		this.fileName = getOriginName(url);
 	}
 
 	public static DiveLogImage of(String url, Long diveLogId) {
 		return new DiveLogImage(url, diveLogId);
+	}
+
+	private String getOriginName(String url) {
+		return url.substring(url.lastIndexOf(URL_SEPARATOR) + 1);
 	}
 }
