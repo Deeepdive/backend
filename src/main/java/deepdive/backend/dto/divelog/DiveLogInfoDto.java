@@ -35,7 +35,8 @@ public record DiveLogInfoDto(
 		Long airTankUsage,
 		ReviewType reviewType,
 		String reviewComment,
-		List<ProfileDefaultResponseDto> buddiesProfile
+		List<ProfileDefaultResponseDto> buddiesProfile,
+		List<String> imageUrls
 ) {
 
 }

@@ -150,6 +150,11 @@ public class DiveLogService {
 						.collect(
 								Collectors.groupingBy(
 										diveLogProfile -> diveLogProfile.getDiveLog().getId()));
+		Map<Long, List<DiveLogImage>> diveLogImages =
+				diveLogQueryService.findImageByDiveLogIds(diveLogIds).stream()
+						.collect(Collectors.groupingBy(
+								DiveLogImage::getDiveLogId
+						));
 
 		List<DiveLogResponseDto> result = diveLogs.stream()
 				.map(diveLog -> {
@@ -161,9 +166,10 @@ public class DiveLogService {
 									.map(profileMapper::toProfileDefaultResponseDto)
 									.toList();
 					List<String> imageUrls =
-							diveLogQueryService.findImageByDiveLogId(diveLogId)
+							diveLogImages.getOrDefault(diveLogId, Collections.emptyList())
 									.stream()
-									.map(DiveLogImage::getUrl).toList();
+									.map(DiveLogImage::getUrl)
+									.toList();
 					return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos, imageUrls);
 				}).toList();
 
