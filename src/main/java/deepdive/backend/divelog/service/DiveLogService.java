@@ -101,13 +101,13 @@ public class DiveLogService {
 				.map(DiveLogProfile::getProfile)
 				.map(profileMapper::toProfileDefaultResponseDto)
 				.toList();
-		List<String> diveLogImages =
+		List<String> imageUrls =
 				diveLogQueryService.findImageByDiveLogId(diveLogId)
 						.stream()
 						.map(DiveLogImage::getUrl)
 						.toList();
 
-		return diveLogMapper.toDiveLogInfoDto(diveLog, result, diveLogImages);
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result, imageUrls);
 	}
 
 	/**
@@ -160,7 +160,11 @@ public class DiveLogService {
 									.map(DiveLogProfile::getProfile)
 									.map(profileMapper::toProfileDefaultResponseDto)
 									.toList();
-					return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos);
+					List<String> imageUrls =
+							diveLogQueryService.findImageByDiveLogId(diveLogId)
+									.stream()
+									.map(DiveLogImage::getUrl).toList();
+					return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos, imageUrls);
 				}).toList();
 
 		return diveLogMapper.toDiveLogResponsePaginationDto(result, diveLogs.getTotalElements());
