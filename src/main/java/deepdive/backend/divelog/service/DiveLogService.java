@@ -125,6 +125,8 @@ public class DiveLogService {
 		log.warn("새로운 관계 준비 완료");
 
 		diveLog.update(dto, buddiesProfiles);
+		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
+		diveLogCommandService.saveImage(dto.imageUrls(), diveLogId);
 	}
 
 	/**
