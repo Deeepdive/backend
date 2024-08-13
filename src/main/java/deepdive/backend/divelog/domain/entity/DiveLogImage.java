@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "DIVE_LOG_PICTURE")
+@Table(name = "DIVE_LOG_IMAGE")
 public class DiveLogImage {
 
 	private static final char URL_SEPARATOR = '/';
