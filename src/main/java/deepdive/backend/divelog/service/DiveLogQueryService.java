@@ -49,4 +49,8 @@ public class DiveLogQueryService {
 	public List<DiveLogImage> findImageByDiveLogId(Long diveLogId) {
 		return diveLogImageRepository.findByDiveLogId(diveLogId);
 	}
+
+	public List<DiveLogImage> findImageByDiveLogIds(List<Long> diveLogIds) {
+		return diveLogImageRepository.findByDiveLogIds(diveLogIds);
+	}
 }
