@@ -43,4 +43,9 @@ public class DiveLogCommandService {
 				ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 		diveLogRepository.delete(diveLog);
 	}
+
+	@Transactional
+	public void deleteImageByDiveLogId(Long diveLogId) {
+		diveLogImageRepository.deleteByDiveLogId(diveLogId);
+	}
 }

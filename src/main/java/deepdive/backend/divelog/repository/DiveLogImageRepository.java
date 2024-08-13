@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface DiveLogImageRepository extends JpaRepository<DiveLogImage, Long> {
 
 	List<DiveLogImage> findByDiveLogId(Long diveLogId);
+
+	void deleteByDiveLogId(Long diveLogId);
 }

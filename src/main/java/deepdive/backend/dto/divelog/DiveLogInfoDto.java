@@ -15,27 +15,27 @@ import java.util.List;
  * DiveLog 단권 조회 결과에 대한 DTO
  */
 public record DiveLogInfoDto(
-	Long id,
-	Purpose purpose,
-	LocalDate diveDate,
-	String center,
-	String point,
-	WaterType waterType,
-	Long depth,
-	Long diveMin,
-	Long waterTemp,
-	UnderWaterVisibility underWaterVisibility,
-	Long airTemp,
-	Weather weather,
-	SuitType suitType,
-	Long weight,
-	WeightType weightType,
-	Long startPressure,
-	Long endPressure,
-	Long airTankUsage,
-	ReviewType reviewType,
-	String reviewComment,
-	List<ProfileDefaultResponseDto> buddiesProfile
+		Long id,
+		Purpose purpose,
+		LocalDate diveDate,
+		String center,
+		String point,
+		WaterType waterType,
+		Long depth,
+		Long diveMin,
+		Long waterTemp,
+		UnderWaterVisibility underWaterVisibility,
+		Long airTemp,
+		Weather weather,
+		SuitType suitType,
+		Long weight,
+		WeightType weightType,
+		Long startPressure,
+		Long endPressure,
+		Long airTankUsage,
+		ReviewType reviewType,
+		String reviewComment,
+		List<ProfileDefaultResponseDto> buddiesProfile
 ) {
 
 }
