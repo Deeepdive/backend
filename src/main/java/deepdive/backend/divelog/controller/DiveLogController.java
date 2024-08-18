@@ -7,7 +7,6 @@ import deepdive.backend.dto.divelog.DiveLogResponsePaginationDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -44,11 +43,9 @@ public class DiveLogController {
 	 * @return 200 OK, 404 NOT_FOUND_USER
 	 */
 	@PatchMapping("/{diveLogId}")
-	public ResponseEntity update(@PathVariable(value = "diveLogId") Long diveLogId,
+	public void update(@PathVariable(value = "diveLogId") Long diveLogId,
 			@RequestBody @Valid DiveLogRequestDto diveLogRequestDto) {
 		diveLogService.updateDiveLog(diveLogId, diveLogRequestDto);
-
-		return ResponseEntity.ok().build();
 	}
 
 	/**

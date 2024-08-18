@@ -17,6 +17,7 @@ import deepdive.backend.member.domain.entity.Member;
 import deepdive.backend.member.service.MemberQueryService;
 import deepdive.backend.profile.domain.entity.Profile;
 import deepdive.backend.profile.service.ProfileQueryService;
+import deepdive.backend.s3.service.S3Service;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,7 @@ public class DiveLogService {
 	private final MemberQueryService memberQueryService;
 	private final ProfileQueryService profileQueryService;
 	private final ProfileMapper profileMapper;
+	private final S3Service s3Service;
 
 
 	/**
@@ -72,7 +74,7 @@ public class DiveLogService {
 		List<ProfileDefaultResponseDto> result = buddies.stream()
 				.map(profileMapper::toProfileDefaultResponseDto)
 				.toList();
-		diveLogCommandService.saveImage(dto.imageUrls(), diveLog.getId());
+		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLog.getId());
 		return diveLogMapper.toDiveLogInfoDto(diveLog, result, dto.imageUrls());
 	}
 
@@ -126,7 +128,7 @@ public class DiveLogService {
 
 		diveLog.update(dto, buddiesProfiles);
 		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
-		diveLogCommandService.saveImage(dto.imageUrls(), diveLogId);
+		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLogId);
 	}
 
 	/**

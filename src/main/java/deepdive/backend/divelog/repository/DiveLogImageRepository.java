@@ -12,6 +12,11 @@ public interface DiveLogImageRepository extends JpaRepository<DiveLogImage, Long
 
 	List<DiveLogImage> findByDiveLogId(Long diveLogId);
 
+	@Query("SELECT img "
+			+ "FROM DiveLogImage img "
+			+ "WHERE img.url IN :urls")
+	List<DiveLogImage> findByUrl(@Param("urls") List<String> urls);
+
 	void deleteByDiveLogId(Long diveLogId);
 
 	@Query("SELECT img "

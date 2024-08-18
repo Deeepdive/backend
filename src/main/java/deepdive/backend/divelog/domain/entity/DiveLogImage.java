@@ -35,16 +35,19 @@ public class DiveLogImage {
 	@Column(name = "DIVE_LOG_ID")
 	private Long diveLogId;
 
-	protected DiveLogImage(String url, Long diveLogId) {
+	protected DiveLogImage(String url) {
 		this.url = url;
 		this.createdAt = LocalDateTime.now();
 		this.deletedAt = null;
-		this.diveLogId = diveLogId;
 		this.fileName = getOriginName(url);
 	}
 
-	public static DiveLogImage of(String url, Long diveLogId) {
-		return new DiveLogImage(url, diveLogId);
+	public static DiveLogImage of(String url) {
+		return new DiveLogImage(url);
+	}
+
+	public void updateDiveLogId(Long diveLogId) {
+		this.diveLogId = diveLogId;
 	}
 
 	private String getOriginName(String url) {
