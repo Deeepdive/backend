@@ -43,6 +43,7 @@ public class DiveLog {
 	@OneToMany(mappedBy = "diveLog", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DiveLogProfile> profiles;
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "DIVE_LOG_ID")
 	private List<DiveLogImage> image;
 
 	// TODO : 나중에 객체화 하기..

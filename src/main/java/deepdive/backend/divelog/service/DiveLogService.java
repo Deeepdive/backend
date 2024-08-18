@@ -179,6 +179,7 @@ public class DiveLogService {
 	@Transactional
 	public void delete(Long diveLogId) {
 		Long memberId = AuthUserInfo.of().getMemberId();
+		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
 		diveLogCommandService.deleteByUser(memberId, diveLogId);
 	}
 }

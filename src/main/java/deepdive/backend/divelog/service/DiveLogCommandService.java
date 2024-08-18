@@ -7,6 +7,7 @@ import deepdive.backend.divelog.repository.DiveLogImageRepository;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.exception.ExceptionStatus;
 import deepdive.backend.profile.domain.entity.Profile;
+import deepdive.backend.s3.service.S3Service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class DiveLogCommandService {
 
 	private final DiveLogRepository diveLogRepository;
 	private final DiveLogImageRepository diveLogImageRepository;
+	private final S3Service s3Service;
 
 	@Transactional
 	public List<DiveLogProfile> createBuddiesProfiles(DiveLog diveLog,
@@ -46,6 +48,10 @@ public class DiveLogCommandService {
 
 	@Transactional
 	public void deleteImageByDiveLogId(Long diveLogId) {
+		diveLogImageRepository.findByDiveLogId(diveLogId)
+				.stream()
+				.map(DiveLogImage::getFileName)
+				.forEach(s3Service::deleteImage);
 		diveLogImageRepository.deleteByDiveLogId(diveLogId);
 	}
 }
