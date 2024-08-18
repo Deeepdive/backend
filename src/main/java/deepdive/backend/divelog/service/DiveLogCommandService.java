@@ -35,6 +35,7 @@ public class DiveLogCommandService {
 				.forEach(diveLogImage -> diveLogImage.updateDiveLogId(diveLogId));
 	}
 
+	@Transactional
 	public void saveImage(String url) {
 		diveLogImageRepository.save(DiveLogImage.of(url));
 	}

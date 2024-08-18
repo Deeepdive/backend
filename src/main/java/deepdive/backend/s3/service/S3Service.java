@@ -25,6 +25,7 @@ public class S3Service {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucketName;
 
+	@Transactional
 	public String uploadImage(MultipartFile imageFile) throws IOException {
 		s3PolicyService.validateImageFile(imageFile);
 		String originalFileName = imageFile.getOriginalFilename();
@@ -53,8 +54,4 @@ public class S3Service {
 		s3Client.deleteObject(bucketName, fileName);
 	}
 
-	private String getFileName(String url) {
-		return url.substring(url.lastIndexOf(URL_SEPARATOR) + 1);
-
-	}
 }
