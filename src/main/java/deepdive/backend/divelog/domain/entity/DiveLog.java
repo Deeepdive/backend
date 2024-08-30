@@ -42,6 +42,9 @@ public class DiveLog {
 
 	@OneToMany(mappedBy = "diveLog", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DiveLogProfile> profiles;
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "DIVE_LOG_ID")
+	private List<DiveLogImage> image;
 
 	// TODO : 나중에 객체화 하기..
 	@Enumerated(value = EnumType.STRING)
@@ -97,6 +100,8 @@ public class DiveLog {
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "WEIGHT_TYPE")
 	private WeightType weightType;
+	@Column(name = "STAR_RATING")
+	private Long starRating;
 
 	protected DiveLog() {
 
@@ -127,6 +132,7 @@ public class DiveLog {
 		diveLog.airTemp = dto.airTemp();
 		diveLog.weight = dto.weight();
 		diveLog.member = member;
+		diveLog.starRating = dto.starRating();
 
 		return diveLog;
 	}
@@ -156,6 +162,7 @@ public class DiveLog {
 		this.weight = dto.weight();
 		this.profiles.clear();
 		this.profiles.addAll(diveLogProfiles);
+		this.starRating = dto.starRating();
 	}
 
 	public void updateProfiles(List<DiveLogProfile> diveLogProfiles) {

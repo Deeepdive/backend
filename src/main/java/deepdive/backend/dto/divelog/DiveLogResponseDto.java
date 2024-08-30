@@ -9,16 +9,16 @@ import java.util.List;
  * 유저가 작성한 여러 개의 diveLog 들에 대한 정보들을 담을 ResponseDTO
  *
  * @param id
- * @param diveHistory   -> dive 날짜, site, point, buddy
  * @param purpose
- * @param buddyProfiles -> 여러 버디들의 defaultProfile, 총 개수
+ * @param buddiesProfile -> 여러 버디들의 defaultProfile, 총 개수
  */
 public record DiveLogResponseDto(
-	Long id,
-	LocalDate diveDate,
-	String center,
-	String point,
-	Purpose purpose,
-	List<ProfileDefaultDto> buddiesProfile) {
+		Long id,
+		LocalDate diveDate,
+		String center,
+		String point,
+		Purpose purpose,
+		List<ProfileDefaultDto> buddiesProfile,
+		List<String> imageUrls) {
 
 }

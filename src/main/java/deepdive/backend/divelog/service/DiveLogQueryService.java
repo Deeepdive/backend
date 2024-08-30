@@ -1,8 +1,11 @@
 package deepdive.backend.divelog.service;
 
 import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.divelog.domain.entity.DiveLogImage;
+import deepdive.backend.divelog.repository.DiveLogImageRepository;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.exception.ExceptionStatus;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DiveLogQueryService {
 
 	private final DiveLogRepository diveLogRepository;
+	private final DiveLogImageRepository diveLogImageRepository;
 
 	/**
 	 * diveLog를 받아온다 -> 내부의 DiveLogProfile Array를 가져온다. 이를 Profiles를 가지고 DiveLogProfile 만들고, 교체함
@@ -25,12 +29,12 @@ public class DiveLogQueryService {
 	public DiveLog getUserDiveLog(Long memberId, Long profileId) {
 
 		return diveLogRepository.findOneByMemberId(memberId, profileId)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+				.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 	}
 
 	public DiveLog getDiveLog(Long diveLogId) {
 		return diveLogRepository.findById(diveLogId)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+				.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
 	}
 
 	public Page<DiveLog> getPaginationUserDiveLogs(Long memberId, Pageable pageable) {
@@ -39,6 +43,14 @@ public class DiveLogQueryService {
 
 	public DiveLog getById(Long diveLogId) {
 		return diveLogRepository.findById(diveLogId)
-			.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+				.orElseThrow(ExceptionStatus.NOT_FOUND_LOG::asServiceException);
+	}
+
+	public List<DiveLogImage> findImageByDiveLogId(Long diveLogId) {
+		return diveLogImageRepository.findByDiveLogId(diveLogId);
+	}
+
+	public List<DiveLogImage> findImageByDiveLogIds(List<Long> diveLogIds) {
+		return diveLogImageRepository.findByDiveLogIds(diveLogIds);
 	}
 }

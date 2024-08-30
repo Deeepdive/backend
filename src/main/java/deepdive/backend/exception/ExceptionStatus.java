@@ -37,7 +37,10 @@ public enum ExceptionStatus {
 	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 refreshToken 입니다."),
 	INVALID_REGISTER_TOKEN(HttpStatus.UNAUTHORIZED, "login 시 요청한 oauthId가 일치하지 않습니다."),
 	INVALID_BUDDY_PROFILE(HttpStatus.BAD_REQUEST, "스스로 buddy로 추가할 수 없습니다"),
-	INVALID_ENUM_TYPE(HttpStatus.BAD_REQUEST, "Enum 타입이 일치하지 않습니다.");
+	INVALID_ENUM_TYPE(HttpStatus.BAD_REQUEST, "Enum 타입이 일치하지 않습니다."),
+	EMPTY_IMAGE(HttpStatus.BAD_REQUEST, "이미지가 비어있습니다."),
+	INVALID_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "지원하지 않는 이미지 확장자입니다."),
+	INVALID_IMAGE_CONTENT(HttpStatus.BAD_REQUEST, "실제 이미지 파일이 아닙니다.");
 
 	private final int errorCode;
 	private final String message;

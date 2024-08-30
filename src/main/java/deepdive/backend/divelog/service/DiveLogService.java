@@ -2,6 +2,7 @@ package deepdive.backend.divelog.service;
 
 import deepdive.backend.auth.domain.AuthUserInfo;
 import deepdive.backend.divelog.domain.entity.DiveLog;
+import deepdive.backend.divelog.domain.entity.DiveLogImage;
 import deepdive.backend.divelog.domain.entity.DiveLogProfile;
 import deepdive.backend.divelog.repository.DiveLogRepository;
 import deepdive.backend.dto.divelog.DiveLogInfoDto;
@@ -69,9 +70,10 @@ public class DiveLogService {
 		diveLogProfileCommandService.saveBuddiesProfile(diveLog, buddies);
 
 		List<ProfileDefaultResponseDto> result = buddies.stream()
-			.map(profileMapper::toProfileDefaultResponseDto)
-			.toList();
-		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
+				.map(profileMapper::toProfileDefaultResponseDto)
+				.toList();
+		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLog.getId());
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result, dto.imageUrls());
 	}
 
 	private void validateDiveDate(LocalDate localDate) {
@@ -94,13 +96,18 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogQueryService.getDiveLog(diveLogId);
 
 		List<DiveLogProfile> buddiesProfile =
-			diveLogProfileQueryService.getByDiveLogId(diveLog.getId());
+				diveLogProfileQueryService.getByDiveLogId(diveLog.getId());
 		List<ProfileDefaultResponseDto> result = buddiesProfile.stream()
-			.map(DiveLogProfile::getProfile)
-			.map(profileMapper::toProfileDefaultResponseDto)
-			.toList();
+				.map(DiveLogProfile::getProfile)
+				.map(profileMapper::toProfileDefaultResponseDto)
+				.toList();
+		List<String> imageUrls =
+				diveLogQueryService.findImageByDiveLogId(diveLogId)
+						.stream()
+						.map(DiveLogImage::getUrl)
+						.toList();
 
-		return diveLogMapper.toDiveLogInfoDto(diveLog, result);
+		return diveLogMapper.toDiveLogInfoDto(diveLog, result, imageUrls);
 	}
 
 	/**
@@ -114,10 +121,11 @@ public class DiveLogService {
 		DiveLog diveLog = diveLogQueryService.getById(diveLogId);
 		List<Profile> newProfiles = profileQueryService.getProfiles(dto.profiles());
 		List<DiveLogProfile> buddiesProfiles = diveLogCommandService.createBuddiesProfiles(diveLog,
-			newProfiles);
-		log.warn("새로운 관계 준비 완료");
+				newProfiles);
 
 		diveLog.update(dto, buddiesProfiles);
+		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
+		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLogId);
 	}
 
 	/**
@@ -134,24 +142,33 @@ public class DiveLogService {
 
 		Page<DiveLog> diveLogs = diveLogQueryService.getPaginationUserDiveLogs(memberId, pageable);
 		List<Long> diveLogIds = diveLogs.stream()
-			.map(DiveLog::getId)
-			.toList();
+				.map(DiveLog::getId)
+				.toList();
 		Map<Long, List<DiveLogProfile>> diveLogProfileMap =
-			diveLogProfileQueryService.getByDiveLogIds(diveLogIds).stream()
-				.collect(
-					Collectors.groupingBy(diveLogProfile -> diveLogProfile.getDiveLog().getId()));
+				diveLogProfileQueryService.getByDiveLogIds(diveLogIds).stream()
+						.collect(
+								Collectors.groupingBy(
+										diveLogProfile -> diveLogProfile.getDiveLog().getId()));
+		Map<Long, List<DiveLogImage>> diveLogImages =
+				diveLogQueryService.findImageByDiveLogIds(diveLogIds).stream()
+						.collect(Collectors.groupingBy(DiveLogImage::getDiveLogId));
 
 		List<DiveLogResponseDto> result = diveLogs.stream()
-			.map(diveLog -> {
-				Long diveLogId = diveLog.getId();
-				List<ProfileDefaultResponseDto> profileDtos =
-					diveLogProfileMap.getOrDefault(diveLogId, Collections.emptyList())
-						.stream()
-						.map(DiveLogProfile::getProfile)
-						.map(profileMapper::toProfileDefaultResponseDto)
-						.toList();
-				return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos);
-			}).toList();
+				.map(diveLog -> {
+					Long diveLogId = diveLog.getId();
+					List<ProfileDefaultResponseDto> profileDtos =
+							diveLogProfileMap.getOrDefault(diveLogId, Collections.emptyList())
+									.stream()
+									.map(DiveLogProfile::getProfile)
+									.map(profileMapper::toProfileDefaultResponseDto)
+									.toList();
+					List<String> imageUrls =
+							diveLogImages.getOrDefault(diveLogId, Collections.emptyList())
+									.stream()
+									.map(DiveLogImage::getUrl)
+									.toList();
+					return diveLogMapper.toDiveLogResponseDto(diveLog, profileDtos, imageUrls);
+				}).toList();
 
 		return diveLogMapper.toDiveLogResponsePaginationDto(result, diveLogs.getTotalElements());
 	}
@@ -159,6 +176,7 @@ public class DiveLogService {
 	@Transactional
 	public void delete(Long diveLogId) {
 		Long memberId = AuthUserInfo.of().getMemberId();
+		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
 		diveLogCommandService.deleteByUser(memberId, diveLogId);
 	}
 }
