@@ -59,6 +59,7 @@ public record DiveLogRequestDto(
 		Long endPressure,
 		Long airTankUsage,
 		ReviewType reviewType,
+		Long starRating,
 		String reviewComment,
 		@Nullable
 		List<Long> profiles,
@@ -73,4 +74,6 @@ public record DiveLogRequestDto(
 	public List<String> imageUrls() {
 		return imageUrls != null ? imageUrls : new ArrayList<>();
 	}
+
+	//
 }

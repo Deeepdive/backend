@@ -100,6 +100,8 @@ public class DiveLog {
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "WEIGHT_TYPE")
 	private WeightType weightType;
+	@Column(name = "STAR_RATING")
+	private Long starRating;
 
 	protected DiveLog() {
 
@@ -130,6 +132,7 @@ public class DiveLog {
 		diveLog.airTemp = dto.airTemp();
 		diveLog.weight = dto.weight();
 		diveLog.member = member;
+		diveLog.starRating = dto.starRating();
 
 		return diveLog;
 	}
@@ -159,6 +162,7 @@ public class DiveLog {
 		this.weight = dto.weight();
 		this.profiles.clear();
 		this.profiles.addAll(diveLogProfiles);
+		this.starRating = dto.starRating();
 	}
 
 	public void updateProfiles(List<DiveLogProfile> diveLogProfiles) {

@@ -122,7 +122,6 @@ public class DiveLogService {
 		List<Profile> newProfiles = profileQueryService.getProfiles(dto.profiles());
 		List<DiveLogProfile> buddiesProfiles = diveLogCommandService.createBuddiesProfiles(diveLog,
 				newProfiles);
-		log.warn("새로운 관계 준비 완료");
 
 		diveLog.update(dto, buddiesProfiles);
 		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
