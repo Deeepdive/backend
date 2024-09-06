@@ -19,6 +19,8 @@ public record DiveLogResponseDto(
 		String point,
 		Purpose purpose,
 		List<ProfileDefaultDto> buddiesProfile,
-		List<String> imageUrls) {
+		List<String> imageUrls,
+		Long starRating
+) {
 
 }
