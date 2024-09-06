@@ -43,7 +43,6 @@ public record DiveLogRequestDto(
 		@NotNull
 		LocalDate diveDate,
 		String center,
-		@NotNull
 		String point,
 		WaterType waterType,
 		Long depth,
@@ -59,12 +58,17 @@ public record DiveLogRequestDto(
 		Long endPressure,
 		Long airTankUsage,
 		ReviewType reviewType,
+		@NotNull
 		Long starRating,
 		String reviewComment,
 		@Nullable
 		List<Long> profiles,
 		@Nullable
-		List<String> imageUrls
+		List<String> imageUrls,
+		@NotNull
+		String city,
+		@NotNull
+		String country
 ) {
 
 	public List<Long> profiles() {
