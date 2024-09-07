@@ -36,7 +36,10 @@ public record DiveLogInfoDto(
 		ReviewType reviewType,
 		String reviewComment,
 		List<ProfileDefaultResponseDto> buddiesProfile,
-		List<String> imageUrls
+		List<String> imageUrls,
+		Long starRating,
+		String city,
+		String country
 ) {
 
 }

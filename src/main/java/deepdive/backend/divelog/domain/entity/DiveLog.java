@@ -59,6 +59,10 @@ public class DiveLog {
 	private String center;
 	@Column(name = "POINT")
 	private String point;
+	@Column(name = "CITY")
+	private String city;
+	@Column(name = "COUNTRY")
+	private String country;
 
 
 	@Column(name = "START_PRESSURE")

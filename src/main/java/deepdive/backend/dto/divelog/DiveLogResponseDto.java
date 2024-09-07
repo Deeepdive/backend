@@ -17,8 +17,12 @@ public record DiveLogResponseDto(
 		LocalDate diveDate,
 		String center,
 		String point,
+		String country,
+		String city,
 		Purpose purpose,
 		List<ProfileDefaultDto> buddiesProfile,
-		List<String> imageUrls) {
+		List<String> imageUrls,
+		Long starRating
+) {
 
 }
