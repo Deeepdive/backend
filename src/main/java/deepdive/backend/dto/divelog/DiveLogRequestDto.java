@@ -65,9 +65,9 @@ public record DiveLogRequestDto(
 		List<Long> profiles,
 		@Nullable
 		List<String> imageUrls,
-		@NotNull
+		@Nullable
 		String city,
-		@NotNull
+		@Nullable
 		String country
 ) {
 
