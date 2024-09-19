@@ -3,6 +3,7 @@ package deepdive.backend.s3.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import deepdive.backend.divelog.service.DiveLogCommandService;
+import deepdive.backend.dto.s3.S3ResponseDto;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class S3Service {
 
 	private static final char URL_SEPARATOR = '/';
+	private static final char EXTENSION_SEPARATOR = '.';
 	private final AmazonS3 s3Client;
 	private final S3PolicyService s3PolicyService;
 	private final DiveLogCommandService diveLogCommandService;
@@ -26,9 +28,11 @@ public class S3Service {
 	private String bucketName;
 
 	@Transactional
-	public String uploadImage(MultipartFile imageFile) throws IOException {
+	public S3ResponseDto uploadImage(MultipartFile imageFile) throws IOException {
 		s3PolicyService.validateImageFile(imageFile);
 		String originalFileName = imageFile.getOriginalFilename();
+		int extensionIndex = originalFileName.lastIndexOf(EXTENSION_SEPARATOR);
+		String extension = originalFileName.substring(extensionIndex + 1);
 
 		String s3FileName = generateS3FileName(originalFileName);
 
@@ -40,7 +44,7 @@ public class S3Service {
 
 		String url = s3Client.getUrl(bucketName, s3FileName).toString();
 		diveLogCommandService.saveImage(url);
-		return url;
+		return new S3ResponseDto(url, extension);
 	}
 
 	private String generateS3FileName(String fileName) {

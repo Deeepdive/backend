@@ -30,9 +30,12 @@ public class DiveLogCommandService {
 	}
 
 	@Transactional
-	public void updateImageUrl(List<String> imageUrls, Long diveLogId) {
-		diveLogImageRepository.findByUrl(imageUrls)
-				.forEach(diveLogImage -> diveLogImage.updateDiveLogId(diveLogId));
+	public void updateImageUrl(List<String> imageUrls, DiveLog diveLog) {
+		List<DiveLogImage> diveLogImages = imageUrls.stream()
+				.map(DiveLogImage::of)
+				.toList();
+
+		diveLog.getImage().addAll(diveLogImages);
 	}
 
 	@Transactional
@@ -49,7 +52,8 @@ public class DiveLogCommandService {
 	}
 
 	@Transactional
-	public void deleteImageByDiveLogId(Long diveLogId) {
-		diveLogImageRepository.deleteByDiveLogId(diveLogId);
+	public void deleteImage(Long diveLogId) {
+		diveLogImageRepository.findByDiveLogId(diveLogId)
+				.forEach(DiveLogImage::delete);
 	}
 }
