@@ -137,6 +137,8 @@ public class DiveLog {
 		diveLog.weight = dto.weight();
 		diveLog.member = member;
 		diveLog.starRating = dto.starRating();
+		diveLog.city = dto.city();
+		diveLog.country = dto.country();
 
 		return diveLog;
 	}
