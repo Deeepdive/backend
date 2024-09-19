@@ -72,7 +72,7 @@ public class DiveLogService {
 		List<ProfileDefaultResponseDto> result = buddies.stream()
 				.map(profileMapper::toProfileDefaultResponseDto)
 				.toList();
-		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLog.getId());
+		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLog);
 		return diveLogMapper.toDiveLogInfoDto(diveLog, result, dto.imageUrls());
 	}
 
@@ -124,8 +124,9 @@ public class DiveLogService {
 				newProfiles);
 
 		diveLog.update(dto, buddiesProfiles);
-		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
-		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLogId);
+
+		diveLog.deleteImage();
+		diveLogCommandService.updateImageUrl(dto.imageUrls(), diveLog);
 	}
 
 	/**
@@ -176,7 +177,7 @@ public class DiveLogService {
 	@Transactional
 	public void delete(Long diveLogId) {
 		Long memberId = AuthUserInfo.of().getMemberId();
-		diveLogCommandService.deleteImageByDiveLogId(diveLogId);
+		diveLogCommandService.deleteImage(diveLogId);
 		diveLogCommandService.deleteByUser(memberId, diveLogId);
 	}
 }
