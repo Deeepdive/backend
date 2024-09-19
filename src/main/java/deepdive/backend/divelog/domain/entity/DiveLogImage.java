@@ -53,4 +53,8 @@ public class DiveLogImage {
 	private String getOriginName(String url) {
 		return url.substring(url.lastIndexOf(URL_SEPARATOR) + 1);
 	}
+
+	public void delete() {
+		this.deletedAt = LocalDateTime.now();
+	}
 }

@@ -23,6 +23,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
@@ -44,7 +45,7 @@ public class DiveLog {
 	private List<DiveLogProfile> profiles;
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "DIVE_LOG_ID")
-	private List<DiveLogImage> image;
+	private List<DiveLogImage> image = new ArrayList<>();
 
 	// TODO : 나중에 객체화 하기..
 	@Enumerated(value = EnumType.STRING)
@@ -168,7 +169,7 @@ public class DiveLog {
 		this.weight = dto.weight();
 		this.profiles.clear();
 		this.profiles.addAll(diveLogProfiles);
-		
+
 		this.starRating = dto.starRating();
 		this.country = dto.country();
 		this.city = dto.city();
@@ -176,5 +177,9 @@ public class DiveLog {
 
 	public void updateProfiles(List<DiveLogProfile> diveLogProfiles) {
 		this.profiles = diveLogProfiles;
+	}
+
+	public void deleteImage() {
+		this.image.clear();
 	}
 }
