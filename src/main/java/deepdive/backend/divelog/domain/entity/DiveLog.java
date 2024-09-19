@@ -168,7 +168,10 @@ public class DiveLog {
 		this.weight = dto.weight();
 		this.profiles.clear();
 		this.profiles.addAll(diveLogProfiles);
+		
 		this.starRating = dto.starRating();
+		this.country = dto.country();
+		this.city = dto.city();
 	}
 
 	public void updateProfiles(List<DiveLogProfile> diveLogProfiles) {
