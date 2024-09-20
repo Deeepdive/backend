@@ -1,6 +1,5 @@
 package deepdive.backend.s3.controller;
 
-import deepdive.backend.dto.s3.S3ResponseDto;
 import deepdive.backend.s3.service.S3Service;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class S3Controller {
 	private final S3Service s3Service;
 
 	@PostMapping("/image")
-	public S3ResponseDto uploadFile(@RequestPart("file") MultipartFile multipartFile)
+	public String uploadFile(@RequestPart("file") MultipartFile multipartFile)
 			throws IOException {
 		return s3Service.uploadImage(multipartFile);
 	}
