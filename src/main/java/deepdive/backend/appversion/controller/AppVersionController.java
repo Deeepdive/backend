@@ -1,9 +1,10 @@
 package deepdive.backend.appversion.controller;
 
+import deepdive.backend.appversion.domain.AppVersion;
+import deepdive.backend.appversion.repository.AppVersionRepository;
 import deepdive.backend.dto.appversion.AppVersionDto;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,19 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/appVersion")
+@Slf4j
 public class AppVersionController {
 
-	private final JdbcTemplate jdbcTemplate;
+	private final AppVersionRepository appVersionRepository;
 
 	@GetMapping("")
 	public AppVersionDto appVersion() {
-		String sql = "SELECT google_min_version, ios_min_version "
-			+ "FROM app_version WHERE id = 1";
+		AppVersion appversion = appVersionRepository.findTopByOrderByIdDesc();
 
-		Map<String, Object> result = jdbcTemplate.queryForMap(sql);
-		String googleAppVersion = (String) result.getOrDefault("google_min_version", "invalid");
-		String iosAppVersion = (String) result.getOrDefault("ios_min_version", "invalid");
+		String googleAppVersion = appversion.getGoogleAppVersion();
+		String iosAppVersion = appversion.getIosAppVersion();
 
 		return new AppVersionDto(googleAppVersion, iosAppVersion);
 	}
+
 }
