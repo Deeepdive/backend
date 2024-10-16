@@ -27,8 +27,6 @@ public class TempDiveLogController {
 
 	@PostMapping("")
 	public DiveLogInfoDto save(@RequestBody @Valid DiveLogRequestDto dto) {
-		log.warn("뭐로 들어옴요??");
-		log.warn(dto.waterType().name());
 		return diveLogService.save(dto);
 	}
 
